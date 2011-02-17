@@ -1,3 +1,4 @@
 itt még nincs semmi
 még mindig nincs
-legalább egy embernek már megy a használat
+
+legalabb mar egy embernek megy a hasznalat
