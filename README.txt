@@ -1,4 +1,1 @@
-elegem van ebbol!!
-nagyon...
-
-proba
+ures README fajl
