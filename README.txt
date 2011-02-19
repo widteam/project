@@ -1,7 +1,7 @@
-Hátralévõ munkák:
+ï»¿HÃ¡tralÃ©vÅ‘ munkÃ¡k:
 
-Dokumentáció véglegesítése - Seymor
-Feladatleírás - Tubeee (lehet neki segíteni)
-Szótár bõvítése - seymor (lehet neki segíteni)
+DokumentÃ¡ciÃ³ vÃ©glegesÃ­tÃ©se - Seymor
+FeladatleÃ­rÃ¡s - Tubeee (lehet neki segÃ­teni)
+SzÃ³tÃ¡r bÅ‘vÃ­tÃ©se - seymor (lehet neki segÃ­teni)
 
-MINDENKI nézze át a dokumentumot, hogy talál-e benne hibát vagy egyéb szembetûnõ dolgokat!
+MINDENKI nÃ©zze Ã¡t a dokumentumot, hogy talÃ¡l-e benne hibÃ¡t vagy egyÃ©b szembetÅ±nÅ‘ dolgokat!
