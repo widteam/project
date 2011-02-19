@@ -1,9 +1,2 @@
 ures README fajl
 ures README fajl
-ures README fajl
-ures README fajl
-ures README fajl
-ures README fajl
-ures README fajl
-ures README fajl
-ures README fajl
