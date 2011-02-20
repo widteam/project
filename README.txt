@@ -1,7 +1,5 @@
 ﻿Hátralévő munkák:
 
-Dokumentáció véglegesítése - Seymor
-Feladatleírás - Tubeee (lehet neki segíteni)
-Szótár bővítése - seymor (lehet neki segíteni)
+Feladatleírás - Mindenki!!!
 
 MINDENKI nézze át a dokumentumot, hogy talál-e benne hibát vagy egyéb szembetűnő dolgokat!
