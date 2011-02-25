@@ -1,5 +1,5 @@
-﻿Hátralévő munkák:
+﻿MINDENKINEK
 
-Feladatleírás - Mindenki!!!
+Adatszerkezeten gondolkodni. Mit és hogyan tároljunk. Esetleges öteltek híján a (hamarosan) feltöltött oncepciómban kersni minél több hibát. Külön pirospont, ha megoldás is születik rá. 
 
-MINDENKI nézze át a dokumentumot, hogy talál-e benne hibát vagy egyéb szembetűnő dolgokat!
+Csak kész adatszerkezet esetén csinálható meg a szekvenciadramok összessége... és csak kész szekvenciadiagram után tudjuk az osztályokat leírni! 
