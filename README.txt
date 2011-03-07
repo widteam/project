@@ -1,8 +1,5 @@
-﻿MINDENKINEK
+﻿TODO: MINDENKINEK
 
-Adatszerkezeten gondolkodni. Mit és hogyan tároljunk. Esetleges öteltek híján a (hamarosan) feltöltött oncepciómban kersni minél több hibát. Külön pirospont, ha megoldás is születik rá. 
+Imádkozn, hogy elfogadják az Nalaízis modell 2-őt és hogy 85% körüli pontot kapjunk rá.
 
-Csak kész adatszerkezet esetén csinálható meg a szekvenciadramok összessége... és csak kész szekvenciadiagram után tudjuk az osztályokat leírni! 
-
-
-asd
+Szkeleton gondolatával barátkozni.Szerdáig kipihenni magatokat.
