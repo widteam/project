@@ -1,14 +1,14 @@
 /*
-* Név: 			DigitalObject
-* Típus: 		Abstract Class
+* Nev: 			DigitalObject
+* Tipus: 		Abstract Class
 * Interfacek:	iComponent
-* Szülõk		---
+* Szulok		---
 * 
-*********** Leírás **********
-* A Wire mellett ez a másik legfontosabb építõeleme a digitális
-* áramköröknek. Meghatározzák, megjelenítik, vagy egy  belsõ függvény 
-* szerint a kimenetükre csatlakozó Wire típusú objektumok értékeit 
-* megváltoztatják. Minden DigitalObject típusú objektum egyedi azonosítóval
+*********** Leiras **********
+* A Wire mellett ez a masik legfontosabb epitoeleme a digitalis
+* aramkoroknek. Meghatarozzak, megjelenitik, vagy egy  belso fuggveny 
+* szerint a kimenetukre csatlakozo Wire tipusu objektumok ertekeit 
+* megvaltoztatjak. Minden DigitalObject tipusu objektum egyedi azonositoval
 * rendelkezik.
 
 */
@@ -17,26 +17,26 @@
 import java.util.*;
 
 public abstract class DigitalObject implements iComponent {
-	/*	ATTRIBÚTUMOK	*/
+	/*	ATTRIBuTUMOK	*/
 	protected String ID;
-	// Leírás: Egyedi azonosító. Tartalmazza az osztály nevét és egy számot
+	// Leiras: Egyedi azonosito. Tartalmazza az osztaly nevet es egy szamot
 	
 	protected List<Wire> wireIn;
-	/* Leírás: Wire objektum-referenciákból álló lista azon Wire objektumokról, 
-	 * melyek az objektum bemeneteihez kapcsolódnak.
+	/* Leiras: Wire objektum-referenciakbol allo lista azon Wire objektumokrol, 
+	 * melyek az objektum bemeneteihez kapcsolodnak.
 	*/
 	
 	protected List<Wire> wireOut;
-	/* Leírás: Wire objektum-referenciákból álló lista azon Wire objektumokról,
-	 * melyek az objektum kimeneteihez kapcsolódnak	
+	/* Leiras: Wire objektum-referenciakbol allo lista azon Wire objektumokrol,
+	 * melyek az objektum kimeneteihez kapcsolodnak	
 	*/
 	
 	/*  KONSTRUKTOR  */
 	public DigitalObject(){
 	}
-	/*  METÓDUSOK  */
+	/*  METoDUSOK  */
 	public String GetID(){
-	// Leírás: Visszaadja az objektumok egyedi azonosítóját
+	// Leiras: Visszaadja az objektumok egyedi azonositojat
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", ID + ":String");	/* TEST */		
 		stack.PrintTail(ID,"", ID + ":String"); 	/* TEST */
