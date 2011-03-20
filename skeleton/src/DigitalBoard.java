@@ -135,7 +135,7 @@ public class DigitalBoard {
 					PreviousValue = Count();
 					//feedback[0], második kör
 					PreviousValue = Count();
-					//ha itt nem egyezne meg, az elõzõ prev.valueval, akkor instabil.
+					//ha bitt nem egyezne meg, az elõzõ prev.valueval, akkor instabil.
 					stack.PrintTail(ID,"",Result + ":boolean");	/* TEST */
 					return Result;
 				}
