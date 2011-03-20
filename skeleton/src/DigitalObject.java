@@ -33,13 +33,13 @@ public abstract class DigitalObject implements iComponent {
 	
 	/*  KONSTRUKTOR  */
 	public DigitalObject(){
-		_TEST_Stack stack = new _TEST_Stack();	
-		stack.PrintHeader("","");
-		
 	}
 	/*  METÓDUSOK  */
 	public String GetID(){
 	// Leírás: Visszaadja az objektumok egyedi azonosítóját
-			return null;
-	};	
+		_TEST stack = new _TEST();		/* TEST */
+		stack.PrintHeader(ID,"", ID + ":String");	/* TEST */		
+		stack.PrintTail(ID,"", ID + ":String"); 	/* TEST */
+		return null;
+	}
 }

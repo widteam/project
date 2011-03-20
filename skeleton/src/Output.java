@@ -10,7 +10,7 @@
 */
 public abstract class Output extends DigitalObject{
 	/*  ATTRIBÚTUMOK  */
-	private int Value;
+	protected int Value;
 	// Leírás: Az adott Output objektum értékét tárolja
 	
 	

@@ -15,7 +15,7 @@
 public interface iComponent {
 	
 	/*	METÓDUSOK	*/
-	public void Count();
+	public int Count();
 	/* LEírás: Ha a DigitalObject kapu vagy kimenet, akkor a bemenõ vezetékeirõl
 	 * lekérdezi az értéket, kiszámolja a logikai függvényét. 
 	 * Ha a DigitalObject kapu vagy bemenet, akkor beállítja a kimenõ 

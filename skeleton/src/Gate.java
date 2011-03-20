@@ -21,17 +21,26 @@ public abstract class Gate extends DigitalObject{
 	 *  a stabilitásellenõrzés céljából (Count() metódus).
 	*/
 	
-	private ArrayList<DigitalObject>Feedbacks;
+	protected List<DigitalObject>Feedbacks;
 	/* Leírás: Ha egy Gate egyik bemenete egy visszacsatolás kezdete, 
 	 * akkor tartalmaz egy Feedbacks tömböt, mely referenciát tárol az összes, 
 	 * az adott visszacsatolásban résztvevõ DigitalObject-re
 	*/
 	public Gate(){
-		PreviousValue = -1;
+		Feedbacks = new ArrayList<DigitalObject>();	// Feedbaxk tömb inicializálva
+		PreviousValue = -1;				// Don't care
 	}
 	
 	/*	METÓDUSOK	*/
 	public void AddToFeedbacks(DigitalObject feedback){
 	// Leírás: Hozzáadja a paraméterként kapott DigitalObjectet a Feedbacks tömbjéhez.
+		_TEST stack = new _TEST();		/* TEST */
+		stack.PrintHeader(feedback.ID,"", "");	/* TEST */
+		Feedbacks.add(feedback);		// Hozzáadjuk a feedbackshez	
+		stack.PrintTail(feedback.ID,"", ""); 	/* TEST */
 	};	
+	public void AddOutput(Wire WireToOutput){
+
+	};
+	
 }
