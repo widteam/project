@@ -218,23 +218,23 @@ public class DigitalBoard {
 	};	
 	public void SetFrequency(int Frequency, String ElementID){
 	// Leiras: A parameterben megadott azonositoju GENERATOR objektum frekvenciajat modositja
-		_TEST stack = new _TEST();		// A Stackbol kinyert adatokat tartalmazza
-		stack.PrintHeader(ID,"","");
-		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
-		// ...
-		stack.PrintTail(ID,"","");
-		// TODO: Ha van visszateresi ertek, ide kell irni!
-		//return null;
+		_TEST stack = new _TEST();								 /* TEST */
+		stack.PrintHeader(ID,Frequency+":int, ElementID + ":String","");	 /* TEST */
+		GENERATOR GEN_to_setfrequency;	
+		GEN_to_setfrequency = new GENERATOR(0,0,null);			/* Temporalis valtozo */
+		GetElementByID(GEN_to_setfrequency.ID);					/* GetElemetByIDvel megkapjuk, az objektumot	*/		
+		GEN_to_setfrequency.SetFrequency(Frequency); 				 /* az generator objektum SetFrequency(...) metodusat meghivjuk */
+		stack.PrintTail(ID,Frequency+":int, ElementID + ":String","");	
 	};
 	public void SetSequence(int Sequence, String ElementID){
 	// Leiras: A parameterben megadott azonositoju GENERATOR objektum szekvenciajat modositja
 		_TEST stack = new _TEST();								 /* TEST */
-		stack.PrintHeader(ID,"Sequence:int, ElementID:String","");	 /* TEST */
+		stack.PrintHeader(ID,Sequence+":int, ElementID + ":String","");	 /* TEST */
 		GENERATOR GEN_to_setsequence;	
 		GEN_to_setsequence = new GENERATOR(0,0,null);			/* Temporalis valtozo */
 		GetElementByID(GEN_to_setsequence.ID);					/* GetElemetByIDvel megkapjuk, az objektumot	*/		
 		GEN_to_setsequence.SetSequence(Sequence); 				 /* az generator objektum SetSequence(...) metodusat meghivjuk */
-		stack.PrintTail(ID,"Sequence:int, ElementID:String","");									 /* TEST */
+		stack.PrintTail(ID,Sequence+":int, ElementID + ":String","");									 /* TEST */
 	
 	};	
 	public void Toggle(String ElementID){
