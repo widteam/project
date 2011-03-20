@@ -7,6 +7,11 @@ public class main {
 		String line ="";
 		Integer choice = -1;
 
+		// DigitalBoardok létrehozása
+		DigitalBoard o0	 = new DigitalBoard();	// egyszerû
+		DigitalBoard o1	 = new DigitalBoard();	// Stabil visszacsatolás
+		DigitalBoard o2	 = new DigitalBoard();	// Instabil visszacsatolás
+
 		while(!line.contentEquals("exit")){	//Míg nem akar kilépni a feslhasználó nem lépünk ki			;
 
 			System.out.println("TESZT SZAKASZ");
@@ -35,30 +40,20 @@ public class main {
 			// Szétválogatjuk az esaeteket
 			switch (choice){
 			case 0:	 // LoadBoard egyszerû
-				// DigitalBoard létrehozása
-				DigitalBoard o0	 = new DigitalBoard();
 				o0.LoadBoard("0");					
 				break;
 			case 1:  // LoadBoard visszacsatolással
-				// DigitalBoard létrehozása
-				DigitalBoard o1 = new DigitalBoard();
 				o1.LoadBoard("1");
 				break;
 			case 2: // LoadBoard instabil
-				// DigitalBoard létrehozása
-				DigitalBoard o2 = new DigitalBoard();
 				o2.LoadBoard("2");
 				break;
 			case 3: // Toggle switch
-				// DigitalBoard létrehozása
-				DigitalBoard o3 = new DigitalBoard();	
 				// a Toggle(...)meghívása egy tesztkapcsolóra 
-				o3.Toggle("SWITCH_to_toggle");
+				o0.Toggle("SWITCH_to_toggle");
 				break;
 			case 4:	// SetSequence
-				// DigitalBoard létrehozása
-				DigitalBoard o4 = new DigitalBoard();	
-				o4.SetSequence(5, "GEN_to_setsequence");
+				o0.SetSequence(5, "GEN_to_setsequence");
 				break;
 			case 8:	// Count
 				SWITCH sw = new SWITCH(new Wire());
@@ -83,34 +78,22 @@ public class main {
 				led.Count();
 				break;	
 			case 9:	// RUN
-				// DigitalBoard létrehozása
-				DigitalBoard o5 = new DigitalBoard();
-				o5.Run();
+				o0.Run();
 				break;	
 			case 10:	// Pause
-				// DigitalBoard létrehozása
-				DigitalBoard o6 = new DigitalBoard();
-				o6.Pause();
+				o0.Pause();
 				break;
 			case 11:	// Stop
-				// DigitalBoard létrehozása
-				DigitalBoard o7 = new DigitalBoard();
-				o7.Stop();
+				o0.Stop();
 				break;
 			case 5:		// Step Component, egyszerû
-				DigitalBoard o8	 = new DigitalBoard();
-				o8.LoadBoard("0");
-				o8.StepComponents(0);
+				o0.StepComponents(0);
 				break;
 			case 6:		// Step Component, visszacsatolós
-				DigitalBoard o9	 = new DigitalBoard();
-				o9.LoadBoard("1");
-				o9.StepComponents(1);
+				o1.StepComponents(1);
 				break;
 			case 7:		// Step Component, visszacsatolós, instabil
-				DigitalBoard o10	 = new DigitalBoard();
-				o10.LoadBoard("2");
-				o10.StepComponents(2);
+				o2.StepComponents(2);
 				break;
 			default:
 				break;
