@@ -7,49 +7,49 @@ public class main {
 		String line ="";
 		Integer choice = -1;
 
-		// DigitalBoardok létrehozása
-		DigitalBoard o0	 = new DigitalBoard();	// egyszerû
-		DigitalBoard o1	 = new DigitalBoard();	// Stabil visszacsatolás
-		DigitalBoard o2	 = new DigitalBoard();	// Instabil visszacsatolás
+		// DigitalBoardok letrehozasa
+		DigitalBoard o0	 = new DigitalBoard();	// egyszeru
+		DigitalBoard o1	 = new DigitalBoard();	// Stabil visszacsatolas
+		DigitalBoard o2	 = new DigitalBoard();	// Instabil visszacsatolas
 
-		while(!line.contentEquals("exit")){	//Míg nem akar kilépni a feslhasználó nem lépünk ki			;
+		while(!line.contentEquals("exit")){	//Mig nem akar kilepni a feslhasznaló nem lepunk ki			;
 
 			System.out.println("TESZT SZAKASZ");
-			System.out.println("Kérem válasszon a lehetõségek közül!");
-			System.out.println("  0 - Load Board (Egyszerû) ");
-			System.out.println("  1 - Load Board (Visszacsatolással) ");
+			System.out.println("Kerem valasszon a lehetosegek kozul!");
+			System.out.println("  0 - Load Board (Egyszeru) ");
+			System.out.println("  1 - Load Board (Visszacsatolassal) ");
 			System.out.println("  2 - Load Board (Instabil) ");
 			System.out.println("  3 - Toggle Switch");
 			System.out.println("  4 - Set Sequence");
-			System.out.println("  5 - Step Components(Egyszerû)");
-			System.out.println("  6 - Step Components(Visszacsatolással");
-			System.out.println("  7 - Step Components(Visszacsatolással");
+			System.out.println("  5 - Step Components(Egyszeru)");
+			System.out.println("  6 - Step Components(Visszacsatolassal");
+			System.out.println("  7 - Step Components(Visszacsatolassal");
 			System.out.println("  8 - Count");
 			System.out.println("  9 - Run");
 			System.out.println("  10 - Pause");
 			System.out.println("  11 - Stop");
-			/* NEM LETT MEGVALÓSÍTVA */ //System.out.println("  13 - Check Value");
-			System.out.println("  exit - Kilépés");
+			/* NEM LETT MEGVALÓSiTVA */ //System.out.println("  13 - Check Value");
+			System.out.println("  exit - Kilepes");
 			
-			try{		// Számmá alakítjuk - ha tudjuk - a bevitt szöveget
+			try{		// Szamma alakitjuk - ha tudjuk - a bevitt szoveget
 				choice  = Integer.decode(line);				
 			}catch(Exception e){
 				//line = "exit" ;
 			}
 
-			// Szétválogatjuk az esaeteket
+			// Szetvalogatjuk az esaeteket
 			switch (choice){
-			case 0:	 // LoadBoard egyszerû
+			case 0:	 // LoadBoard egyszeru
 				o0.LoadBoard("0");					
 				break;
-			case 1:  // LoadBoard visszacsatolással
+			case 1:  // LoadBoard visszacsatolassal
 				o1.LoadBoard("1");
 				break;
 			case 2: // LoadBoard instabil
 				o2.LoadBoard("2");
 				break;
 			case 3: // Toggle switch
-				// a Toggle(...)meghívása egy tesztkapcsolóra 
+				// a Toggle(...)meghivasa egy tesztkapcsolóra 
 				o0.Toggle("SWITCH_to_toggle");
 				break;
 			case 4:	// SetSequence
@@ -86,7 +86,7 @@ public class main {
 			case 11:	// Stop
 				o0.Stop();
 				break;
-			case 5:		// Step Component, egyszerû
+			case 5:		// Step Component, egyszeru
 				o0.StepComponents(0);
 				break;
 			case 6:		// Step Component, visszacsatolós
