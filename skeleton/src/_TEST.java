@@ -1,7 +1,6 @@
 /**
  * 
  * Skeleton tesztelését segítõ osztály.
- * @author Csomák
  *
  */
 public class _TEST {
