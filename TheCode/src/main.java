@@ -28,6 +28,7 @@ public class main {
 			System.out.println("  9 - Run");
 			System.out.println("  10 - Pause");
 			System.out.println("  11 - Stop");
+			System.out.println("  12 - Set Frequency");
 			/* NEM LETT MEGVALÓSiTVA */ //System.out.println("  13 - Check Value");
 			System.out.println("  exit - Kilepes");
 			
@@ -94,6 +95,9 @@ public class main {
 				break;
 			case 7:		// Step Component, visszacsatolós, instabil
 				o2.StepComponents(2);
+				break;
+			case 12:	// SetFrequency
+				o0.SetSequence(10, "GEN_to_setFrequency");
 				break;
 			default:
 				break;
