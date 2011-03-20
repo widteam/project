@@ -247,7 +247,7 @@ public class DigitalBoard {
 		
 		stack.PrintTail(ID,"", ""); 	/* TEST */
 	};		
-	private void SetStatus(Status NewStatus){
+	public void SetStatus(Status NewStatus){
 	// Leírás: Átállítja a SimStatus attribútumot a paraméterben megadott értékre
 		_TEST stack = new _TEST();		// A Stackbõl kinyert adatokat tartalmazza
 		stack.PrintHeader(ID,NewStatus+":Status","");
