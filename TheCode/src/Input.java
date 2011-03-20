@@ -1,19 +1,19 @@
 /*
-* Név: 			Input
-* Típus: 		Class
+* Nev: 			Input
+* Tipus: 		Class
 * Interfacek:	iComponent
-* Szülõk		DigitalObject
+* Szulok		DigitalObject
 * 
-*********** Leírás **********
-* Bemenet nélküli áramköri elem, melynek kimenete vagy adott idõközönként, 
-* vagy felhasználói interakció során változhat meg.
+*********** Leiras **********
+* Bemenet nelkuli aramkori elem, melynek kimenete vagy adott idokozonkent, 
+* vagy felhasznaloi interakcio soran valtozhat meg.
 
 */
 public abstract class Input extends DigitalObject{
-	/*  ATTRIBÚTUMOK  */
+	/*  ATTRIBuTUMOK  */
 	protected int Value;
-	// Leírás: Az adott Input objektum értékét tárolja
+	// Leiras: Az adott Input objektum erteket tarolja
 	
 	
-	/*	METÓDUSOK	*/
+	/*	METoDUSOK	*/
 }

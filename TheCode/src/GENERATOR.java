@@ -1,38 +1,38 @@
 import java.util.ArrayList;
 
 /*
-* Név: 			GENERATOR
-* Típus: 		Class
+* Nev: 			GENERATOR
+* Tipus: 		Class
 * Interfacek:	iComponent
-* Szülõk		DigitalObject-->Input
+* Szulok		DigitalObject-->Input
 * 
-*********** Leírás **********
-* Speciális Input objektum, mely a kimenetét ciklikusan változtatja egy,
-* felhasználó által szerkeszthetõ szekvencia alapján. 
-* Az objektum nyilvántartja a szekvenciát, illetve az aktuális pozíciót
-* a mintában. A generátor Reset utasításának hívásával a pozíció a 
-* minta elejére állítható.
+*********** Leiras **********
+* Specialis Input objektum, mely a kimenetet ciklikusan valtoztatja egy,
+* felhasznalo altal szerkesztheto szekvencia alapjan. 
+* Az objektum nyilvantartja a szekvenciat, illetve az aktualis poziciot
+* a mintaban. A generator Reset utasitasanak hivasaval a pozicio a 
+* minta elejere allithato.
 
 */
 public class GENERATOR extends Input{
-	/*  ATTRIBÚTUMOK  */
+	/*  ATTRIBuTUMOK  */
 	private static int GENERATORCounts;
 	
 	private int Frequency;
-	/* Leírás: A generátor léptetésének a gyakoriságát tároljuk ebben. 
-	 * Az itt megadott számú Step() hívás után fog csak lépni.
+	/* Leiras: A generator leptetesenek a gyakorisagat taroljuk ebben. 
+	 * Az itt megadott szamu Step() hivas utan fog csak lepni.
 	*/
 	
 	private int Sequence;
-	// LEírás: Ebben tároljuk a kimenetre kiküldendõ mintát. Értelmezése bináris.
+	// LEiras: Ebben taroljuk a kimenetre kikuldendo mintat. ertelmezese binaris.
 	
 	private int SequencePos;
-	/* Leírás: Az attribútum tartja nyilván az aktuális pozíciót a szekvenciában. 
-	 * A Reset() hívás 0 értékre állítja
+	/* Leiras: Az attributum tartja nyilvan az aktualis poziciot a szekvenciaban. 
+	 * A Reset() hivas 0 ertekre allitja
 	*/
 	private int FrequencyCounter;
-	/*Leírás:
-	 * Egy segédszámláló, mely nyilvántartja, hogy még mennyi Count maradt hátra
+	/*Leiras:
+	 * Egy segedszamlalo, mely nyilvantartja, hogy meg mennyi Count maradt hatra
 	 */
 	
 	/*  KONSTRUKTOR  */
@@ -51,50 +51,50 @@ public class GENERATOR extends Input{
 	}
 	
 	
-	/*  METÓDUSOK  */
+	/*  METoDUSOK  */
 	public void Reset(){
-	// Leírás: A SequencePos. értékét állítja alapértelmezettre, azaz a minta elejére
+	// Leiras: A SequencePos. erteket allitja alapertelmezettre, azaz a minta elejere
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"","");	/* TEST */
-		//SequencePos = 0;				// Pozíciót alapra
-		//Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binárissá alakítjuk a számot és vesszük az MSB bitet
+		//SequencePos = 0;				// Poziciot alapra
+		//Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
 		stack.PrintTail(ID,"","");		/* TEST */	
 	};
 	public void SetSequence(int NewSequence){
-	// Leírás: a Frequency értékét állítja be, a paraméterben megadott értékre.
+	// Leiras: a Frequency erteket allitja be, a parameterben megadott ertekre.
 		_TEST stack = new _TEST();					/* TEST */
 		stack.PrintHeader(ID,"NewSequence:int","");	/* TEST */
-		//Sequence = NewSequence;					// Beállítjuk a szekvenciát
-		//SequencePos = 0;							// Pozíciót alapra
-		//Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binárissá alakítjuk a számot és vesszük az MSB bitet
+		//Sequence = NewSequence;					// Beallitjuk a szekvenciat
+		//SequencePos = 0;							// Poziciot alapra
+		//Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
 		stack.PrintTail(ID,"","");					/* TEST */	
 	};
 	public void SetFrequency(int NewFrequency){
-	// Leírás: a minta értékét állítja be, a paraméterben megadott értékre.
+	// Leiras: a minta erteket allitja be, a parameterben megadott ertekre.
 		_TEST stack = new _TEST();						/* TEST */
 		stack.PrintHeader(ID,"NewFrequency:int","");	/* TEST */
-		//Frequency = NewFrequency;						// Beállítjuk a frekvenciát
-		//StartFrequency = NewFrequency					// Hány count maradt még hátra
+		//Frequency = NewFrequency;						// Beallitjuk a frekvenciat
+		//StartFrequency = NewFrequency					// Hany count maradt meg hatra
 		stack.PrintTail(ID,"","");						/* TEST */
 	};
 	public int Count(){
-	// Leírás: Kiszámolja egy DigitalObject értékét	
+	// Leiras: Kiszamolja egy DigitalObject erteket	
 		_TEST stack = new _TEST();		
 		stack.PrintHeader(ID,"","");
 	
-		/* Az ÖSSZES kimenetre kiadjuk a kiszámított eredményt. Skeletonnál csak egyre */
-		/*FrequencyCounter--;					// Csökkentjük a számlálót
-		if(!FrequencyCounter){				// HA megfellõ számú count eltelt már
+		/* Az oSSZES kimenetre kiadjuk a kiszamitott eredmenyt. Skeletonnal csak egyre */
+		/*FrequencyCounter--;					// Csokkentjuk a szamlalot
+		if(!FrequencyCounter){				// HA megfello szamu count eltelt mar
 			for(Wire OutPut:wireOut){
-				OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktuális értéker
-				if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciában elõre megyünk.. már ha lehet
+				OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
+				if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciaban elore megyunk.. mar ha lehet
 					SequencePos = 0;				
 				}else{
 					SequencePos++;
 				}			
-				Value = Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszámoljuk az új értéket
+				Value = Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszamoljuk az uj erteket
 			}
-			FrequencyCounter = Frequency;	// Újra az elejérõl számolunk
+			FrequencyCounter = Frequency;	// ujra az elejerol szamolunk
 		}*/
 		Wire wire_out = new Wire();
 		wire_out.SetValue(0);
@@ -103,14 +103,14 @@ public class GENERATOR extends Input{
 		return Value;	
 	};					
 	public boolean Step(){
-	/* Leírás: Feladata az adott elem értékének kiszámítása, 
-	 * ill. annak eldöntése, hogy a DigitalObject stabil-e
+	/* Leiras: Feladata az adott elem ertekenek kiszamitasa, 
+	 * ill. annak eldontese, hogy a DigitalObject stabil-e
 	*/
 		_TEST stack = new _TEST();				/* TEST */
 		stack.PrintHeader(ID,"","");			/* TEST */		
-		Count();								// MEghívja a Count metódust
+		Count();								// MEghivja a Count metodust
 		stack.PrintTail(ID,"","true:boolean");	/* TEST */	
-		return true;							// A GENERATOR mindig igazzal tér vissza
+		return true;							// A GENERATOR mindig igazzal ter vissza
 	};
 
 }
