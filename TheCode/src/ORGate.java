@@ -23,7 +23,7 @@ import java.util.ArrayList;
 *	0	X		X
 *	1	X		1
 *	X	X		X
-* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don’t care
+* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
 
  */
 public class ORGate extends Gate{

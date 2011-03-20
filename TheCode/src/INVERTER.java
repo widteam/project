@@ -16,7 +16,7 @@ import java.util.ArrayList;
 * 	0	  		1
 *	1	  		0
 *	X	  		X
-* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don’t care
+* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
 
  */
 public class INVERTER extends Gate{

@@ -21,7 +21,7 @@
 *	0	X		0
 *	1	X		X
 *	X	X		X
-* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don’t care
+* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
 
 */
 
