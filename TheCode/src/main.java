@@ -22,8 +22,8 @@ public class main {
 			System.out.println("  3 - Toggle Switch");
 			System.out.println("  4 - Set Sequence");
 			System.out.println("  5 - Step Components(Egyszerû)");
-			System.out.println("  6 - Step Components(Visszacsatolással)");
-			System.out.println("  7 - Step Components(Visszacsatolással)");
+			System.out.println("  6 - Step Components(Visszacsatolással");
+			System.out.println("  7 - Step Components(Visszacsatolással");
 			System.out.println("  8 - Count");
 			System.out.println("  9 - Run");
 			System.out.println("  10 - Pause");
