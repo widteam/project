@@ -1,14 +1,14 @@
 /*
-* Név: 			ANDGate
-* Típus: 		Class
+* Nev: 			ANDGate
+* Tipus: 		Class
 * Interfacek:	iComponent
-* Szülõk		DigitalObject-->Gate
+* Szulok		DigitalObject-->Gate
 * 
-*********** Leírás **********
-* Logikai ÉS kaput megvalósító objektum. A bemeneteirõl beol-
-* vasott értékekbõl kiszámolja és továbbadja a kimenetére az
-* új értéket. Az új értékét az ÉS kapu igazságtáblája szerint
-* számolja ki, mely két bemenet esetén a következõ:
+*********** Leiras **********
+* Logikai eS kaput megvalosito objektum. A bemeneteirol beol-
+* vasott ertekekbol kiszamolja es tovabbadja a kimenetere az
+* uj erteket. Az uj erteket az eS kapu igazsagtablaja szerint
+* szamolja ki, mely ket bemenet eseten a kovetkezo:
 * 
 * kimenet   bemenet
 *	A	B	A  AND B
@@ -21,7 +21,7 @@
 *	0	X		0
 *	1	X		X
 *	X	X		X
-* Jelentések: 0: logikai HAMIS érték | 1: logikai IGAZ érték | X: don’t care
+* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
 
 */
 
@@ -30,34 +30,34 @@ import java.util.*;
 
 
 public class ANDGate extends Gate{
-	/*  ATTRIBÚTUMOK  */
-	private static int ANDCounts;	// Statikus változó az egyedi ID értékhez
+	/*  ATTRIBuTUMOK  */
+	private static int ANDCounts;	// Statikus valtozo az egyedi ID ertekhez
 	
 	
 	/*  KONSTRUKTOR  */
 	public ANDGate(Wire wirein1, Wire wirein2){
-		wireIn = new ArrayList<Wire>();	// Inicializáljuk a wireIn listát
-		wireOut = new ArrayList<Wire>();// Inicializáljuk a wireOut listát		
-		ID = "AND" + ANDCounts++;		// ID-t elõállítjuk
-		wireIn.add(wirein1);			// a konstruktorban megadott bemenetet bedrótozzuk
-		wireIn.add(wirein2);			// a másik bemenetet is bedrótozzuk
+		wireIn = new ArrayList<Wire>();	// Inicializaljuk a wireIn listat
+		wireOut = new ArrayList<Wire>();// Inicializaljuk a wireOut listat		
+		ID = "AND" + ANDCounts++;		// ID-t eloallitjuk
+		wireIn.add(wirein1);			// a konstruktorban megadott bemenetet bedrotozzuk
+		wireIn.add(wirein2);			// a masik bemenetet is bedrotozzuk
 	}
 	
 	
-	/*	METÓDUSOK	*/
+	/*	METoDUSOK	*/
 	public int Count(){
-		// Leírás: Kiszámolja egy DigitalObject értékét	
+		// Leiras: Kiszamolja egy DigitalObject erteket	
 			int Result=0;
 			_TEST stack = new _TEST();		
 			stack.PrintHeader(ID,"",Result +":int");
 
-			/* Lekérdezzük a bemenetek értékeit */
+			/* Lekerdezzuk a bemenetek ertekeit */
 			wireIn.get(0).GetValue();
 			wireIn.get(1).GetValue();	
 			
-			//Result = wireIn.get(0).GetValue() & wireIn.get(1).GetValue(); // Eredmény kiszámítása
+			//Result = wireIn.get(0).GetValue() & wireIn.get(1).GetValue(); // Eredmeny kiszamitasa
 			
-			/* Az ÖSSZES kimenetre kiadjuk a kiszámított eredményt. Skeletonnál csak egyre */
+			/* Az oSSZES kimenetre kiadjuk a kiszamitott eredmenyt. Skeletonnal csak egyre */
 			
 			/*for(Wire OutPut:wireOut){
 				OutPut.SetValue(Result);
@@ -70,34 +70,11 @@ public class ANDGate extends Gate{
 			return Result;
 		};		
 		public boolean Step(){
-			/* Leírás: Feladata az adott elem értékének kiszámítása, 
-			 * ill. annak eldöntése, hogy a DigitalObject stabil-e
+			/* Leiras: Feladata az adott elem ertekenek kiszamitasa, 
+			 * ill. annak eldontese, hogy a DigitalObject stabil-e
 			*/
-				boolean Result = true;						// A végsõ eredmény: Stabil-e az áramkör
-				_TEST stack = new _TEST();					/* TEST */
-				stack.PrintHeader(ID,"","true:boolean");	/* TEST */
-				PreviousValue = Count();					// Megnézzük az elsõ futás erredményét
-				if(Feedbacks != null && !Feedbacks.isEmpty()){// Ha nem üres a Feedback tömb
-					int NewValue ;						// Lokális változó
-					for(DigitalObject obj:Feedbacks){	// Feedback össezs elemén végig
-						obj.Count();
-					}
-					NewValue = Count();					// Megnézzük újól az eredményt
-					Result = (PreviousValue==NewValue);	// Eltér-e a kettõ?( Prev és a mostani) 
-					
-					for(DigitalObject obj:Feedbacks){
-						obj.Count();
-					}
-					NewValue = Count();
-					Result = (PreviousValue==NewValue);
-					
-					for(DigitalObject obj:Feedbacks){
-						obj.Count();
-					}
-					NewValue = Count();
-					Result = (PreviousValue==NewValue);
-				}
-				stack.PrintTail(ID,"",Result + ":boolean");	/* TEST */
+				boolean Result = true;						// A vegso eredmeny: Stabil-e az aramkor
+				
 				return Result;
 			};
 }

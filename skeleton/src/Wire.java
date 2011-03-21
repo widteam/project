@@ -1,12 +1,12 @@
 /*
-* Név: 			Wire
-* Típus: 		Class
+* Nev: 			Wire
+* Tipus: 		Class
 * Interfacek:	---
-* Szülõk		---
+* Szulok		---
 * 
-*********** Leírás **********
- * Az áramkörben található értékek tárolására szolgáló objektum. 
- * DigitalObject típusú objektumok között teremt kapcsolatot.
+*********** Leiras **********
+ * Az aramkorben talalhato ertekek tarolasara szolgalo objektum. 
+ * DigitalObject tipusu objektumok kozott teremt kapcsolatot.
 
 */
 
@@ -14,73 +14,73 @@
 import java.util.*;
 
 public class Wire{
-	/*  ATTRIBÚTUMOK  */
-	private static int WIRECounts;	// Statikus változó az egyedi ID értékhez
+	/*  ATTRIBUTUMOK  */
+	private static int WIRECounts;	// Statikus valtozo az egyedi ID ertekhez
 		
 	private String ID;
-	/* Leírás: Egyedi karakteres azonosító, mely egyértelmûen meghatároz 
+	/* Leiras: Egyedi karakteres azonosito, mely egyertelmuen meghataroz 
 	 * egy Wire objektumot.
 	*/
 	
 	@SuppressWarnings("unused")
 	private int Value;
-	/* Leírás: A Wire objektumok által tárolt érték. 
-	 * A Gate objektumok ezek alapján számolják ki kimenetüket
+	/* Leiras: A Wire objektumok altal tarolt ertek. 
+	 * A Gate objektumok ezek alapjan szamoljak ki kimenetuket
 	*/
 	
 	@SuppressWarnings("unused")
 	private List<DigitalObject> wireIn;
-	/* Leírás: DigitalObject objektum-referencia, amely a vezeték 
-	 * bemenetéhez kapcsolódik.
+	/* Leiras: DigitalObject objektum-referencia, amely a vezetek 
+	 * bemenetehez kapcsolodik.
 	*/
 	
 	@SuppressWarnings("unused")
 	private List<DigitalObject> wireOut;
-	/* Leírás: DigitalObject objektum-referencia, amely a vezeték 
-	 * kimenetéhez kapcsolódik.
+	/* Leiras: DigitalObject objektum-referencia, amely a vezetek 
+	 * kimenetehez kapcsolodik.
 	*/
 	
 	/*  KONSTRUKTOR  */
 	public Wire(){
 		ID = "WIRE" + String.valueOf(WIRECounts++);
 	}
-	/*	METÓDUSOK	*/
+	/*	METODUSOK	*/
 	public String GetID(){
-	// Leírás: A Wire egyedi azonosítójának lekérdezésére szolgáló metódus.
-		_TEST stack = new _TEST();	/* TEST */
+	// Leiras: A Wire egyedi azonositojanak lekerdezesere szolgalo metodus.
+		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
-		// TODO: Ha vannak függvényhívások, el kell helyezni ide õket!
+		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */
-		// TODO: Ha van visszatérési érték, ide kell írni!
+		// TODO: Ha van visszateresi ertek, ide kell irni!
 		return null; 
 	
 	};
 	public int GetValue(){
-	// Leírás: A Wire objektum értékének lekérdezésére szolgáló metódus
-		_TEST stack = new _TEST();	/* TEST */
+	// Leiras: A Wire objektum ertekenek lekerdezesere szolgalo metodus
+		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
-		// TODO: Ha vannak függvényhívások, el kell helyezni ide õket!
+		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */
-		// TODO: Ha van visszatérési érték, ide kell írni!
+		// TODO: Ha van visszateresi ertek, ide kell irni!
 		return 0; 
 	};
 	public void SetValue(int NewValue){
-	// Leírás: // Leírás: A Wire objektum értékének beállítására szolgáló metódus
-		_TEST stack = new _TEST();	/* TEST */
+	// Leiras: // Leiras: A Wire objektum ertekenek beallitasara szolgalo metodus
+		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
-		// TODO: Ha vannak függvényhívások, el kell helyezni ide õket!
+		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */
-		// TODO: Ha van visszatérési érték, ide kell írni!
+		// TODO: Ha van visszateresi ertek, ide kell irni!
 	};
 	public void SetConnection(DigitalObject ojectWhere, DigitalObject objectWhat){
-	/* Leírás: Kapcsolatot teremt két DigitalObject között. 
-	 * Beállítja a vezeték inputját (ojectWhere), illetve hozzáadja az output tömbjéhez 
+	/* Leiras: Kapcsolatot teremt ket DigitalObject kozott. 
+	 * Beallitja a vezetek inputjat (ojectWhere), illetve hozzaadja az output tombjehez 
 	 * a DigitalObjectet (objectWhat).
 	 */
-		_TEST stack = new _TEST();	/* TEST */
+		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
-		// TODO: Ha vannak függvényhívások, el kell helyezni ide õket!
+		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */
-		// TODO: Ha van visszatérési érték, ide kell írni!
+		// TODO: Ha van visszateresi ertek, ide kell irni!
 	};
 }

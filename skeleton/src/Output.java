@@ -1,18 +1,18 @@
 /*
-* Név: 			Output
-* Típus: 		Class
+* Nev: 			Output
+* Tipus: 		Class
 * Interfacek:	iComponent
-* Szülõk		DigitalObject
+* Szulok		DigitalObject
 *  
-*********** Leírás **********
-* A bemenet megjelenítésére szolgáló objektum/osztály
+*********** Leiras **********
+* A bemenet megjelenitesere szolgalo objektum/osztaly
 
 */
 public abstract class Output extends DigitalObject{
-	/*  ATTRIBÚTUMOK  */
+	/*  ATTRIBUTUMOK  */
 	protected int Value;
-	// Leírás: Az adott Output objektum értékét tárolja
+	// Leiras: Az adott Output objektum erteket tarolja
 	
 	
-	/*	METÓDUSOK	*/
+	/*	METODUSOK	*/
 }

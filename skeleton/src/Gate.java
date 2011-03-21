@@ -1,13 +1,13 @@
 /*
-* Név: 			Gate
-* Típus: 		Abstract Class
+* Nev: 			Gate
+* Tipus: 		Abstract Class
 * Interfacek:	iComponent
-* Szülõk		DigitalObject
+* Szulok		DigitalObject
 * 
-*********** Leírás **********
-* Absztrakt osztály a logikai kapuk (pl. ÉS, VAGY, Inverter) leszármaztatására.
-* A bemeneti vezeték(ek)nek lekérdezi az értékét, és kiszámolja a kimenet új
-* értékét, és be is állítja azt, az leszármazott osztály igazságtáblája szerint
+*********** Leiras **********
+* Absztrakt osztaly a logikai kapuk (pl. eS, VAGY, Inverter) leszarmaztatasara.
+* A bemeneti vezetek(ek)nek lekerdezi az erteket, es kiszamolja a kimenet uj
+* erteket, es be is allitja azt, az leszarmazott osztaly igazsagtablaja szerint
 
 */
 
@@ -15,28 +15,28 @@
 import java.util.*;
 
 public abstract class Gate extends DigitalObject{
-	/*	ATTRIBÚTUMOK	*/
+	/*	ATTRIBuTUMOK	*/
 	protected int PreviousValue ;
-	/* Leírás: A legutolsó ciklus ( Step() ) eredményét (kimeneti értékét) tárolja,
-	 *  a stabilitásellenõrzés céljából (Count() metódus).
+	/* Leiras: A legutolso ciklus ( Step() ) eredmenyet (kimeneti erteket) tarolja,
+	 *  a stabilitasellenorzes celjabol (Count() metodus).
 	*/
 	
 	protected List<DigitalObject>Feedbacks;
-	/* Leírás: Ha egy Gate egyik bemenete egy visszacsatolás kezdete, 
-	 * akkor tartalmaz egy Feedbacks tömböt, mely referenciát tárol az összes, 
-	 * az adott visszacsatolásban résztvevõ DigitalObject-re
+	/* Leiras: Ha egy Gate egyik bemenete egy visszacsatolas kezdete, 
+	 * akkor tartalmaz egy Feedbacks tombot, mely referenciat tarol az osszes, 
+	 * az adott visszacsatolasban resztvevo DigitalObject-re
 	*/
 	public Gate(){
-		Feedbacks = new ArrayList<DigitalObject>();	// Feedbaxk tömb inicializálva
+		Feedbacks = new ArrayList<DigitalObject>();	// Feedbaxk tomb inicializalva
 		PreviousValue = -1;				// Don't care
 	}
 	
-	/*	METÓDUSOK	*/
+	/*	METoDUSOK	*/
 	public void AddToFeedbacks(DigitalObject feedback){
-	// Leírás: Hozzáadja a paraméterként kapott DigitalObjectet a Feedbacks tömbjéhez.
+	// Leiras: Hozzaadja a parameterkent kapott DigitalObjectet a Feedbacks tombjehez.
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(feedback.ID,"", "");	/* TEST */
-		Feedbacks.add(feedback);		// Hozzáadjuk a feedbackshez	
+		Feedbacks.add(feedback);		// Hozzaadjuk a feedbackshez	
 		stack.PrintTail(feedback.ID,"", ""); 	/* TEST */
 	};	
 	public void AddOutput(Wire WireToOutput){

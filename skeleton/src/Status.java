@@ -1,11 +1,11 @@
 /*
-* Név: 			Status
-* Típus: 		Enum
+* Nev: 			Status
+* Tipus: 		Enum
 * Interfacek:	---
-* Szülõk		---
+* Szulok		---
 *  
-*********** Leírás **********
-* A program futási állapotai
+*********** Leiras **********
+* A program futasi allapotai
 
 */
 
