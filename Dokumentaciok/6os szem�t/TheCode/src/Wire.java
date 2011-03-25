@@ -14,7 +14,7 @@
 import java.util.*;
 
 public class Wire{
-	/*  ATTRIBUTUMOK  */
+	/*  ATTRIBuTUMOK  */
 	private static int WIRECounts;	// Statikus valtozo az egyedi ID ertekhez
 		
 	private String ID;
@@ -22,19 +22,16 @@ public class Wire{
 	 * egy Wire objektumot.
 	*/
 	
-	@SuppressWarnings("unused")
 	private int Value;
 	/* Leiras: A Wire objektumok altal tarolt ertek. 
 	 * A Gate objektumok ezek alapjan szamoljak ki kimenetuket
 	*/
 	
-	@SuppressWarnings("unused")
 	private List<DigitalObject> wireIn;
 	/* Leiras: DigitalObject objektum-referencia, amely a vezetek 
 	 * bemenetehez kapcsolodik.
 	*/
 	
-	@SuppressWarnings("unused")
 	private List<DigitalObject> wireOut;
 	/* Leiras: DigitalObject objektum-referencia, amely a vezetek 
 	 * kimenetehez kapcsolodik.
@@ -44,10 +41,10 @@ public class Wire{
 	public Wire(){
 		ID = "WIRE" + String.valueOf(WIRECounts++);
 	}
-	/*	METODUSOK	*/
+	/*	METoDUSOK	*/
 	public String GetID(){
 	// Leiras: A Wire egyedi azonositojanak lekerdezesere szolgalo metodus.
-		_TEST stack = new _TEST();		/* TEST */
+		_TEST stack = new _TEST();	/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
 		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */
@@ -57,7 +54,7 @@ public class Wire{
 	};
 	public int GetValue(){
 	// Leiras: A Wire objektum ertekenek lekerdezesere szolgalo metodus
-		_TEST stack = new _TEST();		/* TEST */
+		_TEST stack = new _TEST();	/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
 		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */
@@ -66,7 +63,7 @@ public class Wire{
 	};
 	public void SetValue(int NewValue){
 	// Leiras: // Leiras: A Wire objektum ertekenek beallitasara szolgalo metodus
-		_TEST stack = new _TEST();		/* TEST */
+		_TEST stack = new _TEST();	/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
 		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */
@@ -77,7 +74,7 @@ public class Wire{
 	 * Beallitja a vezetek inputjat (ojectWhere), illetve hozzaadja az output tombjehez 
 	 * a DigitalObjectet (objectWhat).
 	 */
-		_TEST stack = new _TEST();		/* TEST */
+		_TEST stack = new _TEST();	/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
 		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
 		stack.PrintTail(ID,"", ""); 	/* TEST */

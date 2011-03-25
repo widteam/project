@@ -1,46 +1,46 @@
 /*
-* Nev: 			DigitalBoard
-* Tipus: 		Class
+* Név: 			DigitalBoard
+* Típus: 		Class
 * Interfacek:	---
-* Szulok		---
+* Szülõk		---
 * 
-*********** Leiras **********
-* A digitalis aramkort nyilvantarto es a vezerlest  biztosito objektum.
-* Az aramkor osszes elemet es * a koztuk levo kapcsolatokat letrehozza,
-* kezeli es tarolja. uj aramkor megnyitasakor betolti az aramkort egy
-* fajlbol – ekozben ellenorzi a szintaktikai helyesseget, 
-* letrehoz minden digitalis elemet, hierarchia szerint sorrendezi,
-* felfedezi a visszacsatolasokat. 
-* Tovabbi feladata az aramkor szamitasait vezerelni, 
-* igy ha a felhasznalo leptetest ker, a generatorokat lepteti, 
-* es ujraszamolja az aramkor komponenseinek allapotat. 
-* Ha a felhasznalo a futtatast valasztja, valtoztathato idokozonkent 
-* lepteti a jelgeneratort, es a komponensek ertekeit ujraszamolja.
+*********** Leírás **********
+* A digitális áramkört nyilvántartó és a vezérlést  biztosító objektum.
+* Az áramkör összes elemét és * a köztük lévõ kapcsolatokat létrehozza,
+* kezeli és tárolja. Új áramkör megnyitásakor betölti az áramkört egy
+* fájlból – eközben ellenõrzi a szintaktikai helyességét, 
+* létrehoz minden digitális elemet, hierarchia szerint sorrendezi,
+* felfedezi a visszacsatolásokat. 
+* További feladata az áramkör számításait vezérelni, 
+* így ha a felhasználó léptetést kér, a generátorokat lépteti, 
+* és újraszámolja az áramkör komponenseinek állapotát. 
+* Ha a felhasználó a futtatást választja, változtatható idõközönként 
+* lépteti a jelgenerátort, és a komponensek értékeit újraszámolja.
 
 */
 /*  IMPORTOK  */
 import java.util.*;	// List, ArrayList-hez
 
 public class DigitalBoard {
-	/*	ATTRIBuTUMOK	*/
+	/*	ATTRIBÚTUMOK	*/
 	@SuppressWarnings("unused")
 	private Status SimStatus; 
 	private String ID;
 	private static int DigitalBoardCounts;
 
-	// Leiras: Haromallapotu valtozo, amely a szimulacio aktualis allapotat tarolja 
+	// Leírás: Háromállapotú változó, amely a szimuláció aktuális állapotát tárolja 
 
 	private ArrayList< List<iComponent> > ComponentList;
-	/* Leiras: Ez az attributum tarolja az osszes kaput, kimenetet, bemenetet
+	/* Leírás: Ez az attribútum tárolja az összes kaput, kimenetet, bemenetet
 	 * hierarchikus sorrendben
-	 * Ez nem mas, mint egy listabol szervezett tomb. A tomb indexe
-	 * azonositja a hierarchia szintet 
-	 * (0-Forrasok, 1-a forrasokhoz csatlakozo elemek, stb)
-	 * az egyes szinteken pedig egy lista van az elemekrol
+	 * Ez nem más, mint egy listából szervezett tömb. A tömb indexe
+	 * azonosítja a hierarchia szintet 
+	 * (0-Források, 1-a forrásokhoz csatlakozó elemek, stb)
+	 * az egyes szinteken pedig egy lista van az elemekrõl
 	*/	
 	
 	private List<Wire> WireList;
-	// Leiras: Egyszeru lista a Wire objektumokbol
+	// Leírás: Egyszerû lista a Wire objektumokból
 
 	/*  KONSTRUKTOR  */ 
 	public DigitalBoard(){		
@@ -49,9 +49,9 @@ public class DigitalBoard {
 		WireList = new ArrayList<Wire>();	
 		ID = "DB" + String.valueOf(DigitalBoardCounts++);
 	}
-	/*	METoDUSOK	*/
+	/*	METÓDUSOK	*/
 	public iComponent GetElementByID(String ElementID){
-	// Leiras: Megkeres egy adott elemet a 	ComponentList illetve a WireList listakban
+	// Leírás: Megkeres egy adott elemet a 	ComponentList illetve a WireList listákban
 		_TEST stack = new _TEST();	
 		/* TEST */
 		stack.PrintHeader(ID,"ElementID:String", ElementID+":iComponent");	/* TEST */
@@ -60,7 +60,7 @@ public class DigitalBoard {
 	};
 	
 	public void LoadBoard(String strFilePath){
-	// Leiras: A megfelelo parameterrel meghivja a ParseFile(String strFilePath) metodust.
+	// Leírás: A megfelelõ paraméterrel meghívja a ParseFile(String strFilePath) metódust.
 		_TEST stack = new _TEST();						/* TEST */
 		stack.PrintHeader(ID,"strFilePath:String", "");	/* TEST */
 		ParseFile(strFilePath);
@@ -69,36 +69,36 @@ public class DigitalBoard {
 	};
 
 	public void ParseFile(String strFilePath){
-	// Leiras: A megadott utvonalon talalhato fajlt olvassa be es soronkent ertelmezi az allomanyt
+	// Leírás: A megadott útvonalon található fájlt olvassa be és soronként értelmezi az állományt
 		_TEST stack = new _TEST();						/* TEST */
 		stack.PrintHeader(ID,"strFilePath:String", "");	/* TEST */
 		switch(Integer.decode(strFilePath)){
 		case 0:		
 			/*
 			* ********************************
-			* *******  Egyszeru aramkor ******
+			* *******  Egyszerû áramkör ******
 			* ********************************
 			*  led0 = sw0 + gen0
 			*/		
-			//osszekoto wire letrehozasa		
+			//Összekötõ wire létrehozása		
 			Wire sw0_or0 = new Wire();	
 			Wire gen0_or0 = new Wire();	
 			Wire or0_led0 = new Wire();	
-			// egy switch , generator egy Or kapu ill egy led letrehozasa, konstruktorukban a wire-rel
+			// egy switch , generátor egy Or kapu ill egy led létrehozása, konstruktorukban a wire-rel
 			SWITCH sw0 = new SWITCH(sw0_or0);
 			GENERATOR gen0 = new GENERATOR(3,5,gen0_or0);
 			ORGate or0 = new ORGate(sw0_or0,gen0_or0);
 			LED led0 = new LED(or0_led0);
 			or0.AddOutput(or0_led0);
-			// Hozzaadjuk a hierarchiahoz
-			ComponentList.add(new ArrayList<iComponent>());	//0. szint letrehozasa
+			// Hozzáadjuk a hierarchiához
+			ComponentList.add(new ArrayList<iComponent>());	//0. szint létrehozása
 			ComponentList.get(0).add(sw0);
 			ComponentList.get(0).add(gen0);
-			ComponentList.add(new ArrayList<iComponent>()); //1 szint letrehozasa
+			ComponentList.add(new ArrayList<iComponent>()); //1 szint létrehozása
 			ComponentList.get(1).add(or0);
-			ComponentList.add(new ArrayList<iComponent>()); // 2. szint letrehozasa
+			ComponentList.add(new ArrayList<iComponent>()); // 2. szint létrehozása
 			ComponentList.get(2).add(led0);
-			// hozzaadjuk a Wireket
+			// hozzáadjuk a Wireket
 			WireList.add(sw0_or0);
 			WireList.add(gen0_or0);
 			WireList.add(or0_led0);
@@ -107,7 +107,7 @@ public class DigitalBoard {
 		case 1:
 			/*
 			* *****************************************
-			* *******  aramkor visszacsatolassal ******
+			* *******  áramkör visszacsatolással ******
 			* *****************************************
 			* and0_and0 = sw01 & and0_and0
 			* led01 = and0_and0
@@ -120,22 +120,22 @@ public class DigitalBoard {
 			SWITCH sw01 = new SWITCH(sw01_and0);
 			ANDGate and0 = new ANDGate(and0_and0,sw01_and0){
 				/**
-				 * mivel visszacsatolast tartalmaz, es nincs a skeletonban erre megfelelo lehetoseg, 
-				 * felulirjuk a peldany step fuggvenyet, hogy megfeleloen mukodjon.
+				 * mivel visszacsatolást tartalmaz, és nincs a skeletonban erre megfelelõ lehetõség, 
+				 * felülirjuk a példány step függvényét, hogy megfelelõen mukodjon.
 				 */
 				public boolean Step(){
-					boolean Result = true;						// A vegso eredmeny: Stabil-e az aramkor
+					boolean Result = true;						// A végsõ eredmény: Stabil-e az áramkör
 					_TEST stack = new _TEST();					/* TEST */
 					stack.PrintHeader(ID,"","true:boolean");	/* TEST */
-					//count magat
-					PreviousValue = Count();					// Megnezzuk az elso futas erredmenyet
-					//feedback[0], elso kor
+					//count magát
+					PreviousValue = Count();					// Megnézzük az elsõ futás erredményét
+					//feedback[0], elsõ kör
 					PreviousValue = Count();
-					//sajat maga, elso kor
+					//saját maga, elsõ kör
 					PreviousValue = Count();
-					//feedback[0], masodik kor
+					//feedback[0], második kör
 					PreviousValue = Count();
-					//ha bitt nem egyezne meg, az elozo prev.valueval, akkor instabil.
+					//ha bitt nem egyezne meg, az elõzõ prev.valueval, akkor instabil.
 					stack.PrintTail(ID,"",Result + ":boolean");	/* TEST */
 					return Result;
 				}
@@ -146,7 +146,7 @@ public class DigitalBoard {
 			and0.AddOutput(and0_led01);
 			
 			and0.AddToFeedbacks(and0);
-			// Hozzaadjuk a hierarchiahoz
+			// Hozzáadjuk a hierarchiához
 			ComponentList.add(new ArrayList<iComponent>());
 			ComponentList.get(0).add(sw01);
 			ComponentList.add(new ArrayList<iComponent>());
@@ -154,41 +154,41 @@ public class DigitalBoard {
 			ComponentList.add(new ArrayList<iComponent>());
 			ComponentList.get(2).add(led01);
 
-			// hozzaadjuk a Wireket
+			// hozzáadjuk a Wireket
 			WireList.add(sw01_and0);
 			WireList.add(and0_and0);
 			WireList.add(and0_led01);
 			break;
 		case 2:
 			/* ********************************
-			* *******  Instabil aramkor ******
+			* *******  Instabil áramkör ******
 			* ********************************
 			* inv0_and2 = !sw2 & inv0_and2
 			* led3 = inv0_and2
 			*/		
-			//osszekoto wire letrehozasa		
+			//Összekötõ wire létrehozása		
 			Wire sw2_and2 = new Wire();	
 			Wire and2_inv0 = new Wire();	
 			Wire inv0_and2 = new Wire();
 			Wire inv0_led3 = new Wire();
-			// egy switch , inverter egy AND kapu ill egy led letrehozasa, konstruktorukban a wire-rel
+			// egy switch , inverter egy AND kapu ill egy led létrehozása, konstruktorukban a wire-rel
 			SWITCH sw2 = new SWITCH(sw2_and2);
-			//final kell, mert kulonben nem hivatkozhatunk ra a and peldanyatirt-bol
+			//final kell, mert különben nem hivatkozhatunk rá a and példányátirt-ból
 			final INVERTER inv0 = new INVERTER(and2_inv0);
 			ANDGate and2 = new ANDGate(sw2_and2,inv0_and2){
 				/**
-				 * mivel visszacsatolast tartalmaz, es nincs a skeletonban erre megfelelo lehetoseg, 
-				 * felulirjuk a peldany step fuggvenyet, hogy megfeleloen mukodjon.
+				 * mivel visszacsatolást tartalmaz, és nincs a skeletonban erre megfelelõ lehetõség, 
+				 * felülirjuk a példány step függvényét, hogy megfelelõen mukodjon.
 				 */
 				public boolean Step(){
-					boolean Result = true;						// A vegso eredmeny: Stabil-e az aramkor
+					boolean Result = true;						// A végsõ eredmény: Stabil-e az áramkör
 					_TEST stack = new _TEST();					/* TEST */
 					stack.PrintHeader(ID,"","true:boolean");	/* TEST */
-					PreviousValue = Count();					// Megnezzuk az elso futas erredmenyet
-					inv0.Count();				//feedback[0].Count(), elso ciklus
-					PreviousValue = Count();	//feedback 0 es 1 kozt magat frissiti
-					inv0.Count();				//feedback[0].Count(), masodik ciklus
-					PreviousValue = Count();	//frissiti magat. itt instabilitasi teszt jon a proto-ban
+					PreviousValue = Count();					// Megnézzük az elsõ futás erredményét
+					inv0.Count();				//feedback[0].Count(), elsõ ciklus
+					PreviousValue = Count();	//feedback 0 és 1 közt magát frissíti
+					inv0.Count();				//feedback[0].Count(), második ciklus
+					PreviousValue = Count();	//frissiti magát. itt instabilitási teszt jön a proto-ban
 
 					stack.PrintTail(ID,"",Result + ":boolean");	/* TEST */
 					return Result;
@@ -201,16 +201,16 @@ public class DigitalBoard {
 			// Feedbacks
 			and2.AddToFeedbacks(and2);
 			and2.AddToFeedbacks(inv0);
-			// Hozzaadjuk a hierarchiahoz
-			ComponentList.add(new ArrayList<iComponent>());	//0. szint letrehozasa
+			// Hozzáadjuk a hierarchiához
+			ComponentList.add(new ArrayList<iComponent>());	//0. szint létrehozása
 			ComponentList.get(0).add(sw2);
-			ComponentList.add(new ArrayList<iComponent>()); //1 szint letrehozasa
+			ComponentList.add(new ArrayList<iComponent>()); //1 szint létrehozása
 			ComponentList.get(1).add(and2);
-			ComponentList.add(new ArrayList<iComponent>()); // 2. szint letrehozasa
+			ComponentList.add(new ArrayList<iComponent>()); // 2. szint létrehozása
 			ComponentList.get(2).add(inv0);
-			ComponentList.add(new ArrayList<iComponent>()); // 3. szint letrehozasa
+			ComponentList.add(new ArrayList<iComponent>()); // 3. szint létrehozása
 			ComponentList.get(2).add(led3);
-			// hozzaadjuk a Wireket
+			// hozzáadjuk a Wireket
 			WireList.add(sw2_and2);
 			WireList.add(and2_inv0);
 			WireList.add(inv0_and2);
@@ -220,7 +220,7 @@ public class DigitalBoard {
 		stack.PrintTail(ID,"strFilePAth:String","");
 	};	
 	public void Run(){
-	// Leiras: metodus meghivja a SetStatus metodust RUNING parameterrel	
+	// Leírás: metódus meghívja a SetStatus metódust RUNING paraméterrel	
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
 		
@@ -230,7 +230,7 @@ public class DigitalBoard {
 		
 	};
 	public void Pause(){
-	// Leiras: A metodus meghivja a SetStatus metodust PAUSED parameterrel		
+	// Leírás: A metódus meghívja a SetStatus metódust PAUSED paraméterrel		
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
 		
@@ -239,7 +239,7 @@ public class DigitalBoard {
 		stack.PrintTail(ID,"", ""); 	/* TEST */
 	};	
 	public void Stop(){
-	// Leiras:  A metodus meghivja a SetStatus metodust STOPPED parameterrel
+	// Leírás:  A metódus meghívja a SetStatus metódust STOPPED paraméterrel
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"", "");	/* TEST */
 
@@ -248,65 +248,66 @@ public class DigitalBoard {
 		stack.PrintTail(ID,"", ""); 	/* TEST */
 	};		
 	public void SetStatus(Status NewStatus){
-	// Leiras: atallitja a SimStatus attributumot a parameterben megadott ertekre
-		_TEST stack = new _TEST();		// A Stackbol kinyert adatokat tartalmazza
+	// Leírás: Átállítja a SimStatus attribútumot a paraméterben megadott értékre
+		_TEST stack = new _TEST();		// A Stackbõl kinyert adatokat tartalmazza
 		stack.PrintHeader(ID,NewStatus+":Status","");
-		// TODO: Ha vannak fuggvenyhivasok, el kell helyezni ide oket!
+		// TODO: Ha vannak függvényhívások, el kell helyezni ide õket!
 		// ...
 		stack.PrintTail(ID,"","");
-		// TODO: Ha van visszateresi ertek, ide kell irni!
+		// TODO: Ha van visszatérési érték, ide kell írni!
 		//return null;
 	};	
 	public void SetFrequency(int Frequency, String ElementID){
-	// Leiras: A parameterben megadott azonositoju GENERATOR objektum frekvenciajat modositja
-		_TEST stack = new _TEST();									 		/* TEST */
-		stack.PrintHeader(ID,Frequency+":int, " + ElementID+":String","");	/* TEST */
-		GENERATOR GEN_to_setsfrequency;	
-		GEN_to_setsfrequency = new GENERATOR(0,0,null);			/* Temporalis valtozo */
-		GetElementByID(GEN_to_setsfrequency.ID);					/* GetElemetByIDvel megkapjuk, az objektumot	*/		
-		GEN_to_setsfrequency.SetSequence(Frequency); 				 /* az generator objektum SetFrequency(...) metodusat meghivjuk */
-		stack.PrintTail(ID,Frequency+":int, " + ElementID+":String","");	 /* TEST */	
-	};	
+	// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum frekvenciáját módosítja
+		_TEST stack = new _TEST();		// A Stackbõl kinyert adatokat tartalmazza
+		stack.PrintHeader(ID,"","");
+		// TODO: Ha vannak függvényhívások, el kell helyezni ide õket!
+		// ...
+		stack.PrintTail(ID,"","");
+		// TODO: Ha van visszatérési érték, ide kell írni!
+		//return null;
+	};
 	public void SetSequence(int Sequence, String ElementID){
-	// Leiras: A parameterben megadott azonositoju GENERATOR objektum szekvenciajat modositja
+	// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum szekvenciáját módosítja
 		_TEST stack = new _TEST();								 /* TEST */
-		stack.PrintHeader(ID,Sequence+":int, " + ElementID+":String","");	 /* TEST */
+		stack.PrintHeader(ID,"Sequence:int, ElementID:String","");	 /* TEST */
 		GENERATOR GEN_to_setsequence;	
-		GEN_to_setsequence = new GENERATOR(0,0,null);			/* Temporalis valtozo */
+		GEN_to_setsequence = new GENERATOR(0,0,null);			/* Temporális változó */
 		GetElementByID(GEN_to_setsequence.ID);					/* GetElemetByIDvel megkapjuk, az objektumot	*/		
-		GEN_to_setsequence.SetSequence(Sequence); 				 /* az generator objektum SetSequence(...) metodusat meghivjuk */
-		stack.PrintTail(ID,Sequence+":int, " + ElementID+":String","");									 /* TEST */
+		GEN_to_setsequence.SetSequence(Sequence); 				 /* az generátor objektum SetSequence(...) metódusát meghívjuk */
+		stack.PrintTail(ID,"Sequence:int, ElementID:String","");									 /* TEST */
 	
 	};	
 	public void Toggle(String ElementID){
-	/* Leiras: A parameterben megadott azonositoju SWITCH objektum erteket az ellenkezore 
-	 * allitja azaltal, hogy meghivja az objektum hasonlo nevu parameteret
+	/* Leírás: A paraméterben megadott azonosítójú SWITCH objektum értékét az ellenkezõre 
+	 * állítja azáltal, hogy meghívja az objektum hasonló nevû paraméterét
 	*/
 		_TEST stack = new _TEST();								/* TEST */
 		stack.PrintHeader(ID,"ElementID:String","");			/* TEST */
-		SWITCH SWITCH_to_toggle = new SWITCH(null);				/* Temporalis valtozo */
+		SWITCH SWITCH_to_toggle = new SWITCH(null);				/* Temporális változó */
 		GetElementByID(SWITCH_to_toggle.ID);					/* GetElemetByIDvel megkapjuk, majd  egyet	*/		
-		SWITCH_to_toggle.Toggle();								/* az switch objektum Toggle() metodusat meghivjuk */
+		SWITCH_to_toggle.Toggle();								/* az switch objektum Toggle() metódusát meghívjuk */
 		stack.PrintTail(ID,"","");								/* TEST */
 	};	
 	public void StepComponents(int TestArg){
-	// Leiras: Meghivja az osszes iComponent interfeszt megvalosito objektum Step() metodusat.
+	// Leírás: Meghívja az összes iComponent interfészt megvalósító objektum Step() metódusát.
 		_TEST stack = new _TEST();		/*TEST*/
 		stack.PrintHeader(ID,"","");	/*TEST*/
-		/* Elvileg mar fel van epulve a hierarchia igy nekem eleg megkapnom a ComponentListet */
+		/* Elvileg már fel van épülve a hierarchia így nekem elég megkapnom a ComponentListet */
 		switch(TestArg){
 		case 0:
-			DigitalObject obj;
+			/*DigitalObject obj;
+			List<iComponent> sublist;
 			for(List<iComponent> sublist: ComponentList)
 				for(iComponent o : sublist){
 					obj = (DigitalObject) o;
-					System.out.println(obj.ID); // DEBUG
+					//System.out.println(obj.ID); // DEBUG
 					obj.Step();
-				}
-			/*ComponentList.get(0).get(0).Step();
+				}*/
+			ComponentList.get(0).get(0).Step();
 			ComponentList.get(0).get(1).Step();
 			ComponentList.get(1).get(0).Step();
-			ComponentList.get(2).get(0).Step();*/
+			ComponentList.get(2).get(0).Step();
 			break;
 		case 1:
 			ComponentList.get(0).get(0).Step();

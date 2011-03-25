@@ -18,22 +18,18 @@ public class GENERATOR extends Input{
 	/*  ATTRIBuTUMOK  */
 	private static int GENERATORCounts;
 	
-	@SuppressWarnings("unused")
 	private int Frequency;
 	/* Leiras: A generator leptetesenek a gyakorisagat taroljuk ebben. 
 	 * Az itt megadott szamu Step() hivas utan fog csak lepni.
 	*/
 	
-	@SuppressWarnings("unused")
 	private int Sequence;
 	// LEiras: Ebben taroljuk a kimenetre kikuldendo mintat. ertelmezese binaris.
 	
-	@SuppressWarnings("unused")
 	private int SequencePos;
 	/* Leiras: Az attributum tartja nyilvan az aktualis poziciot a szekvenciaban. 
 	 * A Reset() hivas 0 ertekre allitja
 	*/
-	@SuppressWarnings("unused")
 	private int FrequencyCounter;
 	/*Leiras:
 	 * Egy segedszamlalo, mely nyilvantartja, hogy meg mennyi Count maradt hatra
@@ -90,7 +86,7 @@ public class GENERATOR extends Input{
 		/*FrequencyCounter--;					// Csokkentjuk a szamlalot
 		if(!FrequencyCounter){				// HA megfello szamu count eltelt mar
 			for(Wire OutPut:wireOut){
-				OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteket
+				OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
 				if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciaban elore megyunk.. mar ha lehet
 					SequencePos = 0;				
 				}else{

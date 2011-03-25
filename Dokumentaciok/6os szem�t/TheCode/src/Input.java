@@ -10,10 +10,10 @@
 
 */
 public abstract class Input extends DigitalObject{
-	/*  ATTRIBUTUMOK  */
+	/*  ATTRIBuTUMOK  */
 	protected int Value;
 	// Leiras: Az adott Input objektum erteket tarolja
 	
 	
-	/*	METODUSOK	*/
+	/*	METoDUSOK	*/
 }

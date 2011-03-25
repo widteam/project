@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 */
 public class LED extends Output{
-	/*  ATTRIBUTUMOK  */
+	/*  ATTRIBuTUMOK  */
 	private static int LEDCount;
 	
 	
@@ -26,7 +26,7 @@ public class LED extends Output{
 
 	
 	
-	/*	METODUSOK	*/
+	/*	METoDUSOK	*/
 	public int Count(){
 	// Leiras: Kiszamolja egy DigitalObject erteket	
 		_TEST stack = new _TEST();		

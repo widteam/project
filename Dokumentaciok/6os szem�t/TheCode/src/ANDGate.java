@@ -1,40 +1,50 @@
-import java.util.ArrayList;
-
 /*
-* Nev: 			INVERTER
+* Nev: 			ANDGate
 * Tipus: 		Class
 * Interfacek:	iComponent
 * Szulok		DigitalObject-->Gate
 * 
 *********** Leiras **********
-* Logikai invertert megvalosito objektum. Egyetlen egy bemenettel rendelkezik, 
-* es kimenetere ennek inverzet adja, ha annak van ertelme. 
-* Igazsagtablaja a kovetkezo:
+* Logikai eS kaput megvalosito objektum. A bemeneteirol beol-
+* vasott ertekekbol kiszamolja es tovabbadja a kimenetere az
+* uj erteket. Az uj erteket az eS kapu igazsagtablaja szerint
+* szamolja ki, mely ket bemenet eseten a kovetkezo:
 * 
-* bemenet	kimenet
-*	A		  NOT A
-* 	0	  		1
-*	1	  		0
-*	X	  		X
+* kimenet   bemenet
+*	A	B	A  AND B
+*	0	0		0
+*	0	1		0
+*	1	0		0
+*	1	1		1
+*	X	0		0
+*	X	1		X
+*	0	X		0
+*	1	X		X
+*	X	X		X
 * Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
 
- */
-public class INVERTER extends Gate{
-	/*  ATTRIBUTUMOK  */
-	private static int INVERTERCounts;
+*/
+
+/*  IMPORTOK  */
+import java.util.*;
+
+
+public class ANDGate extends Gate{
+	/*  ATTRIBuTUMOK  */
+	private static int ANDCounts;	// Statikus valtozo az egyedi ID ertekhez
 	
 	
 	/*  KONSTRUKTOR  */
-	public INVERTER(Wire wirein1){
-		wireIn = new ArrayList<Wire>();
-		wireOut = new ArrayList<Wire>();
-		ID = "INVERTER" + INVERTERCounts++;
-		PreviousValue = -1;
-		wireIn.add(wirein1);
+	public ANDGate(Wire wirein1, Wire wirein2){
+		wireIn = new ArrayList<Wire>();	// Inicializaljuk a wireIn listat
+		wireOut = new ArrayList<Wire>();// Inicializaljuk a wireOut listat		
+		ID = "AND" + ANDCounts++;		// ID-t eloallitjuk
+		wireIn.add(wirein1);			// a konstruktorban megadott bemenetet bedrotozzuk
+		wireIn.add(wirein2);			// a masik bemenetet is bedrotozzuk
 	}
 	
 	
-	/*	METODUSOK	*/
+	/*	METoDUSOK	*/
 	public int Count(){
 		// Leiras: Kiszamolja egy DigitalObject erteket	
 			int Result=0;
@@ -43,11 +53,9 @@ public class INVERTER extends Gate{
 
 			/* Lekerdezzuk a bemenetek ertekeit */
 			wireIn.get(0).GetValue();
+			wireIn.get(1).GetValue();	
 			
-			// Eredmeny kiszamitasa
-			//if(wireIn.get(0).GetValue() ==0)Result =1;
-			//if(wireIn.get(0).GetValue() ==1)Result =0;
-			//if(wireIn.get(0).GetValue() ==-1)Result =-1
+			//Result = wireIn.get(0).GetValue() & wireIn.get(1).GetValue(); // Eredmeny kiszamitasa
 			
 			/* Az oSSZES kimenetre kiadjuk a kiszamitott eredmenyt. Skeletonnal csak egyre */
 			

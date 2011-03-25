@@ -1,21 +1,21 @@
 import java.util.ArrayList;
 
 /*
-* Nev: 			SWITCH
-* Tipus: 		Class
+* Név: 			SWITCH
+* Típus: 		Class
 * Interfacek:	iComponent
-* Szulok		DigitalObject-->Input
+* Szülõk		DigitalObject-->Input
 * 
-*********** Leiras **********
-* Specialis Input objektum, mely a kimenetet ciklikusan valtoztatja egy,
-* felhasznalo altal szerkesztheto szekvencia alapjan. 
-* Az objektum nyilvantartja a szekvenciat, illetve az aktualis poziciot
-* a mintaban. A generator Reset utasitasanak hivasaval a pozicio a 
-* minta elejere allithato.
+*********** Leírás **********
+* Speciális Input objektum, mely a kimenetét ciklikusan változtatja egy,
+* felhasználó által szerkeszthetõ szekvencia alapján. 
+* Az objektum nyilvántartja a szekvenciát, illetve az aktuális pozíciót
+* a mintában. A generátor Reset utasításának hívásával a pozíció a 
+* minta elejére állítható.
 
 */
 public class SWITCH extends Input{
-	/*  ATTRIBuTUMOK  */
+	/*  ATTRIBÚTUMOK  */
 	private static int SWITCHCount;
 	
 	
@@ -31,9 +31,9 @@ public class SWITCH extends Input{
 
 	
 	
-	/*  METoDUSOK  */
+	/*  METÓDUSOK  */
 	public void Toggle(){
-	// Leiras: A Value valtozo erteket allitja nullabol egybe, egybol nullaba
+	// Leírás: A Value változó értékét állítja nullából egybe, egybõl nullába
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"","");	/* TEST */
 		/*if(Value == 0) Value = 1;
@@ -41,11 +41,11 @@ public class SWITCH extends Input{
 		stack.PrintTail(ID,"","");		/* TEST */
 	};
 	public int Count(){
-	// Leiras: Kiszamolja egy DigitalObject erteket	
+	// Leírás: Kiszámolja egy DigitalObject értékét	
 		_TEST stack = new _TEST();		/* TEST */
 		stack.PrintHeader(ID,"","");	/* TEST */
 	
-		/* Az oSSZES kimenetre kiadjuk a kiszamitott eredmenyt. Skeletonnal csak egyre */
+		/* Az ÖSSZES kimenetre kiadjuk a kiszámított eredményt. Skeletonnál csak egyre */
 		/*for(Wire OutPut:wireOut){
 			OutPut.SetValue(Value);	
 		}*/
@@ -56,14 +56,14 @@ public class SWITCH extends Input{
 		return Value;	
 	};					
 	public boolean Step(){
-	/* Leiras: Feladata az adott elem ertekenek kiszamitasa, 
-	 * ill. annak eldontese, hogy a DigitalObject stabil-e
+	/* Leírás: Feladata az adott elem értékének kiszámítása, 
+	 * ill. annak eldöntése, hogy a DigitalObject stabil-e
 	 */
 			_TEST stack = new _TEST();				/* TEST */
 			stack.PrintHeader(ID,"","");			/* TEST */		
-			Count();								// MEghivja a Count metodust
+			Count();								// MEghívja a Count metódust
 			stack.PrintTail(ID,"","true:boolean");	/* TEST */	
-			return true;							// A SWITCH mindig igazzal ter vissza
+			return true;							// A SWITCH mindig igazzal tér vissza
 		};
 
 }

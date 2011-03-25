@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
  */
 public class INVERTER extends Gate{
-	/*  ATTRIBUTUMOK  */
+	/*  ATTRIBuTUMOK  */
 	private static int INVERTERCounts;
 	
 	
@@ -34,7 +34,7 @@ public class INVERTER extends Gate{
 	}
 	
 	
-	/*	METODUSOK	*/
+	/*	METoDUSOK	*/
 	public int Count(){
 		// Leiras: Kiszamolja egy DigitalObject erteket	
 			int Result=0;

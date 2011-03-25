@@ -1,17 +1,17 @@
 import java.util.ArrayList;
 
 /*
-* Nev: 			GENERATOR
-* Tipus: 		Class
+* Név: 			GENERATOR
+* Típus: 		Class
 * Interfacek:	iComponent
-* Szulok		DigitalObject-->Output
+* Szülõk		DigitalObject-->Output
 * 
-*********** Leiras **********
-* A bemenet megjelenitesere szolgalo objektum/osztaly
+*********** Leírás **********
+* A bemenet megjelenítésére szolgáló objektum/osztály
 
 */
 public class LED extends Output{
-	/*  ATTRIBUTUMOK  */
+	/*  ATTRIBÚTUMOK  */
 	private static int LEDCount;
 	
 	
@@ -26,21 +26,21 @@ public class LED extends Output{
 
 	
 	
-	/*	METODUSOK	*/
+	/*	METÓDUSOK	*/
 	public int Count(){
-	// Leiras: Kiszamolja egy DigitalObject erteket	
+	// Leírás: Kiszámolja egy DigitalObject értékét	
 		_TEST stack = new _TEST();		
 		stack.PrintHeader(ID,"","");
 
-		/* Lekerdezzuk a bemenetek ertekeit */
+		/* Lekérdezzük a bemenetek értékeit */
 		wireIn.get(0).GetValue();
 		
 		stack.PrintTail(ID,"","");
 		return Value;
 	};					
 	public boolean Step(){
-	/* Leiras: Feladata az adott elem ertekenek kiszamitasa, 
-	 * ill. annak eldontese, hogy a DigitalObject stabil-e
+	/* Leírás: Feladata az adott elem értékének kiszámítása, 
+	 * ill. annak eldöntése, hogy a DigitalObject stabil-e
 	*/
 		_TEST stack = new _TEST();
 		stack.PrintHeader(ID,"","true:boolean");	

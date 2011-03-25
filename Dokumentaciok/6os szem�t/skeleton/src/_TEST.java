@@ -1,6 +1,6 @@
 /**
  * 
- * Skeleton teszteleset segito osztaly.
+ * Skeleton tesztelését segítõ osztály.
  *
  */
 public class _TEST {
@@ -12,7 +12,7 @@ public class _TEST {
 	public  String CallerClassName = stack[2].getClassName();
 	public  String CallerMethodName = stack[2].getMethodName();
 
-	//class hivas trace
+	//class hívás trace
 	public void PrintHeader(String CallerObjectName, String Parameters, String Returnvalue){
 		for(int i=0;i<TreeDepth;i++) System.out.print('\t');
 		System.out.print(CallerClassName + "-->");

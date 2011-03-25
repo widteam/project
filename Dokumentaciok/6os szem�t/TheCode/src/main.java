@@ -1,20 +1,19 @@
 import java.io.*;
 public class main {
 
-	//ezt a warningot az eclipse miatt kell berakni.. a nevezes miatt a def konstr bekevert.
-	@SuppressWarnings("all")
 	public static void main(String[] args) {
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
 		String line ="";
 		Integer choice = -1;
 
-		while(!line.contentEquals("exit")){	//Míg nem akar kilepni a feslhasznalo nem lepunk ki			;
-			
-			choice = -1;
-			line = "";
-			
-			System.out.println();
+		// DigitalBoardok letrehozasa
+		DigitalBoard o0	 = new DigitalBoard();	// egyszeru
+		DigitalBoard o1	 = new DigitalBoard();	// Stabil visszacsatolas
+		DigitalBoard o2	 = new DigitalBoard();	// Instabil visszacsatolas
+
+		while(!line.contentEquals("exit")){	//Mig nem akar kilepni a feslhasznaló nem lepunk ki			;
+
 			System.out.println("TESZT SZAKASZ");
 			System.out.println("Kerem valasszon a lehetosegek kozul!");
 			System.out.println("  0 - Load Board (Egyszeru) ");
@@ -24,22 +23,16 @@ public class main {
 			System.out.println("  4 - Set Sequence");
 			System.out.println("  5 - Step Components(Egyszeru)");
 			System.out.println("  6 - Step Components(Visszacsatolassal");
-			System.out.println("  7 - Step Components(Visszacsatolassal, instabilra allíthato");
+			System.out.println("  7 - Step Components(Visszacsatolassal");
 			System.out.println("  8 - Count");
 			System.out.println("  9 - Run");
 			System.out.println("  10 - Pause");
 			System.out.println("  11 - Stop");
 			System.out.println("  12 - Set Frequency");
-			
+			/* NEM LETT MEGVALÓSiTVA */ //System.out.println("  13 - Check Value");
 			System.out.println("  exit - Kilepes");
 			
-			try {
-				line = reader.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			try{		// Szamma alakítjuk - ha tudjuk - a bevitt szoveget
+			try{		// Szamma alakitjuk - ha tudjuk - a bevitt szoveget
 				choice  = Integer.decode(line);				
 			}catch(Exception e){
 				//line = "exit" ;
@@ -48,45 +41,20 @@ public class main {
 			// Szetvalogatjuk az esaeteket
 			switch (choice){
 			case 0:	 // LoadBoard egyszeru
-				// DigitalBoard letrehozasa
-				DigitalBoard o0	 = new DigitalBoard();
 				o0.LoadBoard("0");					
 				break;
 			case 1:  // LoadBoard visszacsatolassal
-				// DigitalBoard letrehozasa
-				DigitalBoard o1 = new DigitalBoard();
 				o1.LoadBoard("1");
 				break;
 			case 2: // LoadBoard instabil
-				// DigitalBoard letrehozasa
-				DigitalBoard o2 = new DigitalBoard();
 				o2.LoadBoard("2");
 				break;
 			case 3: // Toggle switch
-				// DigitalBoard letrehozasa
-				DigitalBoard o3 = new DigitalBoard();	
-				// a Toggle(...)meghívasa egy tesztkapcsolora 
-				o3.Toggle("SWITCH_to_toggle");
+				// a Toggle(...)meghivasa egy tesztkapcsolóra 
+				o0.Toggle("SWITCH_to_toggle");
 				break;
 			case 4:	// SetSequence
-				// DigitalBoard letrehozasa
-				DigitalBoard o4 = new DigitalBoard();	
-				o4.SetSequence(5, "GEN_to_setsequence");
-				break;
-			case 5:		// Step Component, egyszeru
-				DigitalBoard o8	 = new DigitalBoard();
-				o8.LoadBoard("0");
-				o8.StepComponents(0);
-				break;
-			case 6:		// Step Component, visszacsatolos
-				DigitalBoard o9	 = new DigitalBoard();
-				o9.LoadBoard("1");
-				o9.StepComponents(1);
-				break;
-			case 7:		// Step Component, visszacsatolos, instabil
-				DigitalBoard o10	 = new DigitalBoard();
-				o10.LoadBoard("2");
-				o10.StepComponents(2);
+				o0.SetSequence(5, "GEN_to_setsequence");
 				break;
 			case 8:	// Count
 				SWITCH sw = new SWITCH(new Wire());
@@ -111,29 +79,34 @@ public class main {
 				led.Count();
 				break;	
 			case 9:	// RUN
-				// DigitalBoard letrehozasa
-				DigitalBoard o5 = new DigitalBoard();
-				o5.Run();
+				o0.Run();
 				break;	
 			case 10:	// Pause
-				// DigitalBoard letrehozasa
-				DigitalBoard o6 = new DigitalBoard();
-				o6.Pause();
+				o0.Pause();
 				break;
 			case 11:	// Stop
-				// DigitalBoard letrehozasa
-				DigitalBoard o7 = new DigitalBoard();
-				o7.Stop();
+				o0.Stop();
+				break;
+			case 5:		// Step Component, egyszeru
+				o0.StepComponents(0);
+				break;
+			case 6:		// Step Component, visszacsatolós
+				o1.StepComponents(1);
+				break;
+			case 7:		// Step Component, visszacsatolós, instabil
+				o2.StepComponents(2);
 				break;
 			case 12:	// SetFrequency
-				// DigitalBoard letrehozasa
-				DigitalBoard o11 = new DigitalBoard();
-				o11.SetFrequency(10,"Generator_to_SetFrequency");
-				break;			
+				o0.SetSequence(10, "GEN_to_setFrequency");
+				break;
 			default:
 				break;
 			}
-
+			try {
+				line = reader.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

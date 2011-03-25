@@ -23,7 +23,6 @@ import java.util.*;	// List, ArrayList-hez
 
 public class DigitalBoard {
 	/*	ATTRIBuTUMOK	*/
-	@SuppressWarnings("unused")
 	private Status SimStatus; 
 	private String ID;
 	private static int DigitalBoardCounts;
@@ -118,28 +117,7 @@ public class DigitalBoard {
 			Wire and0_led01 = new Wire();
 			
 			SWITCH sw01 = new SWITCH(sw01_and0);
-			ANDGate and0 = new ANDGate(and0_and0,sw01_and0){
-				/**
-				 * mivel visszacsatolast tartalmaz, es nincs a skeletonban erre megfelelo lehetoseg, 
-				 * felulirjuk a peldany step fuggvenyet, hogy megfeleloen mukodjon.
-				 */
-				public boolean Step(){
-					boolean Result = true;						// A vegso eredmeny: Stabil-e az aramkor
-					_TEST stack = new _TEST();					/* TEST */
-					stack.PrintHeader(ID,"","true:boolean");	/* TEST */
-					//count magat
-					PreviousValue = Count();					// Megnezzuk az elso futas erredmenyet
-					//feedback[0], elso kor
-					PreviousValue = Count();
-					//sajat maga, elso kor
-					PreviousValue = Count();
-					//feedback[0], masodik kor
-					PreviousValue = Count();
-					//ha bitt nem egyezne meg, az elozo prev.valueval, akkor instabil.
-					stack.PrintTail(ID,"",Result + ":boolean");	/* TEST */
-					return Result;
-				}
-			};
+			ANDGate and0 = new ANDGate(and0_and0,sw01_and0);
 			LED led01 = new LED(and0_led01);
 			
 			and0.AddOutput(and0_and0);
@@ -173,27 +151,8 @@ public class DigitalBoard {
 			Wire inv0_led3 = new Wire();
 			// egy switch , inverter egy AND kapu ill egy led letrehozasa, konstruktorukban a wire-rel
 			SWITCH sw2 = new SWITCH(sw2_and2);
-			//final kell, mert kulonben nem hivatkozhatunk ra a and peldanyatirt-bol
-			final INVERTER inv0 = new INVERTER(and2_inv0);
-			ANDGate and2 = new ANDGate(sw2_and2,inv0_and2){
-				/**
-				 * mivel visszacsatolast tartalmaz, es nincs a skeletonban erre megfelelo lehetoseg, 
-				 * felulirjuk a peldany step fuggvenyet, hogy megfeleloen mukodjon.
-				 */
-				public boolean Step(){
-					boolean Result = true;						// A vegso eredmeny: Stabil-e az aramkor
-					_TEST stack = new _TEST();					/* TEST */
-					stack.PrintHeader(ID,"","true:boolean");	/* TEST */
-					PreviousValue = Count();					// Megnezzuk az elso futas erredmenyet
-					inv0.Count();				//feedback[0].Count(), elso ciklus
-					PreviousValue = Count();	//feedback 0 es 1 kozt magat frissiti
-					inv0.Count();				//feedback[0].Count(), masodik ciklus
-					PreviousValue = Count();	//frissiti magat. itt instabilitasi teszt jon a proto-ban
-
-					stack.PrintTail(ID,"",Result + ":boolean");	/* TEST */
-					return Result;
-				}
-			};
+			INVERTER inv0 = new INVERTER(and2_inv0);
+			ANDGate and2 = new ANDGate(sw2_and2,inv0_and2);
 			LED led3 = new LED(inv0_led3);
 			
 			and2.AddOutput(and2_inv0);
@@ -247,7 +206,7 @@ public class DigitalBoard {
 		
 		stack.PrintTail(ID,"", ""); 	/* TEST */
 	};		
-	public void SetStatus(Status NewStatus){
+	private void SetStatus(Status NewStatus){
 	// Leiras: atallitja a SimStatus attributumot a parameterben megadott ertekre
 		_TEST stack = new _TEST();		// A Stackbol kinyert adatokat tartalmazza
 		stack.PrintHeader(ID,NewStatus+":Status","");
@@ -259,23 +218,23 @@ public class DigitalBoard {
 	};	
 	public void SetFrequency(int Frequency, String ElementID){
 	// Leiras: A parameterben megadott azonositoju GENERATOR objektum frekvenciajat modositja
-		_TEST stack = new _TEST();									 		/* TEST */
-		stack.PrintHeader(ID,Frequency+":int, " + ElementID+":String","");	/* TEST */
-		GENERATOR GEN_to_setsfrequency;	
-		GEN_to_setsfrequency = new GENERATOR(0,0,null);			/* Temporalis valtozo */
-		GetElementByID(GEN_to_setsfrequency.ID);					/* GetElemetByIDvel megkapjuk, az objektumot	*/		
-		GEN_to_setsfrequency.SetSequence(Frequency); 				 /* az generator objektum SetFrequency(...) metodusat meghivjuk */
-		stack.PrintTail(ID,Frequency+":int, " + ElementID+":String","");	 /* TEST */	
-	};	
+		_TEST stack = new _TEST();								 /* TEST */
+		stack.PrintHeader(ID,Frequency+":int, " + ElementID + ":String","");	 /* TEST */
+		GENERATOR GEN_to_setfrequency;	
+		GEN_to_setfrequency = new GENERATOR(0,0,null);			/* Temporalis valtozo */
+		GetElementByID(GEN_to_setfrequency.ID);					/* GetElemetByIDvel megkapjuk, az objektumot	*/		
+		GEN_to_setfrequency.SetFrequency(Frequency); 				 /* az generator objektum SetFrequency(...) metodusat meghivjuk */
+		stack.PrintTail(ID,Frequency+":int," +  ElementID + ":String","");	
+	};
 	public void SetSequence(int Sequence, String ElementID){
 	// Leiras: A parameterben megadott azonositoju GENERATOR objektum szekvenciajat modositja
 		_TEST stack = new _TEST();								 /* TEST */
-		stack.PrintHeader(ID,Sequence+":int, " + ElementID+":String","");	 /* TEST */
+		stack.PrintHeader(ID,Sequence+":int, " + ElementID + ":String","");	 /* TEST */
 		GENERATOR GEN_to_setsequence;	
 		GEN_to_setsequence = new GENERATOR(0,0,null);			/* Temporalis valtozo */
 		GetElementByID(GEN_to_setsequence.ID);					/* GetElemetByIDvel megkapjuk, az objektumot	*/		
 		GEN_to_setsequence.SetSequence(Sequence); 				 /* az generator objektum SetSequence(...) metodusat meghivjuk */
-		stack.PrintTail(ID,Sequence+":int, " + ElementID+":String","");									 /* TEST */
+		stack.PrintTail(ID,Sequence+":int," +  ElementID + ":String","");									 /* TEST */
 	
 	};	
 	public void Toggle(String ElementID){
@@ -296,17 +255,18 @@ public class DigitalBoard {
 		/* Elvileg mar fel van epulve a hierarchia igy nekem eleg megkapnom a ComponentListet */
 		switch(TestArg){
 		case 0:
-			DigitalObject obj;
+			/*DigitalObject obj;
+			List<iComponent> sublist;
 			for(List<iComponent> sublist: ComponentList)
 				for(iComponent o : sublist){
 					obj = (DigitalObject) o;
-					System.out.println(obj.ID); // DEBUG
+					//System.out.println(obj.ID); // DEBUG
 					obj.Step();
-				}
-			/*ComponentList.get(0).get(0).Step();
+				}*/
+			ComponentList.get(0).get(0).Step();
 			ComponentList.get(0).get(1).Step();
 			ComponentList.get(1).get(0).Step();
-			ComponentList.get(2).get(0).Step();*/
+			ComponentList.get(2).get(0).Step();
 			break;
 		case 1:
 			ComponentList.get(0).get(0).Step();
