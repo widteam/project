@@ -1,19 +1,12 @@
-Feltöltve a szkeleton fájlai.
+﻿7-es doksi
 
-_TEST class: Ebben vannak a függvények melyek a kiiratást végzik. (Híváskor és visszatéréskor)
+7.0 - Módosított classdiagram készen
+NINCS készen: class leírásai, objektumkatalógus, szekvenciadiagramok (egy Composit step szekvenciája megegyezik a korábbi DigitalBoard StepComponents szekvenciájával...)
 
-Tessék tesztelni:
-
-Ismert HIBÁK:
-  - Feedbacks a DigitalObject helyett a Gate-ben van (Ez nem baj, mert csak Gate lehet a feedback része)
-   Baj viszont , hogy Ősosztálybeli, DigitalObject objektumokat vár a listába. Ez felesleges...
-
-Lényegi hiba: 
- ANDGate, ORGate, INVERTER osztályoknál minimális szinten ugyan, de implementálsára került a Step() metódus.
-Az ok, hogy nem tudtam áthidalni a Feedbackes részt; a felhasználót nem kérdezhetem róla, mert fogalma sincs.... 
-Ha van rá megoldás, javítsátok, javítom.
-
-
-
-
-Elérhető vagyok a +3630-397-22-05 számon.
+7.1.1 - OK
+7.1.2 - Bemeneti nyelv leírása a "bemeneti nyelv.doc" állományban. butaHDL leírás a "butaHDL_to_LZ.doc" állományban
+7.1.3 - Egyeztetni kéne a 7.1.2 pontban szereplő bementi nyelv doksival, amúgy OK
+7.2 - OK (bár az .odt fájlban lévő kép nem a legszeb, de ott az eap is :D  )
+7.3 - számomra az még egy picit necces... Mejegyzéseket fúztem a doksihoz.
+7.4 - OK 
+Tesztááramkörök - OK
