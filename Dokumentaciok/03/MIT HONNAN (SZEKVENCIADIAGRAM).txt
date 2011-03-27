@@ -1,0 +1,15 @@
+ea. mod:
+	Class Diagram
+	State Chart
+
+cs_update:
+	Pause
+	Run
+	Stop
+	Step
+	Switch
+	Generator
+
+cs_init:
+	Init
+	
