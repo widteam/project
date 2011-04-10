@@ -11,7 +11,7 @@ public class Main {
 
 			System.out.println("TESZT SZAKASZ");
 			System.out.println("Kerem valasszon a lehetosegek kozul!");
-			System.out.println("  0 - Load Board (Egyszeru) ");
+			System.out.println("  0 - Csomákteszt "); //Temporary, TODO átcsinálni!
 			System.out.println("  1 - Load Board (Visszacsatolassal) ");
 			System.out.println("  2 - Load Board (Instabil) ");
 			System.out.println("  3 - Toggle Switch");

@@ -41,12 +41,12 @@ public class Wire{
 	/**DigitalObject objektum-referencia, amely a vezetek 
 	  * bemenetehez kapcsolodik.
 	 */
-	private List<DigitalObject> objectsIn;
+	public List<DigitalObject> objectsIn; //public, mert hierarhiához kell
 	
 	/**DigitalObject objektum-referencia, amely a vezetek 
 	  * kimenetehez kapcsolodik.
 	 */
-	private List<DigitalObject> objectsOut;
+	public List<DigitalObject> objectsOut; //public, mert hierarhiához kell
 	
 	
 	/**  KONSTRUKTOR  */

@@ -90,6 +90,38 @@ public class DigitalBoard {
 	 * @throws FileDoesNotExistException ha a fajl nem letezik vagy nem olvashato
 	 */
 	public void LoadBoard(String strFilePath){
+		
+		/////////////////csomák teszt részéhez//////////////////////////
+		if(strFilePath.equals("0")){
+			//osszekoto wire letrehozasa		
+			Wire sw0_or0 = new Wire("v0");	
+			Wire gen0_or0 = new Wire("v1");	
+			Wire or0_led0 = new Wire("v2");	
+			// egy switch , generator egy Or kapu ill egy led letrehozasa, konstruktorukban a wire-rel
+			SWITCH sw0 = new SWITCH("sw0",sw0_or0);
+			GENERATOR gen0 = new GENERATOR("gen0",3,5,gen0_or0);
+			ORGate or0 = new ORGate("or0",sw0_or0,gen0_or0);
+			LED led0 = new LED("led0",or0_led0);
+			or0.AddOutput(or0_led0);
+			// Hozzaadjuk a hierarchiahoz
+			ComponentList.add(new ArrayList<DigitalObject>());	//0. szint letrehozasa
+			ComponentList.get(0).add(sw0);
+			ComponentList.get(0).add(gen0);
+			ComponentList.add(new ArrayList<DigitalObject>()); //1 szint letrehozasa
+			ComponentList.get(1).add(or0);
+			ComponentList.add(new ArrayList<DigitalObject>()); // 2. szint letrehozasa
+			ComponentList.get(2).add(led0);
+			// hozzaadjuk a Wireket
+			WireList.add(sw0_or0);
+			WireList.add(gen0_or0);
+			WireList.add(or0_led0);
+			System.out.println("now calling hierbuilder");//csomák teszt
+			HierarchyCounter cntr=new HierarchyCounter();
+			cntr.CountHierarchy(WireList, ComponentList);
+
+		}
+		///////////////////////csomák end/////////////////////////////////////////
+		
 	    boolean exists = (new File(strFilePath)).exists();
         if (!exists) {
         	// throw FileDoesNotExistException;
