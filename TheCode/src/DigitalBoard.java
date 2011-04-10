@@ -101,6 +101,9 @@ public class DigitalBoard {
 			WireList.add(sw0_or0);
 			WireList.add(gen0_or0);
 			WireList.add(or0_led0);
+			System.out.println("now calling hierbuilder");//csomák teszt
+			HierarchyCounter cntr=new HierarchyCounter();
+			cntr.CountHierarchy(WireList, ComponentList);
 			break;
 			
 		case 1:

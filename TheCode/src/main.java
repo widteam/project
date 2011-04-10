@@ -1,6 +1,8 @@
 import java.io.*;
 public class main {
 
+	//suppress, mert a konstruktorra nem ismer rá.
+	@SuppressWarnings("all")
 	public static void main(String[] args) {
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
