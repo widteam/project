@@ -108,13 +108,17 @@ public class DigitalBoard {
 			ComponentList.get(0).add(sw0);
 			ComponentList.get(0).add(gen0);
 			ComponentList.add(new ArrayList<DigitalObject>()); //1 szint letrehozasa
-			ComponentList.get(1).add(or0);
+			ComponentList.get(0).add(or0);
 			ComponentList.add(new ArrayList<DigitalObject>()); // 2. szint letrehozasa
-			ComponentList.get(2).add(led0);
+			ComponentList.get(0).add(led0);
 			// hozzaadjuk a Wireket
 			WireList.add(sw0_or0);
 			WireList.add(gen0_or0);
 			WireList.add(or0_led0);
+			//összeköttetések:
+			sw0_or0.objectsOut.add(or0);
+			gen0_or0.objectsOut.add(or0);
+			or0_led0.objectsOut.add(led0);
 			System.out.println("now calling hierbuilder");//csomák teszt
 			HierarchyCounter cntr=new HierarchyCounter();
 			cntr.CountHierarchy(WireList, ComponentList);
