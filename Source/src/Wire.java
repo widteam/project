@@ -91,7 +91,7 @@ public class Wire{
 	  * @param objectWhere {@linkplain objectsOut} listaba kerulo DigitalObect
 	  * @param objectWhat {@linkplain objectsIn} listaba kerulo DigitalObect
 	  * @return
-	  * @throws WireHasMultipleInputsException Ha a Wire-nek egynél több bemenete lenne
+	  * @throws WireHasMultipleInputsException Ha a Wire-nek egynel tobb bemenete lenne
 	  */
 	public void SetConnection(DigitalObject objectWhere, DigitalObject objectWhat){
 		if(objectWhat != null && objectsIn != null){

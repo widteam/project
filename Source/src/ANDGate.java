@@ -21,7 +21,7 @@ import java.util.*;
 *<br>
  * Logikai ES kaput megvalosito objektum. A bemeneteirol beol-
  * vasott ertekekbol kiszamolja es tovabbadja a kimenetere az
- * uj erteket. Az uj erteket az ÉS kapu igazsagtablaja szerint
+ * uj erteket. Az uj erteket az ES kapu igazsagtablaja szerint
  * szamolja ki, mely ket bemenet eseten a kovetkezo:
 * <table border=1>
 * <tr align=center><th colspan=2>Bemenet</th><th>Kimenet</th></tr>
@@ -36,7 +36,7 @@ import java.util.*;
 * <tr align=center><td>X</td><td>1</td><td>X</td></tr>
 * <tr align=center><td>X</td><td>X</td><td>X</td></tr>
 * </table>
-* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don’t care
+* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
  */
 
 

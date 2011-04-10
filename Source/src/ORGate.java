@@ -35,7 +35,7 @@ import java.util.ArrayList;
 * <tr align=center><td>X</td><td>1</td><td>1</td></tr>
 * <tr align=center><td>X</td><td>X</td><td>X</td></tr>
 * </table>
-* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don’t care
+* Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
  */
 public class ORGate extends Gate {
 	/* ATTRIBUTUMOK */

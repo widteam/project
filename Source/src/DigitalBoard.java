@@ -22,8 +22,8 @@ import java.util.*;	// List, ArrayList-hez
 *<br>
 * A digitalis aramkort nyilvantarto es a vezerlest  biztosito objektum.
 * Az aramkor osszes elemet es a koztuk levo kapcsolatokat letrehozza,
-* kezeli es tarolja. Új aramkor megnyitasakor betolti az aramkort egy
-* fajlbol – ekozben ellenorzi a szintaktikai helyesseget, 
+* kezeli es tarolja. Uj aramkor megnyitasakor betolti az aramkort egy
+* fajlbol-ekozben ellenorzi a szintaktikai helyesseget, 
 * letrehoz minden digitalis elemet, hierarchia szerint sorrendezi,
 * felfedezi a visszacsatolasokat. 
 * Tovabbi feladata az aramkor szamitasait vezerelni, 

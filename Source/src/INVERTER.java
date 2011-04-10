@@ -44,7 +44,7 @@ import java.util.ArrayList;
  * <td>X</td>
  * </tr>
  * </table>
- * Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don’t care
+ * Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
  */
 public class INVERTER extends Gate {
 	/* ATTRIBUTUMOK */
