@@ -1,41 +1,63 @@
 import java.util.ArrayList;
-
-/*
-* Név: 			GENERATOR
-* Típus: 		Class
-* Interfacek:	---
-* Szülõk		DigitalObject-->Input
-* 
-*********** Leírás **********
-* Speciális Input objektum, mely a kimenetét ciklikusan változtatja egy,
-* felhasználó által szerkeszthetõ szekvencia alapján. 
-* Az objektum nyilvántartja a szekvenciát, illetve az aktuális pozíciót
-* a mintában. A generátor Reset utasításának hívásával a pozíció a 
-* minta elejére állítható.
-
+/** 
+ * <table border=0>
+ * 	<tr align=left>
+ * 		<th>Nev:</th>
+ * 		<td width=30>&nbsp;&nbsp;GENERATOR</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Tipus:</th>
+ * 		<td>&nbsp;&nbsp;Class</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Interface: </th>
+ * 		<td>&nbsp;&nbsp;---</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Szulok:</th>
+ * 		<td>&nbsp;&nbsp;DigitalObject-->Input</td>
+ * </table> 
+*<br>
+* Specialis Input objektum, mely a kimenetet ciklikusan valtoztatja egy,
+* felhasznalo altal szerkesztheto szekvencia alapjan. 
+* Az objektum nyilvantartja a szekvenciat, illetve az aktualis poziciot
+* a mintaban. A generator Reset utasitasanak hivasaval a pozicio a 
+* minta elejere allithato.
 */
 public class GENERATOR extends Input{
-	/*  ATTRIBÚTUMOK  */
+	/*  ATTRIBUTUMOK  */
+	/**Statikus valtozo az egyedi ID ertekhez */
 	private static int GENERATORCounts;
 	
-	private int Frequency;
-	/* Leírás: A generátor léptetésének a gyakoriságát tároljuk ebben. 
-	 * Az itt megadott számú Step() hívás után fog csak lépni.
-	*/
-	
-	private int Sequence;
-	// LEírás: Ebben tároljuk a kimenetre kiküldendõ mintát. Értelmezése bináris.
-	
-	private int SequencePos;
-	/* Leírás: Az attribútum tartja nyilván az aktuális pozíciót a szekvenciában. 
-	 * A Reset() hívás 0 értékre állítja
-	*/
-	private int FrequencyCounter;
-	/*Leírás:
-	 * Egy segédszámláló, mely nyilvántartja, hogy még mennyi Count maradt hátra
+	/**
+	 *  generator leptetesenek a gyakorisagat taroljuk ebben. 
+	 * Az itt megadott szamu {@code Step()}  hivas utan fog csak lepni.
 	 */
+	private int Frequency;
+
+	/**
+	 * Ebben taroljuk a kimenetre kikuldendo mintat. Ertelmezese binaris.
+	 */
+	private int Sequence;
+
+	/**
+	 * Az attributum tartja nyilvan az aktualis poziciot a szekvenciaban. 
+	 * A {@code Reset()}  hivas 0 ertekre allitja
+	 */
+	private int SequencePos;
+
+	/**
+	 * Egy segedszamlalo, mely nyilvantartja, hogy meg mennyi Count maradt hatra
+	 */
+	private int FrequencyCounter;
+
 	
-	/*  KONSTRUKTOR  */
+	/**  KONSTRUKTOR  
+	 * @param strCompositName A GENERATOR objektumot tartalmazo Composit neve, annak erdekeben, hogy lehessenek azonos nevu elemek az egyes eltereo compositokban
+	 * @param StartFrequency Kezdofrekvencia
+	 * @param StartSequence Letrehozaskor megadhato minta, ujabb ertek beallitasaig ezt ismetli
+	 * @param WiresOut A GENERATOR-hoz csatlakozo Wire objektum referenciaja
+	 */
 	public GENERATOR(String strCompositName, int StartFrequency, int StartSequence, Wire WiresOut){
 		final String strIDDelimiter = "#";
 		String strIDNumber  = String.valueOf(GENERATORCounts++);
@@ -54,56 +76,77 @@ public class GENERATOR extends Input{
 	}
 	
 	
-	/*  METÓDUSOK  */
+	/*  METODUSOK  */
+	/**
+	 * A SequencePos. erteket allitja alapertelmezettre, azaz a minta elejere
+	 */
 	public void Reset(){
-	// Leírás: A SequencePos. értékét állítja alapértelmezettre, azaz a minta elejére
-		SequencePos = 0;				// Pozíciót alapra
-		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binárissá alakítjuk a számot és vesszük az MSB bitet
+		SequencePos = 0;				// Poziciot alapra
+		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
 	};
+	
+	/**
+	 * a Frequency erteket allitja be, a parameterben megadott ertekre.
+	 * @param NewSequence Az a minta melyet be kivanunk allitani
+	 */
 	public void SetSequence(int NewSequence){
-	// Leírás: a Frequency értékét állítja be, a paraméterben megadott értékre.
-		Sequence = NewSequence;					// Beállítjuk a szekvenciát
-		SequencePos = 0;							// Pozíciót alapra
-		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binárissá alakítjuk a számot és vesszük az MSB bitet
+		Sequence = NewSequence;					// Beallitjuk a szekvenciat
+		SequencePos = 0;							// Poziciot alapra
+		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
 	};
+	
+	/**
+	 * a GENERATOR frekvenciajanak erteket allitja be, a parameterben megadott ertekre.
+	 * @param NewFrequency Az uj frekvencia erteke
+	 */
 	public void SetFrequency(int NewFrequency){
-	// Leírás: a minta értékét állítja be, a paraméterben megadott értékre.
-		Frequency = NewFrequency;						// Beállítjuk a frekvenciát
-		FrequencyCounter = NewFrequency;					// Hány count maradt még hátra
+
+		Frequency = NewFrequency;						// Beallitjuk a frekvenciat
+		FrequencyCounter = NewFrequency;					// Hany count maradt meg hatra
 	};
+	
+
+
+	/**Kiszamolja egy DigitalObject erteket
+	 * @return A mintaban soron kovetkezo erteket adja vissza
+	 * @throws InputNotConnectedException Ha nem csatlakozik egyetlen masik digitalObjecthez sem
+	 */
 	public int Count(){
-	// Leírás: Kiszámolja egy DigitalObject értékét	
+
 		int Result=0;
-		/* Az ÖSSZES kimenetre kiadjuk a kiszámított eredményt. Skeletonnál csak egyre */
-		FrequencyCounter--;					// Csökkentjük a számlálót
-		if(FrequencyCounter==0){				// HA megfellõ számú count eltelt már
-			if(wireOut == null || wireOut.isEmpty()){	// ha nincs csatlakoztatva semmihez, hibát dob
-				// throw InputNotConnectedWarning
+		/* Az OSSZES kimenetre kiadjuk a kiszamitott eredmenyt.*/
+		FrequencyCounter--;					// Csokkentjuk a szamlalot
+		if(FrequencyCounter==0){				// HA megfelo szamu count eltelt mar
+			if(wireOut == null || wireOut.isEmpty()){	// ha nincs csatlakoztatva semmihez, hibat dob
+				// throw InputNotConnectedException
 			}else{
 				for(Wire OutPut:wireOut){
-					OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktuális értéker
-					if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciában elõre megyünk.. már ha lehet
+					OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
+					if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciaban elore megyunk.. mar ha lehet
 						SequencePos = 0;				
 					}else{
 						SequencePos++;
 					}						
 				}//end for
 			}
-			Value = Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszámoljuk az új értéket
-			FrequencyCounter = Frequency;	// Újra az elejérõl számolunk
+			Value = Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszamoljuk az uj erteket
+			FrequencyCounter = Frequency;	// Ujra az elejerol szamolunk
 		}else{
 			for(Wire OutPut:wireOut){
 				OutPut.SetValue(Result);
 			}
 		}
 		return Value;	
-	};					
+	};	
+	
+	/**
+	 * Feladata az adott elem ertekenek kiszamitasa, 
+	 * ill. annak eldontese, hogy a GENERATOR stabil-e
+	 * @return Mindig {@code  true } ertekkel ter vissza
+	 */
 	public boolean Step(){
-	/* Leírás: Feladata az adott elem értékének kiszámítása, 
-	 * ill. annak eldöntése, hogy a DigitalObject stabil-e
-	*/
-		Count();								// MEghívja a Count metódust
-		return true;							// A GENERATOR mindig igazzal tér vissza
+		Count();								// MEghivja a Count metodust
+		return true;							// A GENERATOR mindig igazzal ter vissza
 	};
 
 }

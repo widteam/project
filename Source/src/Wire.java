@@ -11,7 +11,7 @@ import java.util.*;
  * 		<td>&nbsp;&nbsp;Class</td>
  * 	</tr>
  * 	<tr align=left>
- * 		<th>Interfacek: </th>
+ * 		<th>Interface: </th>
  * 		<td>&nbsp;&nbsp;---</td>
  * 	</tr>
  * 	<tr align=left>
@@ -20,8 +20,7 @@ import java.util.*;
  * </table> 
 *<br>
 * Az aramkorben talalhato ertekek tarolasara szolgalo objektum. 
-* DigitalObject tipusu objektumok kozott teremt kapcsolatot.
-* @author WID
+* DigitalObject tipusu objektumok kozott teremt kapcsolatot.<br><br>
 */
 public class Wire{
 	/*  ATTRIBUTUMOK  */
@@ -79,7 +78,7 @@ public class Wire{
 	};
 	
 	/**A Wire objektum ertekenek beallitasara szolgalo metodus
-	 * @param NewValue <i>A kivant ertek</i>
+	 * @param NewValue A kivant ertek
 	 * @return 	 
 	 */
 	public void SetValue(int NewValue){
