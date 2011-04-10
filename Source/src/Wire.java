@@ -1,43 +1,56 @@
-/*
-* Név: 			Wire
-* Típus: 		Class
-* Interfacek:	---
-* Szülõk		---
-* 
-*********** Leírás **********
- * Az áramkörben található értékek tárolására szolgáló objektum. 
- * DigitalObject típusú objektumok között teremt kapcsolatot.
-
-*/
-
 /*  IMPORTOK  */
 import java.util.*;
-
+/** 
+ * <table border=0>
+ * 	<tr align=left>
+ * 		<th>Nev:</th>
+ * 		<td width=30>&nbsp;&nbsp;Wire</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Tipus:</th>
+ * 		<td>&nbsp;&nbsp;Class</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Interfacek: </th>
+ * 		<td>&nbsp;&nbsp;---</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Szulok:</th>
+ * 		<td>&nbsp;&nbsp;---</td>
+ * </table> 
+*<br>
+* Az aramkorben talalhato ertekek tarolasara szolgalo objektum. 
+* DigitalObject tipusu objektumok kozott teremt kapcsolatot.
+* @author WID
+*/
 public class Wire{
-	/*  ATTRIBÚTUMOK  */
-	private static int WIRECounts;	// Statikus változó az egyedi ID értékhez
-		
+	/*  ATTRIBUTUMOK  */
+	
+	/**Statikus valtozo az egyedi ID ertekhez */
+	private static int WIRECounts;
+	
+	/**Egyedi karakteres azonosito, mely egyertelmuen meghataroz 
+	  * egy Wire objektumot.
+	*/
 	private String ID;
-	/* Leírás: Egyedi karakteres azonosító, mely egyértelmûen meghatároz 
-	 * egy Wire objektumot.
-	*/
 	
+	/**A Wire objektumok altal tarolt ertek. 
+	  * A Gate objektumok ezek alapjan szamoljak ki kimenetuket
+	 */
 	private int Value;
-	/* Leírás: A Wire objektumok által tárolt érték. 
-	 * A Gate objektumok ezek alapján számolják ki kimenetüket
-	*/
 	
+	/**DigitalObject objektum-referencia, amely a vezetek 
+	  * bemenetehez kapcsolodik.
+	 */
 	private List<DigitalObject> objectsIn;
-	/* Leírás: DigitalObject objektum-referencia, amely a vezeték 
-	 * bemenetéhez kapcsolódik.
-	*/
 	
+	/**DigitalObject objektum-referencia, amely a vezetek 
+	  * kimenetehez kapcsolodik.
+	 */
 	private List<DigitalObject> objectsOut;
-	/* Leírás: DigitalObject objektum-referencia, amely a vezeték 
-	 * kimenetéhez kapcsolódik.
-	*/
 	
-	/*  KONSTRUKTOR  */
+	
+	/**  KONSTRUKTOR  */
 	public Wire(String strCompositName){
 		final String strIDDelimiter = "#";
 		String strIDNumber  = String.valueOf(WIRECounts++);
@@ -47,24 +60,41 @@ public class Wire{
 		objectsIn = new ArrayList<DigitalObject>();
 		objectsOut = new ArrayList<DigitalObject>();
 	}
-	/*	METÓDUSOK	*/
+	/**	METODUSOK	*/
+	
+	/**A Wire egyedi azonositojanak lekerdezesere szolgalo metodus.
+	 * @param 
+	 * @return <i>A Wire objektum azonositoja</i>
+	 */
 	public String GetID(){
-	// Leírás: A Wire egyedi azonosítójának lekérdezésére szolgáló metódus.
 		return ID;	
 	};
+	
+	/**A Wire objektum ertekenek lekerdezesere szolgalo metodus
+	 * @param  
+	 * @return <i>A wire erteke</i>
+	 */
 	public int GetValue(){
-	// Leírás: A Wire objektum értékének lekérdezésére szolgáló metódus
 		return Value;
 	};
+	
+	/**A Wire objektum ertekenek beallitasara szolgalo metodus
+	 * @param NewValue <i>A kivant ertek</i>
+	 * @return 	 
+	 */
 	public void SetValue(int NewValue){
-	// Leírás: // Leírás: A Wire objektum értékének beállítására szolgáló metódus
 		Value = NewValue;
 	};
-	public void SetConnection(DigitalObject ojectWhere, DigitalObject objectWhat){
-	/* Leírás: Kapcsolatot teremt két DigitalObject között. 
-	 * Beállítja a vezeték inputját (ojectWhere), illetve hozzáadja az output tömbjéhez 
-	 * a DigitalObjectet (objectWhat).
-	 */
+	
+	/** Kapcsolatot teremt ket DigitalObject kozott. 
+	  * Beallitja a vezetek inputjat (ojectWhere), illetve hozzaadja az output tombjehez 
+	  * a DigitalObjectet (objectWhat).
+	  * @param objectWhere {@linkplain objectsOut} listaba kerulo DigitalObect
+	  * @param objectWhat {@linkplain objectsIn} listaba kerulo DigitalObect
+	  * @return
+	  * @throws WireHasMultipleInputsException Ha a Wire-nek egynél több bemenete lenne
+	  */
+	public void SetConnection(DigitalObject objectWhere, DigitalObject objectWhat){
 		if(objectWhat != null && objectsIn != null){
 			if(objectsIn.isEmpty()){
 				objectsIn.add(objectWhat);
@@ -72,8 +102,8 @@ public class Wire{
 				//throw WireHasMultipleInputsException;
 			}
 		}
-		if(ojectWhere != null && objectsOut != null){
-			objectsOut.add(ojectWhere);
+		if(objectWhere != null && objectsOut != null){
+			objectsOut.add(objectWhere);
 		}
 	};
 }
