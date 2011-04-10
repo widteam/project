@@ -1,60 +1,78 @@
-/*
-* Név: 			DigitalBoard
-* Típus: 		Class
-* Interfacek:	---
-* Szülõk		---
-* 
-*********** Leírás **********
-* A digitális áramkört nyilvántartó és a vezérlést  biztosító objektum.
-* Az áramkör összes elemét és * a köztük lévõ kapcsolatokat létrehozza,
-* kezeli és tárolja. Új áramkör megnyitásakor betölti az áramkört egy
-* fájlból – eközben ellenõrzi a szintaktikai helyességét, 
-* létrehoz minden digitális elemet, hierarchia szerint sorrendezi,
-* felfedezi a visszacsatolásokat. 
-* További feladata az áramkör számításait vezérelni, 
-* így ha a felhasználó léptetést kér, a generátorokat lépteti, 
-* és újraszámolja az áramkör komponenseinek állapotát. 
-* Ha a felhasználó a futtatást választja, változtatható idõközönként 
-* lépteti a jelgenerátort, és a komponensek értékeit újraszámolja.
-*/
-/**
-*
-* @author Jégh Tamás
-*/
-
 /*  IMPORTOK  */
 import java.io.*;
 import java.util.*;	// List, ArrayList-hez
+/** 
+ * <table border=0>
+ * 	<tr align=left>
+ * 		<th>Nev:</th>
+ * 		<td width=30>&nbsp;&nbsp;DigitalBoard</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Tipus:</th>
+ * 		<td>&nbsp;&nbsp;Class</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Interface: </th>
+ * 		<td>&nbsp;&nbsp;---</td>
+ * 	</tr>
+ * 	<tr align=left>
+ * 		<th>Szulok:</th>
+ * 		<td>&nbsp;&nbsp;---</td>
+ * </table> 
+*<br>
+* A digitalis aramkort nyilvantarto es a vezerlest  biztosito objektum.
+* Az aramkor osszes elemet es a koztuk levo kapcsolatokat letrehozza,
+* kezeli es tarolja. Új aramkor megnyitasakor betolti az aramkort egy
+* fajlbol – ekozben ellenorzi a szintaktikai helyesseget, 
+* letrehoz minden digitalis elemet, hierarchia szerint sorrendezi,
+* felfedezi a visszacsatolasokat. 
+* Tovabbi feladata az aramkor szamitasait vezerelni, 
+* igy ha a felhasznalo leptetest ker, a generatorokat lepteti, 
+* es ujraszamolja az aramkor komponenseinek allapotat. 
+* Ha a felhasznalo a futtatast valasztja, valtoztathato idokozonkent 
+* lepteti a jelgeneratort, es a komponensek ertekeit ujraszamolja.
+*/
+
+
 
 public class DigitalBoard {
-	/*	ATTRIBÚTUMOK	*/
-	@SuppressWarnings("unused")
+	/*	ATTRIBUTUMOK	*/
+	
+	/**
+	 * Haromallapotu valtozo, amely a szimulacio aktualis allapotat tarolja 
+	 */
 	private Status SimStatus; 
 
-	// Leírás: Háromállapotú változó, amely a szimuláció aktuális állapotát tárolja 
-
-	private ArrayList< List<DigitalObject> > ComponentList;
-	/* Leírás: Ez az attribútum tárolja az összes kaput, kimenetet, bemenetet
+	/**
+	 * Ez az attributum tarolja az osszes kaput, kimenetet, bemenetet
 	 * hierarchikus sorrendben
-	 * Ez nem más, mint egy listából szervezett tömb. A tömb indexe
-	 * azonosítja a hierarchia szintet 
-	 * (0-Források, 1-a forrásokhoz csatlakozó elemek, stb)
-	 * az egyes szinteken pedig egy lista van az elemekrõl
-	*/	
-	
-	@SuppressWarnings("unused")
-	private List<Wire> WireList;
-	// Leírás: Egyszerû lista a Wire objektumokból
+	 * Ez nem mas, mint egy listabol szervezett tomb. A tomb indexe
+	 * azonositja a hierarchia szintet 
+	 * (0-Forrasok, 1-a forrasokhoz csatlakozo elemek, stb)
+	 * az egyes szinteken pedig egy lista van az elemekrol
+	 */
+	private ArrayList< List<DigitalObject> > ComponentList;
 
-	/*  KONSTRUKTOR  */ 
+	/**
+	 * Egyszeru lista a Wire objektumokbol
+	 */
+	private List<Wire> WireList;
+
+
+	/**  KONSTRUKTOR  */ 
 	public DigitalBoard(){		
 		SimStatus = Status.STOPPED;
 		ComponentList = new ArrayList<List<DigitalObject>>();
 		WireList = new ArrayList<Wire>();	
+		//Composit MainComposit = new Composit("main");
 	}
-	/*	METÓDUSOK	*/
+	
+	
+	/*	METODUSOK	*/	
+	/**
+	 * Megkeres egy adott elemet egy Composit ComponentList listajaban
+	 */
 	public DigitalObject GetElementByID(String ElementID){
-	// Leírás: Megkeres egy adott elemet a 	ComponentList illetve a WireList listákban
 		if(ComponentList != null && !ComponentList.isEmpty()){
 			for(List<DigitalObject> sublist: ComponentList){
 				for(DigitalObject o : sublist){
@@ -66,8 +84,12 @@ public class DigitalBoard {
 		return null;		
 	};
 
+	/**
+	 * A megfelelo parameterrel meghivja a ParseFile(String strFilePath) metodust.
+	 * @param strFilePath Az aramkort leiro dokumentum (*.bhdl) eleresi utvonala
+	 * @throws FileDoesNotExistException ha a fajl nem letezik vagy nem olvashato
+	 */
 	public void LoadBoard(String strFilePath){
-	// Leírás: A megfelelõ paraméterrel meghívja a ParseFile(String strFilePath) metódust.
 	    boolean exists = (new File(strFilePath)).exists();
         if (!exists) {
         	// throw FileDoesNotExistException;
@@ -76,19 +98,22 @@ public class DigitalBoard {
         }
     };
 
+    /**
+     * A megadott utvonalon talalhato fajlt olvassa be es soronkent ertelmezi az allomanyt
+     * @param strFilePath Az aramkort leiro dokumentum (*.bhdl) eleresi utvonala
+     */
 	public void ParseFile(String strFilePath){
-	// Leírás: A megadott útvonalon található fájlt olvassa be és soronként értelmezi az állományt
 		File file = new File(strFilePath);
         BufferedInputStream bin = null;
 
 
 		try
 		{
-			//create FileInputStream object
+			//FileInputStream object letrehozasa
 			FileInputStream fin = new FileInputStream(file);
-			//create object of BufferedInputStream
+			//BufferedInputStream obkejtum letrehozasa a beolvasashoz
 			bin = new BufferedInputStream(fin);
-			//create a byte array
+			// byte tomb letrehozasa, ebbe olvasunk be majd.
 			byte[] contents = new byte[1024];
 			int bytesRead=0;
 			String strFileContents;
@@ -105,48 +130,75 @@ public class DigitalBoard {
 		}
     };
 
+    /**
+     * metodus meghivja a SetStatus metodust RUNING parameterrel
+     */
 	public void Run(){
-	// Leírás: metódus meghívja a SetStatus metódust RUNING paraméterrel	
 		SetStatus(Status.RUNNING);	
 	};
+	
+	/**
+	 * A metodus meghivja a SetStatus metodust PAUSED parameterrel		
+	 */
 	public void Pause(){
-	// Leírás: A metódus meghívja a SetStatus metódust PAUSED paraméterrel		
 		SetStatus(Status.PAUSED);
 	};	
-	public void Stop(){
-	// Leírás:  A metódus meghívja a SetStatus metódust STOPPED paraméterrel
+	
+	/**
+	 * A metodus meghivja a SetStatus metodust STOPPED parameterrel
+	 */
+	public void Stop(){  
 		SetStatus(Status.RUNNING);
-	};		
+	};
+	
+	/**
+	 * Atallitja a SimStatus attributumot a parameterben megadott ertekre
+	 * @param NewStatus Az uj allapot
+	 */
 	private void SetStatus(Status NewStatus){
-	// Leírás: Átállítja a SimStatus attribútumot a paraméterben megadott értékre
 		SimStatus = NewStatus;
 	};	
+	
+	/**
+	 * A parameterben megadott azonositoju GENERATOR objektum frekvenciajat modositja
+	 * @param Frequency Az uj frekvencia
+	 * @param ElementID A modositani kivant GENERATOR IDja
+	 */
 	public void SetFrequency(int Frequency, String ElementID){
-	// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum frekvenciáját módosítja
 		GENERATOR tmp;
 		tmp = (GENERATOR) GetElementByID(ElementID);
 		tmp.SetFrequency(Frequency);
 	};
+	
+	/**
+	 * A parameterben megadott azonositoju GENERATOR objektum szekvenciajat modositja
+	 * @param Sequence az uj szekvencia, minta
+	 * @param ElementID A modositani kivant GENERATOR IDja
+	 */
 	public void SetSequence(int Sequence, String ElementID){
-	// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum szekvenciáját módosítja
-		GENERATOR GEN_to_setsequence;	/* Temporális változó */
+		GENERATOR GEN_to_setsequence;	/* Temporalis valtozo */
 		GEN_to_setsequence = (GENERATOR) GetElementByID(ElementID);	/* GetElemetByIDvel megkapjuk, az objektumot	*/		
-		GEN_to_setsequence.SetSequence(Sequence); 				 /* az generátor objektum SetSequence(...) metódusát meghívjuk */
+		GEN_to_setsequence.SetSequence(Sequence); 				 /* az generator objektum SetSequence(...) metodusat meghivjuk */
 	
 	};	
+	
+	/**
+	 * A parameterben megadott azonositoju SWITCH objektum erteket az ellenkezore 
+	 * allitja azaltal, hogy meghivja az objektum hasonlo nevu parameteret
+	 * @param ElementID A SWITCH ID-ja
+	 */
 	public void Toggle(String ElementID){
-	/* Leírás: A paraméterben megadott azonosítójú SWITCH objektum értékét az ellenkezõre 
-	 * állítja azáltal, hogy meghívja az objektum hasonló nevû paraméterét
-	*/
-		SWITCH SWITCH_to_toggle;								/* Temporális változó */
+		SWITCH SWITCH_to_toggle;								/* Temporalis valtozo */
 		SWITCH_to_toggle = (SWITCH) GetElementByID(ElementID);	/* GetElemetByIDvel megkapjuk, majd  egyet	*/		
-		SWITCH_to_toggle.Toggle();								/* az switch objektum Toggle() metódusát meghívjuk */
+		SWITCH_to_toggle.Toggle();								/* az switch objektum Toggle() metodusat meghivjuk */
 
 	};	
+	
+	/**
+	 * Meghivja az osszes iComponent interfeszt megvalosito objektum Step() metodusat.
+	 */
 	public void StepComponents(){
-	// Leírás: Meghívja az összes iComponent interfészt megvalósító objektum Step() metódusát.
-
-		/* Elvileg már fel van épülve a hierarchia így nekem elég megkapnom a ComponentListet */
+		/* Elvileg mar fel van epulve a hierarchia igy nekem eleg megkapnom a ComponentListet */
 		DigitalObject obj;
 		for(List<DigitalObject> sublist: ComponentList){
 			for(DigitalObject o : sublist){
