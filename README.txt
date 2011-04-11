@@ -18,6 +18,8 @@ DigitalObject.java
  - Egy getType() metodus implementalva. ID alapjan hatarozza meg.
 
 
+ui.
+nem fogom naplozni .) 
 
 Akarki csinalja, ToDo:
  Hianyzik az AddOutput melle egy AddInput... (szerintem)
