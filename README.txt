@@ -16,6 +16,8 @@ DigitalBoard.java
    ket aramkort (teszt1, teszt2) epitettem fel kezzel.
 DigitalObject.java
  - Egy getType() metodus implementalva. ID alapjan hatarozza meg.
+Main.java
+ - Szkeletonos menu kidobva, tesztesetre tervezve.
 
 
 ui.
