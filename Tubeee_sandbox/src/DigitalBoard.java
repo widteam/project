@@ -132,7 +132,7 @@ public class DigitalBoard {
 			System.out.println("Exception while reading the file "+ ioe);
 		}
 		
-		/* ComponentList feltoltése
+		/* ComponentList feltoltese
 		 * 
 		 * Feltetlezve, hogy a mintaillesztes mar megvolt
 		 * tovabba az aritmetikai kifejezes is at lett alakitva 
