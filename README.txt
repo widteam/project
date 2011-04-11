@@ -1,12 +1,28 @@
-﻿7-es doksi
+﻿Tubeee_sandbox
+Ebben vannak a fajlok - azert uj mappaban mert a masik harom (TheCode, Source, skeleton) mappakba Csomak dolgozott
+Mivel a delutan-este folyaman en is nekialltam, vannak valtozasok.
 
-7.0 - Módosított classdiagram készen
-NINCS készen: class leírásai, objektumkatalógus, szekvenciadiagramok (egy Composit step szekvenciája megegyezik a korábbi DigitalBoard StepComponents szekvenciájával...)
+Tubeee_sandbox/
+ - teszt1.bhdl  - egyszeru aramkor leirasa
+ - teszt2.bhdl  - stabilan visszacsatolt aramkor
+ - teszt3.bhdl  - instabil aramkor
+ - teszt4.bhdl  - bonyolult aramkor
 
-7.1.1 - OK
-7.1.2 - Bemeneti nyelv leírása a "bemeneti nyelv.doc" állományban. butaHDL leírás a "butaHDL_to_LZ.doc" állományban
-7.1.3 - Egyeztetni kéne a 7.1.2 pontban szereplő bementi nyelv doksival, amúgy OK
-7.2 - OK (bár az .odt fájlban lévő kép nem a legszeb, de ott az eap is :D  )
-7.3 - számomra az még egy picit necces... Mejegyzéseket fúztem a doksihoz.
-7.4 - OK 
-Tesztááramkörök - OK
+Tubeee_sandbox/src/
+Kodok. 
+DigitalBoard.java 
+ - Beolvas egy megadott fajlt.
+ - Ha kezzel fel van epitve egy aramkor (egy objektumlista es egy wirelist) akkor felepiti a hierarchiat (ComponentList)
+   ket aramkort (teszt1, teszt2) epitettem fel kezzel.
+DigitalObject.java
+ - Egy getType() metodus implementalva. ID alapjan hatarozza meg.
+Main.java
+ - Szkeletonos menu kidobva, tesztesetre tervezve.
+
+
+ui.
+nem fogom naplozni .) 
+
+Akarki csinalja, ToDo:
+ Hianyzik az AddOutput melle egy AddInput... (szerintem)
+ Kulonbozo konstruktorok letrehozasa, ha pl a kodban mygenerator szerepel, legyen az az ID, ne pedig az automatikus
