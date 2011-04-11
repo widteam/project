@@ -257,9 +257,12 @@ public class DigitalBoard {
 							for(int i=0; i<=iHierarchy;i++){
 								contain =ComponentList.get(i).contains(wire_obj) ;
 							}
-							// ha nem volt meg korabbi szinten akkor most uj szinthez adjuk
-							if(!contain && !components_next.contains(wire_obj))
-								components_next.add(wire_obj);								
+							// ha nem volt meg korabbi szinten es a jelenlegi szinten szerepel meg, akkor most az uj szinthez adjuk
+							if(!contain && !components_next.contains(wire_obj)){
+								components_next.add(wire_obj);		
+ 						        }else{
+                                                           // FEEDBACK MEGKERESESE
+                                                        }
 						}
 					}													
 				}
