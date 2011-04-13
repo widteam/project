@@ -22,8 +22,8 @@ import java.util.*;	// List, ArrayList-hez
 *<br>
 * A digitalis aramkort nyilvantarto es a vezerlest  biztosito objektum.
 * Az aramkor osszes elemet es a koztuk levo kapcsolatokat letrehozza,
-* kezeli es tarolja. Uj aramkor megnyitasakor betolti az aramkort egy
-* fajlbol-ekozben ellenorzi a szintaktikai helyesseget, 
+* kezeli es tarolja. Új aramkor megnyitasakor betolti az aramkort egy
+* fajlbol – ekozben ellenorzi a szintaktikai helyesseget, 
 * letrehoz minden digitalis elemet, hierarchia szerint sorrendezi,
 * felfedezi a visszacsatolasokat. 
 * Tovabbi feladata az aramkor szamitasait vezerelni, 
@@ -132,7 +132,7 @@ public class DigitalBoard {
 			System.out.println("Exception while reading the file "+ ioe);
 		}
 		
-		/* ComponentList feltoltese
+		/* ComponentList feltoltése
 		 * 
 		 * Feltetlezve, hogy a mintaillesztes mar megvolt
 		 * tovabba az aritmetikai kifejezes is at lett alakitva 
@@ -221,6 +221,84 @@ public class DigitalBoard {
 			main_w02.SetConnection(osc01, null);
 			osc01.wireIn.add(main_w02);				
 		}	
+		if(file.getName() == "teszt4.bhdl"){
+			// SWITCH letrehozasa
+			SWITCH sw01 = new SWITCH("main", null);	
+			tmp_components.add(sw01);
+			Wire main_w1 = new Wire("main");
+			WireList.add(main_w1);
+			main_w1.SetConnection(null, sw01);
+			sw01.wireOut.add(main_w1);
+			
+			//GENERATOR
+			GENERATOR gen01 = new GENERATOR("main", 1000, 11001100, null);
+			tmp_components.add(gen01);
+			Wire main_w2 = new Wire("main");
+			WireList.add(main_w2);
+			main_w2.SetConnection(null, gen01);
+			gen01.wireOut.add(main_w2);
+			
+			//LED
+			LED led01 = new LED("main", null);
+			tmp_components.add(led01);
+			
+			// Oscilloscope letrehozasa
+			Oscilloscope osc01 = new Oscilloscope("main", null, 10);
+			tmp_components.add(osc01);
+			
+			Wire feedback = new Wire("comp01");
+			WireList.add(feedback);	
+
+			
+			// letrehozzuk az inverter kaput
+			INVERTER comp1_inv1 = new INVERTER("comp01",feedback);
+			tmp_components.add(comp1_inv1);
+			feedback.SetConnection(comp1_inv1, null);
+			Wire comp1_w1 = new Wire("comp01");
+			WireList.add(comp1_w1);
+			comp1_w1.SetConnection(null, comp1_inv1);
+			comp1_inv1.AddOutput(comp1_w1);
+			
+			//AND1 (!feedback-es)
+			ANDGate main_and1= new ANDGate("comp01", comp1_w1, main_w1);
+			tmp_components.add(main_and1);	
+			comp1_w1.SetConnection(main_and1, null);
+			main_w1.SetConnection(main_and1, null);
+			Wire comp1_w2 = new Wire("comp01");
+			WireList.add(comp1_w2);
+			comp1_w2.SetConnection(null, main_and1);
+			main_and1.AddOutput(comp1_w2);
+			
+			//AND2 (feedback-es)
+			ANDGate main_and2= new ANDGate("comp01", feedback, main_w2);
+			tmp_components.add(main_and2);	
+			feedback.SetConnection(main_and2, null);
+			main_w2.SetConnection(main_and2, null);
+			Wire comp1_w3 = new Wire("comp01");
+			WireList.add(comp1_w3);
+			comp1_w3.SetConnection(null, main_and2);
+			main_and2.AddOutput(comp1_w3);		
+			
+			//OR1 (a ket es kapus)
+			ORGate main_or1= new ORGate("comp01", comp1_w2, comp1_w3);
+			tmp_components.add(main_or1);	
+			comp1_w2.SetConnection(main_or1, null);
+			comp1_w3.SetConnection(main_or1, null);
+			//Wire comp1_w4 = new Wire("comp01");
+			//WireList.add(comp1_w4);
+			//comp1_w4.SetConnection(null, main_or1);
+			main_or1.AddOutput(feedback);	
+			feedback.SetConnection(null, main_or1);
+			
+			//oszcilloszkop
+			osc01.wireIn.add(comp1_w3);
+			comp1_w3.SetConnection(osc01, null);
+			
+			//LED
+			led01.wireIn.add(feedback);
+			feedback.SetConnection(led01, null);
+			
+		}	
 		/*****************************************************************
 		 * **************    TESZTARAMKOROK leirasanak vege  *************	
 		******************************************************************/			
@@ -253,16 +331,56 @@ public class DigitalBoard {
 						 */
 						for(DigitalObject wire_obj:out.objectsOut){
 							/* Itt meg kell nezni hogy korabi szinten szerepelt-e mar */
-							boolean contain = true;
-							for(int i=0; i<=iHierarchy;i++){
-								contain =ComponentList.get(i).contains(wire_obj) ;
+							boolean contain = false;
+							DigitalObject feedback_start;
+							for(int i=0; i<iHierarchy+1;i++){
+								if(ComponentList.get(i).contains(wire_obj)){
+									contain=true;
+									/**
+									 * Ha tartalmazza egy korabbi szint az obj elemet, 
+									 * akkor itt egy visszacsatolas van.
+									 * Ha visszacsatolas, akkor meg FEEDBACK!
+									 */
+									
+									/**
+									 * Elso lepesben a legalacsonyabb szintrol indulva
+									 * felepitjunk egy reszgrafot.
+									 */
+									List<DigitalObject> tmp_list = new ArrayList<DigitalObject>();
+									feedback_start= ComponentList.get(i).get(ComponentList.get(i).indexOf(wire_obj));
+									int count = 0;
+									DigitalObject listelement;
+									
+									tmp_list.add(feedback_start);
+									while(!tmp_list.contains(obj)){
+										listelement = tmp_list.get(count++);
+										for(Wire w:listelement.wireOut ){
+											for(DigitalObject next_element:w.objectsOut){												
+													tmp_list.add(next_element);	
+											}
+										}
+									}//reszgraf epitesenek vege		
+									
+									feedback_start.Feedbacks.add(obj);
+									count=0;
+									
+									while(!feedback_start.Feedbacks.contains(feedback_start)){
+										listelement = feedback_start.Feedbacks.get(count);
+										for(Wire w:listelement.wireIn ){
+											for(DigitalObject next_element:w.objectsIn){
+												if(tmp_list.contains(next_element)){
+													feedback_start.Feedbacks.add(next_element);
+													count++;
+												}
+											}
+										}
+									}//feedback epitesenek vege		
+								}
 							}
-							// ha nem volt meg korabbi szinten es a jelenlegi szinten szerepel meg, akkor most az uj szinthez adjuk
-							if(!contain && !components_next.contains(wire_obj)){
-								components_next.add(wire_obj);		
- 						        }else{
-                                                           // FEEDBACK MEGKERESESE
-                                                        }
+							// ha nem volt meg korabbi szinten akkor most uj szinthez adjuk
+							if(!contain)
+								if(!components_next.contains(wire_obj))
+									components_next.add(wire_obj);								
 						}
 					}													
 				}
@@ -281,6 +399,13 @@ public class DigitalBoard {
 			System.out.print("\t");
 			for(DigitalObject o : sublist){					
 				System.out.print(o.GetID()+ ", ");
+				if(o.Feedbacks!=null && !o.Feedbacks.isEmpty()){
+					System.out.print("FEEDBACK [");
+					for(DigitalObject f_o:o.Feedbacks){
+						System.out.print(" "+ f_o.ID + ", ");
+					}
+					System.out.print("]");
+				}
 			}
 		}
     };

@@ -37,7 +37,7 @@ public class Oscilloscope extends Output{
 		final String strIDName  = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter + strIDNumber;
 			
-		wireOut = null;
+		wireOut = new ArrayList<Wire>();
 		wireIn = new ArrayList<Wire>();
 		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
 	}

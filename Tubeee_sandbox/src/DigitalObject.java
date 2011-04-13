@@ -106,4 +106,10 @@ public abstract class DigitalObject {
 	public String GetType(){
 		return (ID.split("#")[1]).toLowerCase().trim();
 	}
+	public boolean equals(DigitalObject obj){
+		boolean Result=false;
+		if(this.GetID()==obj.GetID())
+				Result=true;
+		return Result;
+	}
 }
