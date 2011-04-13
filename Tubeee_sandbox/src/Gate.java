@@ -1,5 +1,5 @@
 /*  IMPORTOK  */
-import java.util.*;
+import java.util.ArrayList;
 
 /** 
  * <table border=0>
@@ -26,41 +26,47 @@ import java.util.*;
 
 */
 
-
-public abstract class Gate extends DigitalObject{
-	/*	ATTRIBUTUMOK	*/
+public abstract class Gate extends DigitalObject {
+	/* ATTRIBUTUMOK */
 	/**
-	 * A legutolso ciklus ( {@code Step()} ) eredmenyet (kimeneti erteket) tarolja,
-	 *  a stabilitasellenorzes celjabol ({@code Count()} metodus).
+	 * A legutolso ciklus ( {@code Step()} ) eredmenyet (kimeneti erteket)
+	 * tarolja, a stabilitasellenorzes celjabol ({@code Count()} metodus).
 	 */
-	protected int PreviousValue ;
+	protected int PreviousValue;
 
 	/**
 	 * KONSTRUKTOR
 	 */
-	public Gate(){
-		Feedbacks = new ArrayList<DigitalObject>();	// Feedback tomb inicializalva
-		PreviousValue = -1;				// Don't care
+	public Gate() {
+		Feedbacks = new ArrayList<DigitalObject>(); // Feedback tomb
+													// inicializalva
+		PreviousValue = -1; // Don't care
 	}
-	
-	/*	METODUSOK	*/
-	
+
+	/* METODUSOK */
+
 	/**
-	 * Hozzaadja a parameterkent kapott {@link DigitalObject}et a Feedbacks tombjehez.
-	 * @param feedback  DigitalObject tipusu objektum, ami reszt vesz egy visszacsatolasban
+	 * Hozzaadja a parameterkent kapott {@link DigitalObject}et a Feedbacks
+	 * tombjehez.
+	 * 
+	 * @param feedback
+	 *            DigitalObject tipusu objektum, ami reszt vesz egy
+	 *            visszacsatolasban
 	 */
-	public void AddToFeedbacks(DigitalObject feedback){
-		if(Feedbacks != null)
-			Feedbacks.add(feedback);		// Hozzaadjuk a feedbackshez	
-	};	
-	
+	public void AddToFeedbacks(DigitalObject feedback) {
+		if (Feedbacks != null)
+			Feedbacks.add(feedback); // Hozzaadjuk a feedbackshez
+	};
+
 	/**
 	 * Egy ujabb {@link Wire} -t ad hozza a kimeneteihez
-	 * @param WireToOutput a hozzaadni kivant wire objektum
+	 * 
+	 * @param WireToOutput
+	 *            a hozzaadni kivant wire objektum
 	 */
-	public void AddOutput(Wire WireToOutput){
-		if(wireOut != null)
+	public void AddOutput(Wire WireToOutput) {
+		if (wireOut != null)
 			wireOut.add(WireToOutput);
 	};
-	
+
 }

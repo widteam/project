@@ -1,5 +1,5 @@
 /*  IMPORTOK  */
-import java.util.*;
+import java.util.ArrayList;
 /** 
  * <table border=0>
  * 	<tr align=left>
@@ -39,7 +39,6 @@ import java.util.*;
 * Jelentesek: 0: logikai HAMIS ertek | 1: logikai IGAZ ertek | X: don't care
  */
 
-
 public class ANDGate extends Gate {
 	/* ATTRIBUTUMOK */
 	/** Statikus valtozo az egyedi ID ertekhez */
@@ -56,14 +55,15 @@ public class ANDGate extends Gate {
 	 * @param wirein2
 	 *            A kapu masodik bemenete
 	 * */
-	public ANDGate(String strCompositName, Wire wirein1, Wire wirein2){
+	public ANDGate(String strCompositName, Wire wirein1, Wire wirein2) {
 		final String strIDDelimiter = "#";
-		String strIDNumber  = String.valueOf(ANDCounts++);
-		final String strIDName  = this.getClass().getName();
-		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter + strIDNumber;
-			
+		String strIDNumber = String.valueOf(ANDCounts++);
+		final String strIDName = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter
+				+ strIDNumber;
+
 		wireIn = new ArrayList<Wire>(); // Inicializaljuk a wireIn listat
-		wireOut = new ArrayList<Wire>();// Inicializaljuk a wireOut listat		
+		wireOut = new ArrayList<Wire>();// Inicializaljuk a wireOut listat
 		wireIn.add(wirein1); // a konstruktorban megadott bemenetet bedrotozzuk
 		wireIn.add(wirein2); // a masik bemenetet is bedrotozzuk
 	}
@@ -90,21 +90,23 @@ public class ANDGate extends Gate {
 				// throw ElementInputSizeException
 			} else {
 				Result = wireIn.get(0).GetValue();
-				if(Result == 0)
-					Result  = 0;
-				if(Result == 1)
-					Result  = wireIn.get(1).GetValue();
+				if (Result == 0)
+					Result = 0;
+				if (Result == 1)
+					Result = wireIn.get(1).GetValue();
+				else if (wireIn.get(1).GetValue() == 0)
+					Result = 0;
 				else
-					if(wireIn.get(1).GetValue() == 0) Result =0;
-					else Result = -1;
+					Result = -1;
 			}
 		}
-		
+
 		/* Vegignezzuk az osszes kimenetet... */
-		if(wireOut == null || wireOut.isEmpty()){	// ha nincs csatlakoztatva semmihez, hibat dob
+		if (wireOut == null || wireOut.isEmpty()) { // ha nincs csatlakoztatva
+													// semmihez, hibat dob
 			// throw GateNotConnectedWarning
-		}else{
-			for(Wire OutPut:wireOut){
+		} else {
+			for (Wire OutPut : wireOut) {
 				OutPut.SetValue(Result);
 			}
 		}
@@ -123,16 +125,17 @@ public class ANDGate extends Gate {
 	 */
 	public boolean Step() {
 
-		boolean Result = true; 		// A vegso eredmeny: Stabil-e az aramkor
-		PreviousValue = Count(); 	// Megnezzuk az elso futas erredmenyet
+		boolean Result = true; // A vegso eredmeny: Stabil-e az aramkor
+		PreviousValue = Count(); // Megnezzuk az elso futas erredmenyet
 		if (Feedbacks != null && !Feedbacks.isEmpty()) {// Ha nem ures a
 														// Feedback tomb
 			int NewValue; // Lokalis valtozo
 			for (DigitalObject obj : Feedbacks) { // Feedback osses elemen vegig
 				obj.Count();
 			}
-			NewValue = Count();		 // Megnezzuk ujol az eredmenyt
-			Result = (PreviousValue == NewValue); 	// Elter-e a ketto?( Prev es a mostani)
+			NewValue = Count(); // Megnezzuk ujol az eredmenyt
+			Result = (PreviousValue == NewValue); // Elter-e a ketto?( Prev es a
+													// mostani)
 
 			for (DigitalObject obj : Feedbacks) {
 				obj.Count();

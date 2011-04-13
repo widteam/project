@@ -20,5 +20,5 @@
 * A program futasi allapotai
 */
 public enum Status {
-	RUNNING,STOPPED,PAUSED
+	RUNNING, STOPPED, PAUSED
 }
