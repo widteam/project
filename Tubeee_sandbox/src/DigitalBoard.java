@@ -137,7 +137,7 @@ public class DigitalBoard {
 		}
 
 		/*
-		 * ComponentList feltoltése
+		 * ComponentList feltoltese
 		 * 
 		 * Feltetlezve, hogy a mintaillesztes mar megvolt tovabba az aritmetikai
 		 * kifejezes is at lett alakitva RPN alakra, sot meg jobb ha van egy
