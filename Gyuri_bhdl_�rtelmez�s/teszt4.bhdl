@@ -1,0 +1,28 @@
+composit main(in,out)
+	switch sw01;
+	generator gen01;
+	led led01;	
+	oscilloscope osc01(10);
+	composite comp01;
+	wire w01;
+	wire w02;
+	wire w03;
+	wire w04;
+	assign w01 sw01;
+	assign w02 gen01;
+	assign comp01 w01;
+	assign comp01 w02;
+	assign w03 comp01;
+	assign w04 comp01;
+	assign led01 w03;
+	assign osc01 w04;
+endcomposit;
+
+composit comp01(in w01,w02,out w03, w04)
+	wire feedback;
+	assign feedback = (!feedback & w01) | (feedback & w02)
+	assign w03 = feedback;
+	wire to_w04;
+	assign to_w04 = feedback & w02;
+	assign w04 = to_w04;
+endcomposit;

@@ -1,0 +1,11 @@
+composit main(in,out)
+	switch sw01;
+	oscilloscope osc01(10);
+	andgate and01;
+	wire w01;
+	wire w02;
+	assign w01 sw01;
+	assign w02 and01;
+	assign and01 w02;
+	assign osc01 w02;
+endcomposit
