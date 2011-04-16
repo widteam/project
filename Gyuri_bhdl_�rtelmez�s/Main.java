@@ -15,42 +15,19 @@ public class Main {
     	foundComposites.add("(in,");
     	foundComposites.add("out)");
     	foundComposites.add("switch sw01;");
-    	foundComposites.add("generator gen01;");
-    	foundComposites.add("led led01;");
-    	foundComposites.add("assign led01 = sw01 | gen01;");    	
-    	foundComposites.add("endcomposit");
+    	foundComposites.add("oscilloscope osc01;");
+    	foundComposites.add("andgate and01;");
+    	foundComposites.add("wire w01;");
+    	foundComposites.add("wire w02;");
+    	foundComposites.add("assign w01 sw01;");
+    	foundComposites.add("assign w02 and01;");
+    	foundComposites.add("assign and01 w02;");
+    	foundComposites.add("assign osc01 w02;");
+    	foundComposites.add("endcomposit;");
     	
+    	Composit mainComp = new Composit("main");
     	
-    	
-    	ArrayList<DigitalObject> objectList = new ArrayList<DigitalObject>();
-    	ArrayList<Wire> wireList = new ArrayList<Wire>();
-    	
-    	
-    	    	
-    	
-    	for(String s : foundComposites)
-    	{
-    		System.out.println(s);
-    		if(ObjectBuilder.isNewObject(s))
-    		{
-    			objectList.add(ObjectBuilder.buildObject(s));
-    			System.out.println(ObjectBuilder.buildObject(s).ID + " létrehozva.\n");
-    		}
-    		else if(ObjectBuilder.isNewWire(s))
-    		{
-    			wireList.add(ObjectBuilder.buildWire(s));
-    			System.out.println(ObjectBuilder.buildWire(s).GetID() + " létrehozva.\n");
-    		}
-    		else if(ObjectBuilder.isAssign(s))
-    		{
-    			ObjectBuilder.assign(s, objectList);
-    			System.out.println();
-    		}
-    		else System.out.println("Nem tudom mi ez.\n");    		
-    	}
-    	System.out.println("Az objectList tartalma:");
-    	for(DigitalObject o : objectList)
-    		System.out.println(o.ID);
+    	mainComp = ObjectBuilder.buildComposit(foundComposites);
     }
 }
 
