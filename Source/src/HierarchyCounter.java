@@ -11,7 +11,6 @@ public class HierarchyCounter {
 	List<DigitalObject> list;
 	List<Wire> wires;
 	ArrayList<List<DigitalObject>> components;
-<<<<<<< HEAD
 	
 	/**
 	 * A paraméter hierarchiáját adja vissza
@@ -93,30 +92,6 @@ public class HierarchyCounter {
 	public void CountHierarchy(List<Wire> wiresArg, ArrayList<List<DigitalObject>> componentsArg){
 		sources=new ArrayList<DigitalObject>(); //forrásokat különvesszük
 		list=new ArrayList<DigitalObject>(); //bejáratlan
-=======
-	
-	public int getSzint(DigitalObject ennek){
-		int ret=-1;
-		for(int i=0; i<components.size(); i++){
-			if(-1!=components.get(i).indexOf(ennek));
-		}
-		return ret;
-	}
-	
-	public void moveToSzint(DigitalObject ezt, int ide){
-		if(components.size()<ide) components.add(new ArrayList<DigitalObject>()); //ha nincs még szint+1 hierarchia
-		if(getSzint(ezt)<0) list.remove(ezt); //ha nincs a hierarchiában, a bejáratlanból vesszük ki
-		if(components.get(getSzint(ezt)).indexOf(ezt)!=-1) components.get(getSzint(ezt)).remove(ezt); //ha a listában van, kivesszük
-		components.get(ide).add(ezt);//hozzáadjuk a kért hierarchiára
-	}
-	
-	public void foo(){}
-	
-	public void CountHierarchy(List<Wire> wiresArg, ArrayList<List<DigitalObject>> componentsArg){
-		sources=new ArrayList<DigitalObject>(); //forrásokat különvesszük
-		list=new ArrayList<DigitalObject>(); //bejáratlan
-		list.clear();
->>>>>>> 2766c6d2ecdad8e1450e8f5f4a0f119fc6f5f1d7
 		wires=wiresArg;
 		components=componentsArg;
 				
@@ -148,14 +123,11 @@ public class HierarchyCounter {
 							//ha már volt, 
 							//a) feedback
 							//b) hierarchia nõhet
-<<<<<<< HEAD
-							if(getSzint(current)<szint+1) components.get(szint).get(i).Feedbacks=getRoute(components.get(szint).get(i), components.get(szint).get(i).wireOut.get(j).objectsOut.get(k), components.get(szint).get(i).Feedbacks) ; 
+							
+							if(getSzint(current)<szint+1) current.Feedbacks=getRoute(components.get(szint).get(i), current, components.get(szint).get(i).Feedbacks) ;
+							//ha nincs út, vagyis nem feedback, nem ad hozzá semmit. pl ha egyik lába 0, másik 5ös hierarchiájú
 							//feedback számitása, hozzáadása az eddigi feedback tömbhöz
-							if(getSzint(current)>szint+1) moveToSzint(current, szint+1); //nõ a szintje
-=======
-							if(getSzint(current)<szint+1) foo(); //feed back lesz TODO
-							if(getSzint(current)>=szint+1) moveToSzint(current, szint+1); //nõ a szintje
->>>>>>> 2766c6d2ecdad8e1450e8f5f4a0f119fc6f5f1d7
+							
 							
 						} else {
 							//ha még nem volt
