@@ -187,16 +187,16 @@ public class bhdlParser {
 				System.out.println("Wire has been created.");
 			}
 			if (matching(reg_led, commands[i]) != null) {
-				elementlist.add(CreateLed(Owner, commands[i]));
+				Owner.getFirstLevelOfComponentList().add(CreateLed(Owner, commands[i]));
 				System.out.println("LED has been  created.");
 			}
 			if (matching(reg_oscilloscope, commands[i]) != null) {
-				elementlist.add(CreateOscilloscope(Owner,
+				Owner.getFirstLevelOfComponentList().add(CreateOscilloscope(Owner,
 						commands[i]));
 				System.out.println("Oscilloscope  has been created.");
 			}
 			if (matching(reg_generator, commands[i]) != null) {
-				elementlist.add(CreateGenerator(Owner,
+				Owner.getFirstLevelOfComponentList().add(CreateGenerator(Owner,
 						commands[i]));
 				System.out.println("GENERATOR has been  created.");
 			}

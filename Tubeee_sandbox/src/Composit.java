@@ -23,6 +23,8 @@ public class Composit extends DigitalObject {
 		WireList = new ArrayList<Wire>();
 		wireIn = new ArrayList<Wire>(); // Inicializaljuk a wireIn listat
 		wireOut = new ArrayList<Wire>();// Inicializaljuk a wireOut listat
+		ComponentList = new ArrayList<List<DigitalObject>>();
+		ComponentList.add(new ArrayList<DigitalObject>());
 	}
 
 
