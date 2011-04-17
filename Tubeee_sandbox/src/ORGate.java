@@ -56,9 +56,9 @@ public class ORGate extends Gate {
 	public ORGate(String strCompositName, Wire wirein1, Wire wirein2) {
 		final String strIDDelimiter = "#";
 		String strIDNumber = String.valueOf(ORCounts++);
-		final String strIDName = this.getClass().getName();
-		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter
-				+ strIDNumber;
+		final String strClassName = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
+				+strClassName +  strIDNumber;
 
 		wireIn = new ArrayList<Wire>();
 		wireOut = new ArrayList<Wire>();

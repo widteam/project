@@ -112,5 +112,8 @@ public abstract class DigitalObject {
 	public String GetType() {
 		return (ID.split("#")[1]).trim();
 	}
+	public String GetName() {
+		return (ID.split("#")[2]).trim();
+	}
 
 }

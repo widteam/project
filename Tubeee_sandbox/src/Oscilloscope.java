@@ -40,7 +40,7 @@ public class Oscilloscope extends Output {
 		String strIDNumber = String.valueOf(OscilloscopeCount++);
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-				+ strIDNumber;
+				+ strClassName + strIDNumber;
 		init();
 		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
 	}

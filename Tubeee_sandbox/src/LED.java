@@ -44,7 +44,7 @@ public class LED extends Output {
 		String strIDNumber = String.valueOf(LEDCount++);
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-				+ strIDNumber;
+				+ strClassName + strIDNumber;
 		init();
 	}
 	public LED(String strCompositName,String LEDName) {

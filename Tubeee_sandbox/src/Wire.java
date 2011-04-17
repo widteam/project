@@ -58,7 +58,7 @@ public class Wire {
 		String strIDNumber = String.valueOf(WIRECounts++);
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-				+ strIDNumber;
+				+ strClassName + strIDNumber;
 
 		objectsIn = new ArrayList<DigitalObject>();
 		objectsOut = new ArrayList<DigitalObject>();
@@ -68,7 +68,7 @@ public class Wire {
 		if(WireName.isEmpty() || WireName==null){
 			String strIDNumber = String.valueOf(WIRECounts++);
 			ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-					+ strIDNumber;
+					+ strClassName + strIDNumber;
 		}else{
 			ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter+ WireName;
 		}
@@ -78,15 +78,7 @@ public class Wire {
 
 	/** METODUSOK */
 
-	/**
-	 * A Wire egyedi azonositojanak lekerdezesere szolgalo metodus.
-	 * 
-	 * @param
-	 * @return <i>A Wire objektum azonositoja</i>
-	 */
-	public String GetID() {
-		return ID;
-	};
+
 
 	/**
 	 * A Wire objektum ertekenek lekerdezesere szolgalo metodus
@@ -135,8 +127,19 @@ public class Wire {
 			objectsOut.add(objectWhere);
 		}
 	};
-	
+	/**
+	 * A Wire egyedi azonositojanak lekerdezesere szolgalo metodus.
+	 * 
+	 * @param
+	 * @return <i>A Wire objektum azonositoja</i>
+	 */
+	public String GetID() {
+		return ID;
+	};
 	public String GetType() {
 		return (ID.split("#")[1]).trim();
+	}
+	public String GetName() {
+		return (ID.split("#")[2]).trim();
 	}
 }

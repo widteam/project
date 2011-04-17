@@ -116,7 +116,29 @@ public class bhdlParser {
 		Composit myComposit = new Composit("",CompositName);
 		return myComposit;
 	}
-
+	public static Composit ReadComposit(Composit owner, String composit) {
+		// Egy regularis kifejezes ami illeszkedik egy composit elemre.
+		String rege = "composit[ ]?(main)\\(in(( |[\\w]*,?)+),out(( |[\\w]*,?)+)\\)(.*)?endcomposit;";
+		Pattern regexp = Pattern.compile(rege);
+		// Megkeressuk a talalatokat
+		Matcher match = regexp.matcher(composit);
+		String CompositName = "";
+		String CompositeContent="";
+		Composit ThisComposit =null;
+		String[] CompositCommands = null;	// Egy kompozitvban levo utasitasok
+		// keresunk
+		match.find();
+		// ha volt talalat
+		if (match.matches() && match.groupCount() > 1) {
+			CompositName = match.group(1);
+			ThisComposit = (Composit) owner.GetElementByName(CompositName);
+			CompositeContent = match.group(6);
+			
+		}
+		CompositCommands = getCommands(CompositeContent);
+		CommandParser(ThisComposit, CompositCommands,ThisComposit.getFirstLevelOfComponentList());
+		return ThisComposit;
+	}
 	public static String[] getCommands(String bhdlcomposit){
 		// Egy regularis kifejezes ami illeszkedik egy composit elemre.
 		String rege = "composit[ ]?([\\w, ]+)\\(in(( |[\\w]*,?)+),out(( |[\\w]*,?)+)\\)(.*)?endcomposit;";
@@ -143,7 +165,7 @@ public class bhdlParser {
 	 * @param commands egy lista a parancsokbol
 	 * @param elementlist egy DigitalObjectekbol szervezett lista, melyet a parancsok alapjan epit fel s majd ezen vegzi a hierarchiat
 	 */
-	public static void CommandParser(Composit myComposit, String[] commands, List<DigitalObject> elementlist) {
+	public static void CommandParser(Composit Owner, String[] commands,List<DigitalObject> elementlist) {
 		/*
 		 * Kulonbozo regularis kifejezesek mely segitsegevel megkaphatoak a reszletek is
 		 */
@@ -161,38 +183,38 @@ public class bhdlParser {
 		 */
 		for (int i = 0; i < commands.length; i++) {
 			if (matching(reg_wire, commands[i]) != null) {				
-				CreateWire(myComposit, commands[i]);	
+				Owner.AddToWireList(CreateWire(Owner, commands[i]));	
 				System.out.println("Wire has been created.");
 			}
 			if (matching(reg_led, commands[i]) != null) {
-				elementlist.add(CreateLed(myComposit, commands[i]));
+				Owner.getFirstLevelOfComponentList().add(CreateLed(Owner, commands[i]));
 				System.out.println("LED has been  created.");
 			}
 			if (matching(reg_oscilloscope, commands[i]) != null) {
-				elementlist.add(CreateOscilloscope(myComposit,
+				Owner.getFirstLevelOfComponentList().add(CreateOscilloscope(Owner,
 						commands[i]));
 				System.out.println("Oscilloscope  has been created.");
 			}
 			if (matching(reg_generator, commands[i]) != null) {
-				elementlist.add(CreateGenerator(myComposit,
+				Owner.getFirstLevelOfComponentList().add(CreateGenerator(Owner,
 						commands[i]));
 				System.out.println("GENERATOR has been  created.");
 			}
 			if (matching(reg_switch, commands[i]) != null) {
-				elementlist.add(CreateSwitch(myComposit,
+				Owner.getFirstLevelOfComponentList().add(CreateSwitch(Owner,
 						commands[i]));
 				System.out.println("SWITCh  has been created.");
 			}
 			if (matching(reg_set, commands[i]) != null) {
-				SettingElement(myComposit,commands[i]);
+				SettingElement(Owner,commands[i]);
 				System.out.println("Setting element");
 			}
 			if (matching(reg_assign, commands[i]) != null) {
-				assign(myComposit,commands[i],elementlist);
+				assign(Owner,commands[i],elementlist);
 				System.out.println("Assign expression.");
 			}
 			if (matching(reg_comp, commands[i]) != null) {
-				CreateComposit(myComposit,commands[i]);
+				CreateComposit(Owner,commands[i]);
 				System.out.println("Composit  has been embedded.");
 			}
 		}
@@ -207,7 +229,48 @@ public class bhdlParser {
 		match.find();
 		if(match.matches()){
 			String comp_name = match.group(1).trim();
+			String[] WiresIn = match.group(2).split(",");
+				for(int i=0; i<WiresIn.length;i++)WiresIn[i]=WiresIn[i].trim();
+			String[] WiresOut= match.group(4).split(",");
+				for(int i=0; i<WiresOut.length;i++)WiresOut[i]=WiresOut[i].trim();
+			
+			/*
+			 * A bemeno parameterekkel valo osszekotese
+			 */
 			Composit myComposit = new Composit(OwnerName,comp_name);
+			
+			for(String wire_in:WiresIn){
+				Wire w=null;
+				if(owner.GetWireByName(wire_in)!=null){
+					w = owner.GetWireByName(wire_in);
+				}else if(owner.GetElementByName(wire_in)!=null){
+					w = owner.GetElementByName(wire_in).wireOut.get(0);
+				}else{
+					// throw new UnknownException(",,,,");
+				}
+				if(w!=null){
+					w.SetConnection(myComposit, null);
+					myComposit.wireIn.add(w);	
+					myComposit.AddToWireList(w);
+				}
+			}
+			for(String wire_out:WiresOut){
+				Wire w=null;
+				if(owner.GetWireByName(wire_out)!=null){
+					w = owner.GetWireByName(wire_out);
+				}else if(owner.GetElementByName(wire_out)!=null){
+					w = owner.GetElementByName(wire_out).wireOut.get(0);
+				}else{
+					// throw new UnknownException(",,,,");
+				}
+				if(w!=null){
+					w.SetConnection(myComposit, null);
+					myComposit.wireIn.add(w);	
+					myComposit.AddToWireList(w);
+				}
+			}
+			
+			ReadComposit(null,comp_name);
 			return myComposit;
 		}
 		return null;
@@ -371,18 +434,10 @@ public class bhdlParser {
 					
 					if(!isOperator(item)){
 						// Hozzadjuk a veremhez
-						if(elementlist!=null){
-							for(DigitalObject o:elementlist){
-								//if(!o.getClass().getName().equalsIgnoreCase("Composit")){
-									if((o.ID.split("#")[2]).trim().trim().equalsIgnoreCase(item)){
-										WireStack.add(o.wireOut.get(0));
-									}
-								//}else{}
-									
-							}
-						}
-						if(myComposit.GetWireByID(item)!=null){
-								WireStack.add(myComposit.GetWireByID(item));
+						if(myComposit.GetWireByName(item)!=null){
+							WireStack.add(myComposit.GetWireByName(item));
+						}else if(myComposit.GetElementByName(item)!=null){
+								WireStack.add(myComposit.GetElementByName(item).wireOut.get(0));
 						}
 					}else if(isOperator(item)){
 						if(NumOfOperand(item)==1){
@@ -434,23 +489,13 @@ public class bhdlParser {
 			}//Vege: ha tobb elem van a listaban mint 1
 
 			assigned_wire = WireStack.pop();
-			if (elementlist != null && !elementlist.isEmpty()) {
-				for (DigitalObject o : elementlist) {
-					if(o.ID.split("#").length>2)
-						if((o.ID.split("#")[2]).trim().equalsIgnoreCase(lvalue)){
-							o.wireIn.add(assigned_wire);
-							assigned_wire.SetConnection(o, null);
-						}
-				}
+			if(myComposit.GetWireByName(lvalue)!=null){
+				myComposit.GetWireByName(lvalue).objectsIn=assigned_wire.objectsIn;				
+			}else if(myComposit.GetElementByName(lvalue)!=null){
+					myComposit.GetElementByName(lvalue).wireIn.add(assigned_wire);
+					assigned_wire.SetConnection(myComposit.GetElementByName(lvalue), null);
+					myComposit.AddToWireList(assigned_wire);
 			}
-			if(myComposit.GetWireByID(lvalue)!=null){
-				assigned_wire.objectsOut = myComposit.GetWireByID(lvalue).objectsOut;
-				myComposit.RemoveWire(myComposit.GetWireByID(lvalue));
-			}
-			
-			myComposit.AddToWireList(assigned_wire);
-			
-	
 		}
 		
 		return assigned_wire;

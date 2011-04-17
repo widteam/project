@@ -12,7 +12,7 @@ public class Composit extends DigitalObject {
 	 * csatlakozó elemek, stb) az egyes szinteken pedig egy lista van az
 	 * elemekrõl
 	 */
-	List<Wire> WireList;
+	private List<Wire> WireList;
 
 	// Leírás: Egyszerû lista a Wire objektumokból
 
@@ -23,6 +23,8 @@ public class Composit extends DigitalObject {
 		WireList = new ArrayList<Wire>();
 		wireIn = new ArrayList<Wire>(); // Inicializaljuk a wireIn listat
 		wireOut = new ArrayList<Wire>();// Inicializaljuk a wireOut listat
+		ComponentList = new ArrayList<List<DigitalObject>>();
+		ComponentList.add(new ArrayList<DigitalObject>());
 	}
 
 
@@ -95,18 +97,21 @@ public class Composit extends DigitalObject {
 			for (List<DigitalObject> sublist : ComponentList) {
 				for (DigitalObject o : sublist) {
 					if (o.ID == ElementID)
-						return (DigitalObject) o;
+						return  o;
 				}
 			}
 		}
+		return null;
+	}
+	public DigitalObject GetElementByName(String ElementName) {
 		/**
 		 * Nev alapjan
 		 */
 		if (ComponentList != null && !ComponentList.isEmpty()) {
 			for (List<DigitalObject> sublist : ComponentList) {
 				for (DigitalObject o : sublist) {
-					if((o.ID.split("#")[2]).trim()==ElementID)
-						return (DigitalObject) o;
+					if(o.GetName().equalsIgnoreCase(ElementName))
+						return  o;
 				}
 			}
 		}
@@ -121,9 +126,13 @@ public class Composit extends DigitalObject {
 					return w;
 			}
 		}
+		return null;
+	}
+	public Wire GetWireByName(String WireName) {
+		// Leírás: Megkeres egy adott drótot a WireList listákban
 		if (WireList != null && !WireList.isEmpty()) {
 			for (Wire w : WireList) {
-				if((w.GetID().split("#")[2]).trim()==WireID)
+				if(w.GetName().equalsIgnoreCase(WireName))
 					return w;
 			}
 		}
@@ -165,9 +174,21 @@ public class Composit extends DigitalObject {
 		}
 	}
 
+	/**
+	 * Hozzaad a WireList-hez egy elemet
+	 * @param wire
+	 */
 	public void AddToWireList(Wire wire) {
 		WireList.add(wire);
 	}
+	/**
+	 * Elvesz a WireList-bol egy elemet
+	 * @param wire
+	 */
+	public boolean RemoveFromWireList(Wire w){
+		return WireList.remove(w);
+	}
+	
 	public void buildHierarchy(List<DigitalObject> tmp_components){
 		/*
 		 * Elso lepesben az osszes Input objektumot hozzaadjuk a Hierarchia 0.
@@ -328,9 +349,7 @@ public class Composit extends DigitalObject {
 			}
 		}
 	}
-	
-	public boolean RemoveWire(Wire w){
-		return WireList.remove(w);
+	public List<DigitalObject> getFirstLevelOfComponentList(){
+		return ComponentList.get(0);
 	}
-
 }
