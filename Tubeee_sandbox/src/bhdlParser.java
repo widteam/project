@@ -201,7 +201,7 @@ public class bhdlParser {
 				System.out.println("GENERATOR has been  created.");
 			}
 			if (matching(reg_switch, commands[i]) != null) {
-				elementlist.add(CreateSwitch(Owner,
+				Owner.getFirstLevelOfComponentList().add(CreateSwitch(Owner,
 						commands[i]));
 				System.out.println("SWITCh  has been created.");
 			}
@@ -270,7 +270,7 @@ public class bhdlParser {
 				}
 			}
 			
-			ReadComposit(comp_name);
+			ReadComposit(null,comp_name);
 			return myComposit;
 		}
 		return null;
@@ -434,18 +434,10 @@ public class bhdlParser {
 					
 					if(!isOperator(item)){
 						// Hozzadjuk a veremhez
-						if(elementlist!=null){
-							for(DigitalObject o:elementlist){
-								//if(!o.getClass().getName().equalsIgnoreCase("Composit")){
-									if((o.ID.split("#")[2]).trim().trim().equalsIgnoreCase(item)){
-										WireStack.add(o.wireOut.get(0));
-									}
-								//}else{}
-									
-							}
-						}
-						if(myComposit.GetWireByID(item)!=null){
-								WireStack.add(myComposit.GetWireByID(item));
+						if(myComposit.GetWireByName(item)!=null){
+							WireStack.add(myComposit.GetWireByName(item));
+						}else if(myComposit.GetElementByName(item)!=null){
+								WireStack.add(myComposit.GetElementByName(item).wireOut.get(0));
 						}
 					}else if(isOperator(item)){
 						if(NumOfOperand(item)==1){
@@ -497,23 +489,13 @@ public class bhdlParser {
 			}//Vege: ha tobb elem van a listaban mint 1
 
 			assigned_wire = WireStack.pop();
-			if (elementlist != null && !elementlist.isEmpty()) {
-				for (DigitalObject o : elementlist) {
-					if(o.ID.split("#").length>2)
-						if((o.ID.split("#")[2]).trim().equalsIgnoreCase(lvalue)){
-							o.wireIn.add(assigned_wire);
-							assigned_wire.SetConnection(o, null);
-						}
-				}
+			if(myComposit.GetWireByName(lvalue)!=null){
+				myComposit.GetWireByName(lvalue).objectsIn=assigned_wire.objectsIn;				
+			}else if(myComposit.GetElementByName(lvalue)!=null){
+					myComposit.GetElementByName(lvalue).wireIn.add(assigned_wire);
+					assigned_wire.SetConnection(myComposit.GetElementByName(lvalue), null);
+					myComposit.AddToWireList(assigned_wire);
 			}
-			if(myComposit.GetWireByID(lvalue)!=null){
-				assigned_wire.objectsOut = myComposit.GetWireByID(lvalue).objectsOut;
-				myComposit.RemoveFromWireList(myComposit.GetWireByID(lvalue));
-			}
-			
-			myComposit.AddToWireList(assigned_wire);
-			
-	
 		}
 		
 		return assigned_wire;

@@ -44,7 +44,7 @@ public class SWITCH extends Input {
 		String strIDNumber = String.valueOf(SWITCHCount++);
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-				+ strIDNumber;
+				+ strClassName + strIDNumber;
 		init();
 	}
 	/**

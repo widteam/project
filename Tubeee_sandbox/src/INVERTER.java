@@ -65,7 +65,7 @@ public class INVERTER extends Gate {
 		String strIDNumber = String.valueOf(INVERTERCounts++);
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-				+ strIDNumber;
+				+ strClassName + strIDNumber;
 
 		wireIn = new ArrayList<Wire>();
 		wireOut = new ArrayList<Wire>();

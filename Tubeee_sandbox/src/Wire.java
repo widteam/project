@@ -58,7 +58,7 @@ public class Wire {
 		String strIDNumber = String.valueOf(WIRECounts++);
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-				+ strIDNumber;
+				+ strClassName + strIDNumber;
 
 		objectsIn = new ArrayList<DigitalObject>();
 		objectsOut = new ArrayList<DigitalObject>();
@@ -68,7 +68,7 @@ public class Wire {
 		if(WireName.isEmpty() || WireName==null){
 			String strIDNumber = String.valueOf(WIRECounts++);
 			ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-					+ strIDNumber;
+					+ strClassName + strIDNumber;
 		}else{
 			ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter+ WireName;
 		}
