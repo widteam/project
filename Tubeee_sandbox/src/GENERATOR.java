@@ -60,8 +60,8 @@ public class GENERATOR extends Input{
 	 */
 	public GENERATOR(String strCompositName, int StartFrequency, int StartSequence){
 		String strIDNumber  = String.valueOf(GENERATORCounts++);
-		final String strIDName  = this.getClass().getName();
-		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter + strIDNumber;
+		final String strClassName  = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter + strIDNumber;
 			
 		wireIn = null;
 		wireOut = new ArrayList<Wire>();

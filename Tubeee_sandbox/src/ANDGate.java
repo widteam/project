@@ -58,8 +58,8 @@ public class ANDGate extends Gate {
 	public ANDGate(String strCompositName, Wire wirein1, Wire wirein2) {
 		final String strIDDelimiter = "#";
 		String strIDNumber = String.valueOf(ANDCounts++);
-		final String strIDName = this.getClass().getName();
-		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter
+		final String strClassName = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
 				+ strIDNumber;
 
 		wireIn = new ArrayList<Wire>(); // Inicializaljuk a wireIn listat
