@@ -123,15 +123,24 @@ public class HierarchyCounter {
 							//ha már volt, 
 							//a) feedback
 							//b) hierarchia nõhet
+							List<DigitalObject> feeds=new ArrayList<DigitalObject>();
+							feeds=getRoute(components.get(szint).get(i), current, feeds); //kiszámoljuk a feedback tömbhöz hozzáadandó dolgokat. Ha nincs út, üres
+							if(feeds.size()>0) {
+								if(components.get(szint).get(i).Feedbacks.size()>0)feeds.add(components.get(szint).get(i));//ha már volt benne feedback, hozzáadjuk magát is (8as effekt)
+								for(int l=0; l<feeds.size();l++){
+									components.get(szint).get(i).Feedbacks.add(feeds.get(i));//a most kapott feedbackeket hozzáadjuk
+								}
+							} else {
+								 moveToSzint(current, szint+1); //ha nincs visszacsatolás, simán csak fejlebb visszük.
+							}
 							
-							if(getSzint(current)<szint+1) current.Feedbacks=getRoute(components.get(szint).get(i), current, components.get(szint).get(i).Feedbacks) ;
 							//ha nincs út, vagyis nem feedback, nem ad hozzá semmit. pl ha egyik lába 0, másik 5ös hierarchiájú
 							//feedback számitása, hozzáadása az eddigi feedback tömbhöz
 							
 							
 						} else {
 							//ha még nem volt
-							moveToSzint(components.get(szint).get(i).wireOut.get(j).objectsOut.get(k), szint+1);
+							moveToSzint(current, szint+1);
 						}
 					}
 				}
