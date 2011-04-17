@@ -113,7 +113,7 @@ public class bhdlParser {
 			CompositName = match.group(1);
 		}
 		//  a composit letrehozasa
-		Composit myComposit = new Composit(CompositName);
+		Composit myComposit = new Composit("",CompositName);
 		return myComposit;
 	}
 
