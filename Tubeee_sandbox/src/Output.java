@@ -19,18 +19,19 @@
 *<br>
 * A bemenet megjelenitesere szolgalo objektum/osztaly
 */
-public abstract class Output extends DigitalObject{
-	/*  ATTRIBUTUMOK  */
+public abstract class Output extends DigitalObject {
+	/* ATTRIBUTUMOK */
 	/**
 	 * Az adott Output objektum erteket tarolja
 	 */
 	protected int Value;
-		
-	/*	METODUSOK	*/
+
+	/* METODUSOK */
 	/**
-	 * Az Output osztalynak nincs feedback tombje, igy  a metodus nincs implementalva
+	 * Az Output osztalynak nincs feedback tombje, igy a metodus nincs
+	 * implementalva
 	 */
 	public void AddToFeedbacks(DigitalObject object) {
-		;		// Outputnak nincs feedbackje.
+		; // Outputnak nincs feedbackje.
 	};
 }

@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 /** 
  * <table border=0>
@@ -22,32 +23,45 @@ import java.util.concurrent.ArrayBlockingQueue;
 * A bemenet megjelenitesere szolgalo objektum/osztaly.
 * Adott mennyisegu elozo erteket tarol es jelenit meg.
 */
-public class Oscilloscope extends Output{
-	/*  ATTRIBUTUMOK  */
-	/**Statikus valtozo az egyedi ID ertekhez */
+public class Oscilloscope extends Output {
+	/* ATTRIBUTUMOK */
+	/** Statikus valtozo az egyedi ID ertekhez */
 	private static int OscilloscopeCount;
-	
-	/**A mintat tarolo FIFO lista */
+
+	/** A mintat tarolo FIFO lista */
 	private Queue<Integer> Samples;
-	
-	/*  KONSTRUKTOROK  */
-	public Oscilloscope(String strCompositName, Wire WireIn, int SampleSize){
-		final String strIDDelimiter = "#";
-		String strIDNumber  = String.valueOf(OscilloscopeCount++);
-		final String strIDName  = this.getClass().getName();
-		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter + strIDNumber;
-			
-		wireOut = null;
-		wireIn = new ArrayList<Wire>();
+
+	/* KONSTRUKTOROK */
+	private void init(){
+		wireOut = new ArrayList<Wire>();
+		wireIn = new ArrayList<Wire>();		
+	}
+	public Oscilloscope(String strCompositName,  int SampleSize) {
+		String strIDNumber = String.valueOf(OscilloscopeCount++);
+		final String strClassName = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
+				+ strClassName + strIDNumber;
+		init();
 		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
 	}
 	
-	/*  METODUSOK  */
+	public Oscilloscope(String strCompositName,  String OscilloscopeName,int SampleSize) {
+		final String strClassName = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
+		+ OscilloscopeName;
+		init();
+		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
+	}
+	/* METODUSOK */
 	/**
 	 * Megkapja a bemenetenek erteket, es eltarolja azt.
+	 * 
 	 * @return a minta legregebbi eleme
-	 * @throws ElementHasNoInputsException Amennyiben az objektumnak nincs bemenete
-	 * @throws ElementInputSizeException Amennyiben az objektumnak nincs meg a megfelelo szamu bemenete
+	 * @throws ElementHasNoInputsException
+	 *             Amennyiben az objektumnak nincs bemenete
+	 * @throws ElementInputSizeException
+	 *             Amennyiben az objektumnak nincs meg a megfelelo szamu
+	 *             bemenete
 	 */
 	public int Count() {
 		/* Lekerdezzuk a bemenetek ertekeit */
@@ -57,21 +71,24 @@ public class Oscilloscope extends Output{
 			if (wireIn.size() != 1) {
 				// throw ElementInputSizeException
 			} else {
-				Value = Samples.poll();	// Utolso elem a mintabol kiesik	
-				Samples.add(wireIn.get(0).GetValue());	// hozzaadjuk az uj erteket
+				Value = Samples.poll(); // Utolso elem a mintabol kiesik
+				Samples.add(wireIn.get(0).GetValue()); // hozzaadjuk az uj
+														// erteket
 			}
 		}
 		return Value;
 	}
 
 	/**
-	 * Feladata az adott elem ertekenek kiszamitasa, 
-	 * ill. annak eldontese, hogy a DigitalObject stabil-e
-	 * @return mindig {@code true } ertekkel ter vissza, hiszen egy Output elem mindig stabil.
+	 * Feladata az adott elem ertekenek kiszamitasa, ill. annak eldontese, hogy
+	 * a DigitalObject stabil-e
+	 * 
+	 * @return mindig {@code true } ertekkel ter vissza, hiszen egy Output elem
+	 *         mindig stabil.
 	 */
 	public boolean Step() {
-			Count();
-			return true;
+		Count();
+		return true;
 	}
 
 }

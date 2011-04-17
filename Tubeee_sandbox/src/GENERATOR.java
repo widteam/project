@@ -58,23 +58,33 @@ public class GENERATOR extends Input{
 	 * @param StartSequence Letrehozaskor megadhato minta, ujabb ertek beallitasaig ezt ismetli
 	 * @param WiresOut A GENERATOR-hoz csatlakozo Wire objektum referenciaja
 	 */
-	public GENERATOR(String strCompositName, int StartFrequency, int StartSequence, Wire WiresOut){
-		final String strIDDelimiter = "#";
+	public GENERATOR(String strCompositName, int StartFrequency, int StartSequence){
 		String strIDNumber  = String.valueOf(GENERATORCounts++);
-		final String strIDName  = this.getClass().getName();
-		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter + strIDNumber;
+		final String strClassName  = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter + strClassName + strIDNumber;
 			
 		wireIn = null;
 		wireOut = new ArrayList<Wire>();
 		Frequency = StartFrequency;
 		FrequencyCounter = StartFrequency;
 		Sequence = StartSequence;
-		SequencePos = 0;
-		
+		SequencePos = 0;		
 		Value = 0;
 
 	}
-	
+	public GENERATOR(String strCompositName,String GeneratorName, int StartFrequency, int StartSequence){
+		final String strIDName = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter
+		+ GeneratorName;			
+		wireIn = null;
+		wireOut = new ArrayList<Wire>();
+		Frequency = StartFrequency;
+		FrequencyCounter = StartFrequency;
+		Sequence = StartSequence;
+		SequencePos = 0;		
+		Value = 0;
+
+	}	
 	
 	/*  METODUSOK  */
 	/**
