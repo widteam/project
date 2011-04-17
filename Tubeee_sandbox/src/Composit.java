@@ -347,5 +347,7 @@ public class Composit extends DigitalObject {
 			}
 		}
 	}
-
+	public List<DigitalObject> getFirstLevelOfComponentList(){
+		return ComponentList.get(0);
+	}
 }

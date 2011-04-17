@@ -149,23 +149,8 @@ public class DigitalBoard {
 		Composit main = bhdlParser.CreateMain(main_composit);
 		String[] main_commands = bhdlParser.getCommands(main_composit);
 		bhdlParser.CommandParser(main, main_commands, ComponentList.get(0));
-		strFileContents = strFileContents.replace(main_composit,"");
-		
-		
-		/*while(strFileContents!=null && !strFileContents.trim().isEmpty() ){
-			String[] CompositCommands = null;	// Egy kompozitvban levo utasitasok
-			Composit myComposit;	// az aktualis kompozit			
-			String composit = bhdlParser.find_next_Composite(strFileContents);
-			
-			myComposit = bhdlParser.CreateComposit(composit);
-			CompositCommands = bhdlParser.getCommands(composit);
-			bhdlParser.CommandParser(myComposit, CompositCommands, elementlist);
-			
-			
-			strFileContents = strFileContents.replace(composit,"");
-		}
-		*/
 
+		
 		
 		/*
 		 * ComponentList feltoltese
