@@ -113,7 +113,7 @@ public class bhdlParser {
 			CompositName = match.group(1);
 		}
 		//  a composit letrehozasa
-		Composit myComposit = new Composit(CompositName);
+		Composit myComposit = new Composit("",CompositName);
 		return myComposit;
 	}
 
@@ -207,7 +207,27 @@ public class bhdlParser {
 		match.find();
 		if(match.matches()){
 			String comp_name = match.group(1).trim();
+			String[] WiresIn = match.group(2).split(",");
+				for(int i=0; i<WiresIn.length;i++)WiresIn[i]=WiresIn[i].trim();
+			String[] WiresOut= match.group(4).split(",");
+				for(int i=0; i<WiresIn.length;i++)WiresOut[i]=WiresOut[i].trim();
+			
+			/*
+			 * A bemeno parameterekkel valo osszekotese
+			 */
+			for(String wire_in:WiresIn){
+				Wire w=null;
+				DigitalObject o=null;
+				if(owner.GetWireByName(wire_in)!=null){
+					
+				}else if(owner.GetWireByName(wire_in)!=null){
+					
+				}else{
+					// throw new UnknownException(",,,,");
+				}
+			}
 			Composit myComposit = new Composit(OwnerName,comp_name);
+			
 			return myComposit;
 		}
 		return null;
