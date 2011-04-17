@@ -1,9 +1,11 @@
 /*  IMPORTOK  */
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 /** 
@@ -115,52 +117,52 @@ public class DigitalBoard {
 		File file = new File(strFilePath);
 		List<DigitalObject> elementlist = new ArrayList<DigitalObject>();
 		// System.out.print(file.getAbsolutePath());
-		BufferedInputStream bin = null;
-		String strFileContents="";
-		try {
-			// FileInputStream object letrehozasa
-			FileInputStream fin = new FileInputStream(file);
-			// BufferedInputStream obkejtum letrehozasa a beolvasashoz
-			bin = new BufferedInputStream(fin);
-			// byte tomb letrehozasa, ebbe olvasunk be majd.
-			byte[] contents = new byte[1024];
-			int bytesRead = 0;
-			
-			while ((bytesRead = bin.read(contents)) != -1) {
-				strFileContents = new String(contents, 0, bytesRead);
-				System.out.print(strFileContents);
-			}
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found" + e);
-		} catch (IOException ioe) {
-			System.out.println("Exception while reading the file " + ioe);
-		}
-		
-		// Tisztogatas
-		
-		strFileContents = bhdlParser.remove_Spaces(strFileContents);
-		strFileContents = bhdlParser.remove_CR_LF(strFileContents); //nincs sortores
-		
-		/*
-		 * MAIN composit megkeresese letrehozasa
-		 */
-		ComponentList.add(new ArrayList<DigitalObject>());
-		String main_composit = bhdlParser.FindMainComposite(strFileContents);
-		Composit main = bhdlParser.CreateMain(main_composit);
-		String[] main_commands = bhdlParser.getCommands(main_composit);
-		bhdlParser.CommandParser(main, main_commands, ComponentList.get(0));
-
-		
-		
-		/*
-		 * ComponentList feltoltese
-		 * 
-		 * Feltetlezve, hogy a mintaillesztes mar megvolt tovabba az aritmetikai
-		 * kifejezes is at lett alakitva RPN alakra, sot meg jobb ha van egy
-		 * tombunk a componensekkel es a wirelist
-		 */
-
-		/* Elkeszitem a WIre objektumokat, es a WireListet */
+//		BufferedInputStream bin = null;
+//		String strFileContents="";
+//		try {
+//			// FileInputStream object letrehozasa
+//			FileInputStream fin = new FileInputStream(file);
+//			// BufferedInputStream obkejtum letrehozasa a beolvasashoz
+//			bin = new BufferedInputStream(fin);
+//			// byte tomb letrehozasa, ebbe olvasunk be majd.
+//			byte[] contents = new byte[1024];
+//			int bytesRead = 0;
+//			
+//			while ((bytesRead = bin.read(contents)) != -1) {
+//				strFileContents = new String(contents, 0, bytesRead);
+//				System.out.print(strFileContents);
+//			}
+//		} catch (FileNotFoundException e) {
+//			System.out.println("File not found" + e);
+//		} catch (IOException ioe) {
+//			System.out.println("Exception while reading the file " + ioe);
+//		}
+//		
+//		// Tisztogatas
+//		
+//		strFileContents = bhdlParser.remove_Spaces(strFileContents);
+//		strFileContents = bhdlParser.remove_CR_LF(strFileContents); //nincs sortores
+//		
+//		/*
+//		 * MAIN composit megkeresese letrehozasa
+//		 */
+//		ComponentList.add(new ArrayList<DigitalObject>());
+//		String main_composit = bhdlParser.FindMainComposite(strFileContents);
+//		Composit main = bhdlParser.CreateMain(main_composit);
+//		String[] main_commands = bhdlParser.getCommands(main_composit);
+//		bhdlParser.CommandParser(main, main_commands, ComponentList.get(0));
+//
+//		
+//		
+//		/*
+//		 * ComponentList feltoltese
+//		 * 
+//		 * Feltetlezve, hogy a mintaillesztes mar megvolt tovabba az aritmetikai
+//		 * kifejezes is at lett alakitva RPN alakra, sot meg jobb ha van egy
+//		 * tombunk a componensekkel es a wirelist
+//		 */
+//
+//		/* Elkeszitem a WIre objektumokat, es a WireListet */
 		List<DigitalObject> tmp_components = new ArrayList<DigitalObject>();
 		/*****************************************************************
 		 * ************** TESZTARAMKOROK leirasa manualisan **************
@@ -279,151 +281,27 @@ public class DigitalBoard {
 		/*****************************************************************
 		 * ************** TESZTARAMKOROK leirasanak vege *************
 		 ******************************************************************/
-		buildHierarchy(tmp_components);
-		getFeedbacks();
-		Debug();
+		ComponentList.add(tmp_components);
+		HierarchyCounter cntr=new HierarchyCounter();
+		cntr.CountHierarchy(WireList, ComponentList);
+		//Debug();
+		run(file.getName());
 	}
 		
-	private void buildHierarchy(List<DigitalObject> tmp_components){
-		/*
-		 * Elso lepesben az osszes Input objektumot hozzaadjuk a Hierarchia 0.
-		 * szintjehez
-		 */
-		// 0. szint letrehozasa
-		ComponentList.add(new ArrayList<DigitalObject>());
-		for (DigitalObject obj : tmp_components) {
-			if (obj.GetType().equalsIgnoreCase("SWITCH")
-					|| obj.GetType().equalsIgnoreCase("GENERATOR")) {
-				/* Hozzadjuk a szinthez az elemet */
-				ComponentList.get(0).add(obj);
-			}
-		}
-		/* Eltavolitjuk a listabol a mar hierarchikus elemeket */
-		tmp_components.removeAll(ComponentList.get(0));
-
-		/* Amig van elem a listaban */
-
-		int iHierarchy = 0;
-		while (!tmp_components.isEmpty()) {
-			List<DigitalObject> components_next = new ArrayList<DigitalObject>();
-			// Vegigmegyunk az aktualis szint osszes elemen
-			for (DigitalObject obj : ComponentList.get(iHierarchy)) {
-				// az aktualis szint aktualis elemenek kimenetein
-				for (Wire out : obj.wireOut) {
-					/*
-					 * es az aktualis szint aktualis elemenek kimeno drotjai
-					 * altal meghatarozott elemet hozzaadjuk a kovetkezo
-					 * elemekhez
-					 */
-					for (DigitalObject wire_obj : out.objectsOut) {
-						/*
-						 * Itt meg kell nezni hogy korabi szinten szerepelt-e
-						 * mar
-						 */
-						boolean contain = false;
-
-						for (int i = 0; i < iHierarchy + 1; i++) {
-							if (ComponentList.get(i).contains(wire_obj)) {
-								contain = true;
-							}
-						}
-						// ha nem volt meg korabbi szinten akkor most uj
-						// szinthez adjuk
-						if (!contain)
-							if (!components_next.contains(wire_obj))
-								components_next.add(wire_obj);
-					}
-				}
-			}
-			tmp_components.removeAll(components_next);
-			ComponentList.add(new ArrayList<DigitalObject>());
-			ComponentList.get(++iHierarchy).addAll(components_next);
+	public void run(String filename){
+		System.out.println(filename+ "'s Board is loaded");
+		InputStreamReader input = new InputStreamReader(System.in);
+		BufferedReader reader = new BufferedReader(input);
+		try { // Szamma alakitjuk - ha tudjuk - a bevitt szoveget
+			reader.readLine();//PETII, amit visszaad, azzal kezdj vmit
+			//setSequence gen_name sequence(pl 01101010100) -> gen_name.setSequence(0x0110101010100) (binariba kell alakitani!!); count();
+			//toggleSwitch sw_name -> sw_name.Toggle(); count();
+			//step -> StepComponents();
+		} catch (Exception e) {
+			// line = "exit" ;
 		}
 	}
-	private void getFeedbacks(){
-		// FEEDBACK
-		/**
-		 * Ha tartalmazza egy korabbi szint az obj elemet, akkor itt egy
-		 * visszacsatolas van. Ha visszacsatolas, akkor meg FEEDBACK!
-		 */
-		int iHierarchy = 0;
-		for (List<DigitalObject> sublist : ComponentList) { // vegig az osszes
-															// hierarchia
-															// szinten
-			for (DigitalObject obj : sublist) { // vegig a reszlistakon
-				DigitalObject feedback_start = null; // inicializaljuk a
-														// feedbacket nullra
-				for (Wire out : obj.wireOut) { // az aktualis elem osszes
-												// kimenetet nezzuk
-					for (DigitalObject wire_obj : out.objectsOut) { // ez az
-																	// osszes
-																	// elem
-																	// amihez
-																	// csatlakozik
-						/*
-						 * Itt meg kell nezni hogy korabi szinten szerepelt-e
-						 * mar
-						 */
-						for (int i = 0; i < iHierarchy + 1; i++) {
-							if (ComponentList.get(i).contains(wire_obj)) {
-								/**
-								 * a FEEDBACK kezdetebol elerheto elemek
-								 * megtalalasa Elso lepesben a legalacsonyabb
-								 * szintrol indulva felfele felepitunk egy
-								 * reszgrafot. Akkor allunk meg ha feljebb
-								 * elertuk az also elemet
-								 */
-								List<DigitalObject> tmp_list = new ArrayList<DigitalObject>();
-								feedback_start = ComponentList.get(i).get(
-										ComponentList.get(i).indexOf(wire_obj));
-								int count = 0;
-
-								DigitalObject listelement;
-								tmp_list.add(feedback_start);
-								while (!tmp_list.contains(obj)) {
-									listelement = tmp_list.get(count++);
-									for (Wire w : listelement.wireOut) {
-										for (DigitalObject next_element : w.objectsOut) {
-											tmp_list.add(next_element);
-										}
-									}
-								}// reszgraf epitesenek vege
-
-								/**
-								 * a FEEDBACK vegebol visszafele elerheto elemek
-								 * Ahol megegyezik a ket lista (ez es az elozo)
-								 * az egy visszacsatolas
-								 */
-								feedback_start.Feedbacks.add(obj);
-								count = 0;
-								boolean added = false;
-								while (true) {// feedback_start.Feedbacks.contains(feedback_start)){
-									listelement = feedback_start.Feedbacks
-											.get(count);
-									if (listelement == feedback_start) {
-										break;
-									}
-									for (Wire w : listelement.wireIn) {
-										for (DigitalObject next_element : w.objectsIn) {
-											if (tmp_list.contains(next_element)) {
-												feedback_start.Feedbacks
-														.add(next_element);
-												added = true;
-											}
-										}
-									}
-									if (added)
-										count++;
-
-								}// feedback epitesenek vege
-							}// if vege: szerepelt-e korabban
-						}// vege: korabbi szintek vegignezese
-					}// vege: kimeno drotokon levo objektumok
-				}// vege:kimeno drotok
-			}// vege: sublistban az elemek
-			iHierarchy++;
-		}// vege: hierarchiak		
-	}	
+	
 	public void Debug(){
 		/* KIIRATAS, DEBUG */
 		int szint = 0;
