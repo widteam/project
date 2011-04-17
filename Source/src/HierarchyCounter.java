@@ -11,7 +11,6 @@ public class HierarchyCounter {
 	List<DigitalObject> list;
 	List<Wire> wires;
 	ArrayList<List<DigitalObject>> components;
-<<<<<<< HEAD
 	
 	/**
 	 * A paraméter hierarchiáját adja vissza
@@ -93,30 +92,6 @@ public class HierarchyCounter {
 	public void CountHierarchy(List<Wire> wiresArg, ArrayList<List<DigitalObject>> componentsArg){
 		sources=new ArrayList<DigitalObject>(); //forrásokat különvesszük
 		list=new ArrayList<DigitalObject>(); //bejáratlan
-=======
-	
-	public int getSzint(DigitalObject ennek){
-		int ret=-1;
-		for(int i=0; i<components.size(); i++){
-			if(-1!=components.get(i).indexOf(ennek));
-		}
-		return ret;
-	}
-	
-	public void moveToSzint(DigitalObject ezt, int ide){
-		if(components.size()<ide) components.add(new ArrayList<DigitalObject>()); //ha nincs még szint+1 hierarchia
-		if(getSzint(ezt)<0) list.remove(ezt); //ha nincs a hierarchiában, a bejáratlanból vesszük ki
-		if(components.get(getSzint(ezt)).indexOf(ezt)!=-1) components.get(getSzint(ezt)).remove(ezt); //ha a listában van, kivesszük
-		components.get(ide).add(ezt);//hozzáadjuk a kért hierarchiára
-	}
-	
-	public void foo(){}
-	
-	public void CountHierarchy(List<Wire> wiresArg, ArrayList<List<DigitalObject>> componentsArg){
-		sources=new ArrayList<DigitalObject>(); //forrásokat különvesszük
-		list=new ArrayList<DigitalObject>(); //bejáratlan
-		list.clear();
->>>>>>> 2766c6d2ecdad8e1450e8f5f4a0f119fc6f5f1d7
 		wires=wiresArg;
 		components=componentsArg;
 				
@@ -148,18 +123,24 @@ public class HierarchyCounter {
 							//ha már volt, 
 							//a) feedback
 							//b) hierarchia nõhet
-<<<<<<< HEAD
-							if(getSzint(current)<szint+1) components.get(szint).get(i).Feedbacks=getRoute(components.get(szint).get(i), components.get(szint).get(i).wireOut.get(j).objectsOut.get(k), components.get(szint).get(i).Feedbacks) ; 
+							List<DigitalObject> feeds=new ArrayList<DigitalObject>();
+							feeds=getRoute(components.get(szint).get(i), current, feeds); //kiszámoljuk a feedback tömbhöz hozzáadandó dolgokat. Ha nincs út, üres
+							if(feeds.size()>0) {
+								if(components.get(szint).get(i).Feedbacks.size()>0)feeds.add(components.get(szint).get(i));//ha már volt benne feedback, hozzáadjuk magát is (8as effekt)
+								for(int l=0; l<feeds.size();l++){
+									components.get(szint).get(i).Feedbacks.add(feeds.get(i));//a most kapott feedbackeket hozzáadjuk
+								}
+							} else {
+								 moveToSzint(current, szint+1); //ha nincs visszacsatolás, simán csak fejlebb visszük.
+							}
+							
+							//ha nincs út, vagyis nem feedback, nem ad hozzá semmit. pl ha egyik lába 0, másik 5ös hierarchiájú
 							//feedback számitása, hozzáadása az eddigi feedback tömbhöz
-							if(getSzint(current)>szint+1) moveToSzint(current, szint+1); //nõ a szintje
-=======
-							if(getSzint(current)<szint+1) foo(); //feed back lesz TODO
-							if(getSzint(current)>=szint+1) moveToSzint(current, szint+1); //nõ a szintje
->>>>>>> 2766c6d2ecdad8e1450e8f5f4a0f119fc6f5f1d7
+							
 							
 						} else {
 							//ha még nem volt
-							moveToSzint(components.get(szint).get(i).wireOut.get(j).objectsOut.get(k), szint+1);
+							moveToSzint(current, szint+1);
 						}
 					}
 				}
