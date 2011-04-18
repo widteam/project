@@ -55,6 +55,7 @@ public class SWITCH extends Input {
 	public SWITCH(String strCompositName,String SwitchName) {
 		// Egyedi ID kiszamitasa
 		final String strIDName = this.getClass().getName();
+		//ID=SwitchName;
 		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter+ SwitchName;
 		init();
 	}

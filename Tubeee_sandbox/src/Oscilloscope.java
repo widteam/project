@@ -71,7 +71,7 @@ public class Oscilloscope extends Output {
 			if (wireIn.size() != 1) {
 				// throw ElementInputSizeException
 			} else {
-				Value = Samples.poll(); // Utolso elem a mintabol kiesik
+				if(Samples.size()>0) Value = Samples.poll(); // Utolso elem a mintabol kiesik
 				Samples.add(wireIn.get(0).GetValue()); // hozzaadjuk az uj
 														// erteket
 			}

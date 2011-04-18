@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.*;
 /** 
  * <table border=0>
  * 	<tr align=left>
@@ -79,7 +80,7 @@ public class DigitalBoard {
 		if (ComponentList != null && !ComponentList.isEmpty()) {
 			for (List<DigitalObject> sublist : ComponentList) {
 				for (DigitalObject o : sublist) {
-					if (o.ID == ElementID)
+					if (o.ID.equalsIgnoreCase(ElementID))
 						return (DigitalObject) o;
 				}
 			}
@@ -173,11 +174,11 @@ public class DigitalBoard {
 		}
 		if (file.getName() == "teszt2.bhdl") {
 			// SWITCH letrehozasa
-			SWITCH sw01 = new SWITCH("main", null);
+			SWITCH sw01 = new SWITCH("main", "sw01");
 			tmp_components.add(sw01);
 
 			// Oscilloscope letrehozasa
-			Oscilloscope osc01 = new Oscilloscope("main", null, 10);
+			Oscilloscope osc01 = new Oscilloscope("main", "osc01", 10);
 			tmp_components.add(osc01);
 
 			Wire main_w02 = new Wire("main");
@@ -285,21 +286,136 @@ public class DigitalBoard {
 		HierarchyCounter cntr=new HierarchyCounter();
 		cntr.CountHierarchy(WireList, ComponentList);
 		//Debug();
-		run(file.getName());
+		System.out.println(file.getName()+ "'s Board is loaded");
+		CountComponents();
+		runProto();
+		
+		
+	}
+	
+	public DigitalObject getItemByID(String eztkeresem){
+		for(int i=0; i<ComponentList.size();i++){//minden szint
+			for(int j=0; j<ComponentList.get(i).size();j++){//minden eleme
+				if(ComponentList.get(i).get(j).ID.equalsIgnoreCase(eztkeresem)) 
+					return ComponentList.get(i).get(j);
+				String id=ComponentList.get(i).get(j).ID;
+				id=id.split("#")[2];
+				if(id.equalsIgnoreCase(eztkeresem)) return ComponentList.get(i).get(j);
+					
+			}
+		}
+		return null;
 	}
 		
-	public void run(String filename){
-		System.out.println(filename+ "'s Board is loaded");
+	public void runProto(){
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
-		try { // Szamma alakitjuk - ha tudjuk - a bevitt szoveget
-			reader.readLine();//PETII, amit visszaad, azzal kezdj vmit
-			//setSequence gen_name sequence(pl 01101010100) -> gen_name.setSequence(0x0110101010100) (binariba kell alakitani!!); count();
-			//toggleSwitch sw_name -> sw_name.Toggle(); count();
-			//step -> StepComponents();
-		} catch (Exception e) {
-			// line = "exit" ;
-		}
+		String line,command = "",param1 = "",param2 = "";
+
+        Pattern regxp;
+        while(true){ 
+        	try { //  a bevitt szoveget
+    			line = reader.readLine();
+                           
+                //Regularis Kifejezes
+                regxp = Pattern.compile(".*? "); // Megkeressuk parancsot
+
+                //Megkeressuk a talalatokat
+                Matcher match = regxp.matcher(line);
+                if (match.find()){
+                	command = match.group();//Kimentjuk parancsot
+                } else {
+                    regxp = Pattern.compile(".*");//Egyszavas parancs
+                    match = regxp.matcher(line);
+                    if (match.find()){
+                    	command = match.group();//Kimentjuk parancsot
+                    }
+                }
+
+                line = line.replace(command,"");//Kivesszuk talalatot,reszre keresunk cska
+                command = command.replace(" ",""); //Kivesszuk spacet
+
+                match = regxp.matcher(line);
+                if (match.find()){
+                	param1 = match.group();//Kimentjuk elso parametert
+                } else {
+                    regxp = Pattern.compile(".*");//Egyszavas parancs
+                    match = regxp.matcher(line);
+                    if (match.find()){
+                    	param1 = match.group();//Kimentjuk parancsot
+                    }
+                }
+
+                line = line.replace(param1,"");//Kivesszuk talalatot,reszre keresunk cska
+                param1 = param1.replace(" ",""); //Kivesszuk spacet
+
+                regxp = Pattern.compile(".*");
+                match = regxp.matcher(line);
+                match.find();
+                param2 = match.group();//Kimentjuk masodik parametert
+                param2 = param2.replace(" ",""); //Kivesszuk spacet
+                           
+                //Kosonjuk JAVA, hogy nem lehet stringet switchbe rakni
+                if (command.equals("setFrequency")){
+                	DigitalObject elem=getItemByID(param1);
+                	if(elem==null) System.out.println("x Error: Wrong Parameter: No object with id "+param1);
+                    int freq = Integer.parseInt(param2);
+                    if(freq<=0) System.out.println("x Error: Frequency must be positive");
+                    try {
+                    	((GENERATOR)(elem)).SetFrequency(freq);
+                    } catch(Exception ex)  {
+                    	System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                    }
+                    System.out.println(param1+"'s frequency is set to " + freq);
+                    CountComponents();
+                    runProto();
+                } else if(command.equals("stepComponents")){
+                	StepComponents();
+                	System.out.println("Board circuit has stepped");
+                	runProto();
+                } else if(command.equals("setOutput")){
+                    System.out.println("Output is set to " + param1);
+                    //TODO?
+                } else if(command.equals("setInterval")){
+                    System.out.println("Boards interval is set to " + param1);
+                    //TODO?
+                } else if(command.equals("toggleSwitch")){
+                	DigitalObject elem=getItemByID(param1);
+                	if(elem==null) System.out.println("x Error: Wrong Parameter: No object with id "+param1);
+                     try {
+                    	((SWITCH)(elem)).Toggle();
+                    	System.out.println(param1+"'s value is set to " + ((SWITCH)(elem)).Value);
+                    } catch(Exception ex)  {
+                    	System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                    }
+                    CountComponents();
+                    runProto();
+                } else if(command.equals("setSample")){
+                    System.out.println("For each Digitalobject in List");
+                    System.out.println("Search for the name " + param1);
+                    System.out.println("If it is OSCILLOSCOPE, call its SetSample with param " + param2);
+                    int sample = Integer.parseInt(param2);
+                    //TODO? int meg binary problem
+                    CountComponents();
+                } else if(command.equals("exit")){
+                    System.exit(0);
+                } else {
+                    System.out.print("Unknown command\n");
+                    runProto();
+                }
+    		} catch (Exception e) {
+    			System.out.println(e.toString());
+    		} 
+        }
+		
+//		try { // Szamma alakitjuk - ha tudjuk - a bevitt szoveget
+//			reader.readLine();//PETII, amit visszaad, azzal kezdj vmit
+//			//setSequence gen_name sequence(pl 01101010100) -> gen_name.setSequence(0x0110101010100) (binariba kell alakitani!!); count();
+//			//toggleSwitch sw_name -> sw_name.Toggle(); count();
+//			//step -> StepComponents();
+//		} catch (Exception e) {
+//			// line = "exit" ;
+//		}
 	}
 	
 	public void Debug(){
@@ -407,11 +523,53 @@ public class DigitalBoard {
 		 * Elvileg mar fel van epulve a hierarchia igy nekem eleg megkapnom a
 		 * ComponentListet
 		 */
+		System.out.println("<main count>");
+		
 		DigitalObject obj;
 		for (List<DigitalObject> sublist : ComponentList) {
 			for (DigitalObject o : sublist) {
 				obj = (DigitalObject) o;
 				obj.Step();
+				for(int i=0;i<obj.wireOut.size();i++){
+					if(obj.ID.split("#")[0].equalsIgnoreCase("main"))
+						System.out.println("<"+obj.wireOut.get(i).GetName()+"> value is "+obj.wireOut.get(i).GetValue());
+					
+				}
+				//System.out.println("xxx"+obj.getClass().toString());
+				if(obj.getClass().toString().equals("class Oscilloscope") || 
+						obj.getClass().toString().equals("class LED"))
+							System.out.println("<"+obj.ID.split("#")[2]+"> value is "+ obj.wireIn.get(0).GetValue());
+									
+				
+			}
+		}
+		
+	}
+	/**
+	 * Meghivja az osszes iComponent interfeszt megvalosito objektum Count()
+	 * metodusat.
+	 */
+	public void CountComponents() {
+		/*
+		 * Elvileg mar fel van epulve a hierarchia igy nekem eleg megkapnom a
+		 * ComponentListet
+		 */
+		System.out.println("<main count>");
+		DigitalObject obj;
+		for (List<DigitalObject> sublist : ComponentList) {
+			for (DigitalObject o : sublist) {
+				obj = (DigitalObject) o;
+				obj.Count();
+				for(int i=0;i<obj.wireOut.size();i++){
+					//System.out.print(obj.ID.split("#")[0].trim());
+					if(obj.ID.split("#")[0].equalsIgnoreCase("main"))
+						System.out.println("<"+obj.wireOut.get(i).GetName()+"> value is "+obj.wireOut.get(i).GetValue());
+				}
+				//System.out.println("xxx"+obj.getClass().toString());
+				if(obj.getClass().toString().equals("class Oscilloscope") || 
+						obj.getClass().toString().equals("class LED"))
+							System.out.println("<"+obj.ID.split("#")[2]+"> value is "+ obj.wireIn.get(0).GetValue());
+					
 			}
 		}
 	}
