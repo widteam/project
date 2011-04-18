@@ -526,24 +526,25 @@ public class bhdlParser {
 				myComposit.wireIn.set(i, w);
 				myComposit.ReplaceWire(myComposit.wireIn.get(i), w);
 			}
-			// Temporalis valtozo
 			
 			/*
 			 * UGYANZET el is kell jatszani csak most a kimeno elemeket csatlakoztatjuk
 			 */
 			w=null;	
 			for(int i=0;i<WiresOut.length;i++){
-				// Ha letezik a szuloben az adott WIRE
+				// Ha letezik a szuloben az adott WIRE...
 				if(owner.GetWireByName(WiresOut[i])!=null){
-					// w most az a drot ami kimegy a compositbol
+					// ...akkor w az a wire lesz
 					w= owner.GetWireByName(WiresOut[i]);
+					
 					// Hozzakotom a kulso drothoz a belso droton csucsulo elemeket
-					w.objectsIn= myComposit.wireOut.get(i).objectsIn;
+			
+					w.objectsIn = myComposit.wireOut.get(i).objectsIn;
 					
 					/*
 					 * most ertesiteni kell ezeket az elemeket, hogy valtozott a
 					 * listajuk. (ha nem ures az elemek halmaza)
-					 */
+					 */	
 					if(w.objectsIn!=null){
 						for(int o=0;o<w.objectsIn.size();o++){
 							/*
@@ -551,21 +552,20 @@ public class bhdlParser {
 							 */
 							int WireToChangeIndex = w.objectsIn.get(o).wireOut.indexOf(myComposit.wireOut.get(i));
 							//Kicsereljuk a drotot ezeken az elemeken
-							myComposit.wireOut.set(WireToChangeIndex, w);							
+							w.objectsIn.get(o).wireOut.set(WireToChangeIndex, w);							
 						}
-					}
+					}		
 				}
 				// Ha ez a bemeno ize egy elem
-				else if(owner.GetElementByName(WiresIn[i])!=null){
-					/*
-					 *  owner.GetElementByName(WiresIn[i]).wireOut.get(0)--> 
-					 *  Szulo composit elemenek drotja ami belemegy a Compositba
-					 *  
-					 */
-					
-					w= owner.GetElementByName(WiresIn[i]).wireOut.get(0);
+				else if(owner.GetElementByName(WiresOut[i])!=null){
+					for(int index=0;index<owner.GetElementByName(WiresOut[i]).wireIn.size();index++){
+						if(owner.GetElementByName(WiresOut[i]).wireIn.get(index).objectsIn.contains(myComposit)){
+							w= owner.GetElementByName(WiresOut[i]).wireIn.get(index);
+							w.objectsIn.remove(w.objectsIn.indexOf(myComposit));
+						}
+					}
 					// a kivulrol jovo drothoz csatlakoztatjuk a composit elmeit
-					w.objectsIn =  myComposit.wireOut.get(i).objectsIn;
+					w.objectsIn.addAll(myComposit.wireOut.get(i).objectsIn);
 					/*
 					 * most ertesiteni kell ezeket az elemeket, hogy valtozott a
 					 * listajuk. (ha nem ures az elemek halmaza)
@@ -577,12 +577,12 @@ public class bhdlParser {
 							 */
 							int WireToChangeIndex = w.objectsIn.get(o).wireOut.indexOf(myComposit.wireOut.get(i));
 							//Kicsereljuk a drotot ezeken az elemeken
-							myComposit.wireOut.set(WireToChangeIndex, w);							
+							w.objectsIn.get(o).wireOut.set(WireToChangeIndex, w);							
 						}
-					}			
+					}									
 				}
-				myComposit.ReplaceWire(myComposit.wireOut.get(i), w);
 				myComposit.wireOut.set(i, w);
+				myComposit.ReplaceWire(myComposit.wireOut.get(i), w);
 			}
 //			ReadComposit(myComposit,source,comp_name);
 			return myComposit;
@@ -629,76 +629,99 @@ public class bhdlParser {
 			/*********************************************************************/
 			String[] items = postfix.split(" ");
 			Stack<Wire> WireStack = new Stack<Wire>();
-			if(WireStack.size()>1 || true){
-				for(String item:items){
-					
-					if(!isOperator(item)){
-						// Hozzadjuk a veremhez
-						if(owner.GetWireByName(item)!=null){
-							WireStack.add(owner.GetWireByName(item));
-						}else if(owner.GetElementByName(item)!=null){
-							// ha meg nincs kesz a wire, gyorsan letrehozzuk
-							Wire w = new Wire(owner.GetName());
-							w.SetConnection(null, owner.GetElementByName(item));
-							owner.GetElementByName(item).wireOut.add(w);
-							owner.AddToWireList(w);
-							
-							WireStack.add(w);
-						}
-					}else if(isOperator(item)){
-						if(NumOfOperand(item)==1){
-							if(item.equalsIgnoreCase("!"))
-							{
-								Wire inv_in1 = WireStack.pop();								
-								INVERTER myInverter = new INVERTER(owner.GetName(), inv_in1);
-								inv_in1.SetConnection(myInverter, null);
-								Wire inv_out = new Wire(owner.GetName());
-								inv_out.SetConnection(null, myInverter);
-								owner.AddToWireList(inv_out);
-								myInverter.AddOutput(inv_out);
-								WireStack.push(inv_out);
-								owner.getFirstLevelOfComponentList().add(myInverter);
-							}
-						}
-						if(NumOfOperand(item)==2){
-							if(item.equalsIgnoreCase("&"))
-							{
-								Wire and_in1 = WireStack.pop();	
-								Wire and_in2 = WireStack.pop();	
-								ANDGate myAnd = new ANDGate(owner.GetName(), and_in1,and_in2);
-								and_in1.SetConnection(myAnd, null);
-								and_in2.SetConnection(myAnd, null);
-								Wire and_out = new Wire(owner.GetName());
-								and_out.SetConnection(null, myAnd);
-								owner.AddToWireList(and_out);
-								myAnd.AddOutput(and_out);
-								WireStack.push(and_out);
-								owner.getFirstLevelOfComponentList().add(myAnd);
-							}
-							if(item.equalsIgnoreCase("|"))
-							{
-								Wire or_in1 = WireStack.pop();	
-								Wire or_in2 = WireStack.pop();	
-								ORGate myOr = new ORGate(owner.GetName(), or_in1,or_in2);
-								or_in1.SetConnection(myOr, null);
-								or_in2.SetConnection(myOr, null);
-								Wire or_out = new Wire(owner.GetName());
-								or_out.SetConnection(null, myOr);
-								owner.AddToWireList(or_out);
-								myOr.AddOutput(or_out);
-								WireStack.push(or_out);
-								owner.getFirstLevelOfComponentList().add(myOr);
-							}
-						}//end: operandusok szama					
-					}//end if: ha operator				
-				}//end for: lista bejarasa, postfix kiertekel		
-			}//Vege: ha tobb elem van a listaban mint 1
 
+			// Kiertekeljuk a PostFixes alakot
+			for(String item:items){
+				// ha nem operator
+				if(!isOperator(item)){
+					// Hozzadjuk a veremhez
+					if(owner.GetWireByName(item)!=null){
+						WireStack.add(owner.GetWireByName(item));
+					}else if(owner.GetElementByName(item)!=null){
+						// ha meg nincs kesz a wire, gyorsan letrehozzuk
+						Wire w = new Wire(owner.GetName());
+						w.SetConnection(null, owner.GetElementByName(item));
+						owner.GetElementByName(item).wireOut.add(w);
+						owner.AddToWireList(w);
+						
+						WireStack.add(w);
+					}
+				}
+				// ha operator (& | !)
+				else if(isOperator(item)){
+					// meg kell neznunk, hogy hagy operandust igenyel
+					if(NumOfOperand(item)==1){
+						if(item.equalsIgnoreCase("!"))
+						{
+							Wire inv_in1 = WireStack.pop();								
+							INVERTER myInverter = new INVERTER(owner.GetName(), inv_in1);
+							inv_in1.SetConnection(myInverter, null);
+							Wire inv_out = new Wire(owner.GetName());
+							inv_out.SetConnection(null, myInverter);
+							owner.AddToWireList(inv_out);
+							myInverter.AddOutput(inv_out);
+							WireStack.push(inv_out);
+							owner.getFirstLevelOfComponentList().add(myInverter);
+						}
+					}
+					if(NumOfOperand(item)==2){
+						if(item.equalsIgnoreCase("&"))
+						{
+							Wire and_in1 = WireStack.pop();	
+							Wire and_in2 = WireStack.pop();	
+							ANDGate myAnd = new ANDGate(owner.GetName(), and_in1,and_in2);
+							and_in1.SetConnection(myAnd, null);
+							and_in2.SetConnection(myAnd, null);
+							Wire and_out = new Wire(owner.GetName());
+							and_out.SetConnection(null, myAnd);
+							owner.AddToWireList(and_out);
+							myAnd.AddOutput(and_out);
+							WireStack.push(and_out);
+							owner.getFirstLevelOfComponentList().add(myAnd);
+						}
+						if(item.equalsIgnoreCase("|"))
+						{
+							Wire or_in1 = WireStack.pop();	
+							Wire or_in2 = WireStack.pop();	
+							ORGate myOr = new ORGate(owner.GetName(), or_in1,or_in2);
+							or_in1.SetConnection(myOr, null);
+							or_in2.SetConnection(myOr, null);
+							Wire or_out = new Wire(owner.GetName());
+							or_out.SetConnection(null, myOr);
+							owner.AddToWireList(or_out);
+							myOr.AddOutput(or_out);
+							WireStack.push(or_out);
+							owner.getFirstLevelOfComponentList().add(myOr);
+						}
+					}//end: operandusok szama					
+				}//end if: ha operator				
+			}//end for: lista bejarasa, postfix kiertekel		
+
+			// ez a "vegeredmeny" ez a drot fog csatlakozni az lvaluehoz
 			assigned_wire = WireStack.pop();
+			/*
+			 *  most megnezzuk, lvlaue hol s mikent letezik.
+			 */
+			
+			// Ha ez egy wire a composit WireList-jeben
 			if(owner.GetWireByName(lvalue)!=null){
-				owner.GetWireByName(lvalue).objectsIn = assigned_wire.objectsIn;
+				/* 
+				 * ha wire, akkor mar letezik. Hozzaadjuk a bemeno elemlistajahoz 
+				 * a vegeredmeny drot elemlistajat
+				 */				
+				owner.GetWireByName(lvalue).objectsIn.addAll(assigned_wire.objectsIn);
+				/*
+				 *  most ertesitek minden olyan objektumot, amely az assigned_wire-hez csatlakozik
+				 *  ugyanis az torlesre fog kerulni.
+				 *  az objektumok kimenetenek a Composit drotjat adom meg
+				 */
 				for(int i=0;i<assigned_wire.objectsIn.size();i++){
 					DigitalObject o = assigned_wire.objectsIn.get(i);
+					/*
+					 * ha talalok az objektumnal egy olyan drotot ami 
+					 * az assigned_wire-hez csatlakozna veletlen, 
+					 * azt lecserelem a Composit Wire elemere
+					 */
 					for(Wire w: o.wireOut){
 						if(w==assigned_wire){
 							o.wireOut.set(o.wireOut.indexOf(w), owner.GetWireByName(lvalue)) ;
@@ -706,13 +729,17 @@ public class bhdlParser {
 						
 					}
 				}
-			}else if(owner.GetElementByName(lvalue)!=null){
-				owner.GetElementByName(lvalue).wireIn.add(assigned_wire);
-					assigned_wire.SetConnection(owner.GetElementByName(lvalue), null);
-					owner.AddToWireList(assigned_wire);
 			}
-		}
-		
+			/*
+			 *  Ha ez egy elem a Composit ComponentList, akkor elvileg neki nem lesz 
+			 *  nicns wire-je amit fel kell szabaditani, egyszeruen csak hozzakotjuk
+			 */
+			else if(owner.GetElementByName(lvalue)!=null){
+				owner.GetElementByName(lvalue).wireIn.add(assigned_wire);
+				assigned_wire.SetConnection(owner.GetElementByName(lvalue), null);
+				owner.AddToWireList(assigned_wire);	
+			}
+		}		
 		return assigned_wire;
 	}
 
