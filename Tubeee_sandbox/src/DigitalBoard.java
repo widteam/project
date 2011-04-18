@@ -400,7 +400,7 @@ public class DigitalBoard {
                 } else if(command.equals("exit")){
                     System.exit(0);
                 } else {
-                    System.out.print("Unknown command\n");
+                    System.out.print("x Error: CommandNotFound\n");
                     runProto();
                 }
     		} catch (Exception e) {
