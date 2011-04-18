@@ -125,13 +125,16 @@ public class DigitalBoard {
 		bhdlParser.CommandParser(MainComposit, strFileContents,main_commands);
 		MainComposit.buildHierarchy();
 		MainComposit.getFeedbacks();
-		Debug();
+		Debug(true);
 	}
+	public void Debug(boolean AllComponent){
+		/* KIIRATAS, DEBUG */
+		MainComposit.Debug(AllComponent);
+	};
 	public void Debug(){
 		/* KIIRATAS, DEBUG */
-		MainComposit.Debug();
+		MainComposit.Debug(false);
 	};
-
 	/**
 	 * metodus meghivja a SetStatus metodust RUNING parameterrel
 	 */

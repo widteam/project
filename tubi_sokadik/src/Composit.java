@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class Composit extends DigitalObject {
 	/* ATTRIBÚTUMOK */
@@ -277,30 +278,47 @@ public class Composit extends DigitalObject {
 			ComponentList.get(++iHierarchy).addAll(components_next);
 		}
 	}
-	public void getFeedbacks(){
+
+	public void getFeedbacks() {
 		// FEEDBACK
 		/**
 		 * Ha tartalmazza egy korabbi szint az obj elemet, akkor itt egy
 		 * visszacsatolas van. Ha visszacsatolas, akkor meg FEEDBACK!
 		 */
 		int iHierarchy = 0;
-		for (List<DigitalObject> sublist : ComponentList) { // vegig az osszes
-															// hierarchia
-															// szinten
-			for (DigitalObject obj : sublist) { // vegig a reszlistakon
-				DigitalObject feedback_start = null; // inicializaljuk a
-														// feedbacket nullra
-				for (Wire out : obj.wireOut) { // az aktualis elem osszes
-												// kimenetet nezzuk
-					for (DigitalObject wire_obj : out.objectsOut) { // ez az
-																	// osszes
-																	// elem
-																	// amihez
-																	// csatlakozik
-						/*
-						 * Itt meg kell nezni hogy korabi szinten szerepelt-e
-						 * mar
-						 */
+
+		// vegig az osszes hierarchia szinten
+		for (List<DigitalObject> sublist : ComponentList) {
+			// vegig a reszlistakon
+			for (DigitalObject obj : sublist) {
+				// feedback inicializalasa
+				DigitalObject feedback_start = null;
+
+				/*
+				 * Ha az elem egy COMPOSIT az kulon banasmodot igenyel ugyanis
+				 * annak nem minden wire-jem utat jo helyre ha nem akkor mehet
+				 * normalisan tehat a ket esetre kulon WIREOUT
+				 */
+				List<Wire> WIRESOUT = null;
+				if (obj.GetType().equalsIgnoreCase("Composit")) {
+					WIRESOUT = new ArrayList<Wire>();
+					for (Wire w : obj.wireOut) {
+						for (DigitalObject o : w.objectsIn) {
+							if (o.GetType().equalsIgnoreCase("Composit")) {
+								WIRESOUT.add(w);
+							}
+						}
+					}
+				} else {
+					WIRESOUT = obj.wireOut;
+				}
+				// az aktualis elem kimeneteit nezzuk
+				for (Wire out : WIRESOUT) { 
+					/*
+					 * Ellenoritzni kell, hogy a kimenet objektumai szerepeltek-e 
+					 * mar korabbi szinten
+					 */
+					for (DigitalObject wire_obj : out.objectsOut) { 
 						for (int i = 0; i < iHierarchy + 1; i++) {
 							if (ComponentList.get(i).contains(wire_obj)) {
 								/**
@@ -319,7 +337,23 @@ public class Composit extends DigitalObject {
 								tmp_list.add(feedback_start);
 								while (!tmp_list.contains(obj)) {
 									listelement = tmp_list.get(count++);
-									for (Wire w : listelement.wireOut) {
+									/*
+									 * Megint a gonosz Composit...
+									 */
+									List<Wire> CWIRESOUT = null;
+									if (listelement.GetType().equalsIgnoreCase("Composit")) {
+										CWIRESOUT = new ArrayList<Wire>();
+										for (Wire w : listelement.wireOut) {
+											for (DigitalObject o : w.objectsIn) {
+												if (o.GetType().equalsIgnoreCase("Composit")) {
+													CWIRESOUT.add(w);
+												}
+											}
+										}
+									} else {
+										CWIRESOUT = listelement.wireOut;
+									}
+									for (Wire w : CWIRESOUT) {
 										for (DigitalObject next_element : w.objectsOut) {
 											tmp_list.add(next_element);
 										}
@@ -331,6 +365,7 @@ public class Composit extends DigitalObject {
 								 * Ahol megegyezik a ket lista (ez es az elozo)
 								 * az egy visszacsatolas
 								 */
+								feedback_start.Feedbacks =new ArrayList<DigitalObject>();
 								feedback_start.Feedbacks.add(obj);
 								count = 0;
 								boolean added = false;
@@ -340,7 +375,27 @@ public class Composit extends DigitalObject {
 									if (listelement == feedback_start) {
 										break;
 									}
-									for (Wire w : listelement.wireIn) {
+									/*
+									 * Ha az elem egy COMPOSIT az kulon banasmodot igenyel
+									 * ugyanis annak nem minden wire-jem utat jo helyre
+									 * ha nem akkor mehet normalisan	
+									 * tehat a ket esetre kulon WIREOUT	
+									 */
+									List<Wire> WIRESIN = null;
+									if(obj.GetType().equalsIgnoreCase("Composit")){
+										WIRESIN = new ArrayList<Wire>();
+									for(Wire w:obj.wireIn){
+											for(DigitalObject o:w.objectsOut){
+												if(o.GetType().equalsIgnoreCase("Composit")){
+													WIRESIN.add(w);
+												}
+											}
+										}
+									}
+									else{
+										WIRESIN = listelement.wireIn;
+									}
+									for (Wire w : WIRESIN) {
 										for (DigitalObject next_element : w.objectsIn) {
 											if (tmp_list.contains(next_element)) {
 												feedback_start.Feedbacks
@@ -359,27 +414,52 @@ public class Composit extends DigitalObject {
 				}// vege:kimeno drotok
 			}// vege: sublistban az elemek
 			iHierarchy++;
-		}// vege: hierarchiak		
-	}	
-	public void Debug(){
+		}// vege: hierarchiak
+	}
+
+	public void Debug(boolean AllComponent){
 		/* KIIRATAS, DEBUG */
-		int szint = 0;
-		for (List<DigitalObject> sublist : ComponentList) {
-			System.out.println();
-			System.out.print("Szint: ");
-			System.out.print(szint++);
-			System.out.print("\t");
-			for (DigitalObject o : sublist) {
-				System.out.print(o.GetID() + ", ");
-				if (o.Feedbacks != null && !o.Feedbacks.isEmpty()) {
-					System.out.print("FEEDBACK [");
-					for (DigitalObject f_o : o.Feedbacks) {
-						System.out.print(" " + f_o.ID + ", ");
+		if(AllComponent){
+			Stack<Composit> compi_stack = new Stack<Composit>();
+			compi_stack.push(this);
+			GetAllComposit(compi_stack);
+			
+			while(!compi_stack.isEmpty()){
+				Composit c = compi_stack.pop();
+				c.Debug(false);
+			}
+		}
+		else{
+			int szint = 0;
+			for (List<DigitalObject> sublist : ComponentList) {
+				System.out.println();
+				System.out.print("Szint: ");
+				System.out.print(szint++);
+				System.out.print("\t");
+				for (DigitalObject o : sublist) {
+					System.out.print(o.GetID() + ", ");
+					if (o.Feedbacks != null && !o.Feedbacks.isEmpty()) {
+						System.out.print("FEEDBACK [");
+						for (DigitalObject f_o : o.Feedbacks) {
+							System.out.print(" " + f_o.ID + ", ");
+						}
+						System.out.print("]");
 					}
-					System.out.print("]");
 				}
 			}
 		}
+	}
+
+	private void GetAllComposit(Stack<Composit> compi_stack){
+		for (List<DigitalObject> sublist : ComponentList) {
+			for (DigitalObject o : sublist) {					
+				if(o.GetType().equalsIgnoreCase("Composit")){
+					Composit comp = (Composit) o ;					
+					compi_stack.add(comp);
+					comp.GetAllComposit(compi_stack);
+				}
+			}
+		}	
 	}
 	public List<DigitalObject> getFirstLevelOfComponentList(){
 		return ComponentList.get(0);

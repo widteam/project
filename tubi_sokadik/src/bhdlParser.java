@@ -399,18 +399,19 @@ public class bhdlParser {
 				
 				/* A Composit fejlece alapjan megtalalt drotokat most letre is hozzuk.
 				 * Mindegyiket hozzakotjuk a Composithoz es hozzadjuk a Composit listajahoz
+				 * ezek a drotok a Compositon belul futnak.
 				 */	
 				//Bemeno drotok
 				for(String wire_in:HeaderWiresIn){
 					Wire w=new Wire(comp_name,wire_in);
-					w.SetConnection(null,null);
+					w.SetConnection(null,myComposit);
 					myComposit.wireIn.add(w);	
 					myComposit.AddToWireList(w);
 				}
 				//Kimeno drotok
 				for(String wire_out:HeaderWiresOut){
 					Wire w=new Wire(comp_name,wire_out);
-					w.SetConnection(null,null);
+					w.SetConnection(myComposit,null);
 					myComposit.wireOut.add(w);
 					myComposit.AddToWireList(w);
 				}
@@ -419,10 +420,12 @@ public class bhdlParser {
 			 * REKURZIV FELDERITESE A TOBBI KOMPOZITNAK
 			 * ReadComposit(myComposit,source,comp_name);			 * 
 			 */
-			Composit compi = ReadComposit(myComposit,source,comp_name);
-			owner.getFirstLevelOfComponentList().add(compi);
+			ReadComposit(myComposit,source,comp_name);
+			owner.getFirstLevelOfComponentList().add(myComposit);
 
 			/* Ez pedig ahogy kivulrol nez ki az osszekottetes
+			 * A drotok a Compositig futnak csak, Composit beli elemhez nem csatlakoznak
+			 * (null).
 			 */	
 			//Bemeno drotok
 			Wire w =null;
@@ -431,13 +434,12 @@ public class bhdlParser {
 					w = owner.GetWireByName(WiresIn[i]);
 				}
 				else if(owner.GetElementByName(WiresIn[i])!=null){
-					w=new Wire(comp_name);
+					w=new Wire(owner.GetName());
 					owner.GetElementByName(WiresIn[i]).wireOut.add(w);
 					w.SetConnection(null, owner.GetElementByName(WiresIn[i]));
 				}
-				
+				myComposit.wireIn.add(w);
 				w.SetConnection(myComposit,null);
-				myComposit.wireIn.add(w);	
 				owner.AddToWireList(w);
 			}
 			//Kimeno drotok
@@ -446,150 +448,17 @@ public class bhdlParser {
 					w = owner.GetWireByName(WiresOut[i]);
 				}
 				else if(owner.GetElementByName(WiresOut[i])!=null){
-					w=new Wire(comp_name);
+					w=new Wire(owner.GetName());
 					owner.GetElementByName(WiresOut[i]).wireIn.add(w);
 					w.SetConnection(owner.GetElementByName(WiresOut[i]),null);
 					owner.AddToWireList(w);
 				}					
 				w.SetConnection(null,myComposit);
-				myComposit.wireOut.add(w);	
+				myComposit.wireOut.add(w);
 				owner.AddToWireList(w);
 			}
-		}
+		}		
 		
-			
-			/*
-			 * Most jon a legmacerasabb resz.
-			 * Egy masik Compositbol a most letrehozott
-			 * Composit mashogy nez ki, masok a bemeno drotjai.
-			 * Ezt kell valahogy athidalni. Egy biztos pont: 
-			 * Ugyanannak a Compositnak minden komponensbol
-			 *  - ugyanannyi osszekottetese van
-			 *  - ugyanabban a sorendben
-			 */
-			
-			// Temporalis valtozo
-			Wire w=null;	
-			/*
-			 * Vegignezem, hogy a szulo mit kot a Composithoz.
-			 * A Compositon beluli drotokat lecserelem a Compositon kivulire
-			 */
-			for(int i=0;i<WiresIn.length;i++){
-				// Ha letezik a szuloben az adott WIRE
-				if(owner.GetWireByName(WiresIn[i])!=null){
-					// owner.GetWireByName(Wires[i])--> Szulo composit drotja ami belemegy a Compositba
-					w= owner.GetWireByName(WiresIn[i]);
-					
-					// Hozzakotom a kulso drothoz a belso droton csucsulo elemeket
-					//myComposit.wireIn.get(i) --> Composit bemeno drotjai
-					w.objectsOut = myComposit.wireIn.get(i).objectsOut;
-					
-					/*
-					 * most ertesiteni kell ezeket az elemeket, hogy valtozott a
-					 * listajuk. (ha nem ures az elemek halmaza)
-					 */	
-					if(w.objectsOut!=null){
-						for(int o=0;o<w.objectsOut.size();o++){
-							/*
-							 * Kinyerjuk a valtoztatando Wire-k indexet
-							 */
-							int WireToChangeIndex = w.objectsOut.get(o).wireIn.indexOf(myComposit.wireIn.get(i));
-							//Kicsereljuk a drotot ezeken az elemeken
-							w.objectsOut.get(o).wireIn.set(WireToChangeIndex, w);							
-						}
-					}		
-				}
-				// Ha ez a bemeno ize egy elem
-				else if(owner.GetElementByName(WiresIn[i])!=null){
-					/*
-					 *  owner.GetElementByName(WiresIn[i]).wireOut.get(0)--> 
-					 *  Szulo composit elemenek drotja ami belemegy a Compositba
-					 *  
-					 */
-					for(int index=0;index<owner.GetElementByName(WiresIn[i]).wireOut.size();index++){
-						if(owner.GetElementByName(WiresIn[i]).wireOut.get(index).objectsOut.contains(myComposit)){
-							w= owner.GetElementByName(WiresIn[i]).wireOut.get(index);
-							w.objectsOut.remove(w.objectsOut.indexOf(myComposit));
-						}
-					}
-					// a kivulrol jovo drothoz csatlakoztatjuk a composit elmeit
-					w.objectsOut.addAll(myComposit.wireIn.get(i).objectsOut);
-					/*
-					 * most ertesiteni kell ezeket az elemeket, hogy valtozott a
-					 * listajuk. (ha nem ures az elemek halmaza)
-					 */
-					if(w.objectsOut!=null){
-						for(int o=0;o<w.objectsOut.size();o++){
-							/*
-							 * Kinyerjuk a valtoztatando Wire-k indexet
-							 */
-							int WireToChangeIndex = w.objectsOut.get(o).wireIn.indexOf(myComposit.wireIn.get(i));
-							//Kicsereljuk a drotot ezeken az elemeken
-							w.objectsOut.get(o).wireIn.set(WireToChangeIndex, w);							
-						}
-					}									
-				}
-				myComposit.wireIn.set(i, w);
-				myComposit.ReplaceWire(myComposit.wireIn.get(i), w);
-			}
-			
-			/*
-			 * UGYANZET el is kell jatszani csak most a kimeno elemeket csatlakoztatjuk
-			 */
-			w=null;	
-			for(int i=0;i<WiresOut.length;i++){
-				// Ha letezik a szuloben az adott WIRE...
-				if(owner.GetWireByName(WiresOut[i])!=null){
-					// ...akkor w az a wire lesz
-					w= owner.GetWireByName(WiresOut[i]);
-					
-					// Hozzakotom a kulso drothoz a belso droton csucsulo elemeket
-			
-					w.objectsIn = myComposit.wireOut.get(i).objectsIn;
-					
-					/*
-					 * most ertesiteni kell ezeket az elemeket, hogy valtozott a
-					 * listajuk. (ha nem ures az elemek halmaza)
-					 */	
-					if(w.objectsIn!=null){
-						for(int o=0;o<w.objectsIn.size();o++){
-							/*
-							 * Kinyerjuk a valtoztatando Wire-k indexet
-							 */
-							int WireToChangeIndex = w.objectsIn.get(o).wireOut.indexOf(myComposit.wireOut.get(i));
-							//Kicsereljuk a drotot ezeken az elemeken
-							w.objectsIn.get(o).wireOut.set(WireToChangeIndex, w);							
-						}
-					}		
-				}
-				// Ha ez a bemeno ize egy elem
-				else if(owner.GetElementByName(WiresOut[i])!=null){
-					for(int index=0;index<owner.GetElementByName(WiresOut[i]).wireIn.size();index++){
-						if(owner.GetElementByName(WiresOut[i]).wireIn.get(index).objectsIn.contains(myComposit)){
-							w= owner.GetElementByName(WiresOut[i]).wireIn.get(index);
-							w.objectsIn.remove(w.objectsIn.indexOf(myComposit));
-						}
-					}
-					// a kivulrol jovo drothoz csatlakoztatjuk a composit elmeit
-					w.objectsIn.addAll(myComposit.wireOut.get(i).objectsIn);
-					/*
-					 * most ertesiteni kell ezeket az elemeket, hogy valtozott a
-					 * listajuk. (ha nem ures az elemek halmaza)
-					 */
-					if(w.objectsIn!=null){
-						for(int o=0;o<w.objectsIn.size();o++){
-							/*
-							 * Kinyerjuk a valtoztatando Wire-k indexet
-							 */
-							int WireToChangeIndex = w.objectsIn.get(o).wireOut.indexOf(myComposit.wireOut.get(i));
-							//Kicsereljuk a drotot ezeken az elemeken
-							w.objectsIn.get(o).wireOut.set(WireToChangeIndex, w);							
-						}
-					}									
-				}
-				myComposit.wireOut.set(i, w);
-				myComposit.ReplaceWire(myComposit.wireOut.get(i), w);
-			}
 //			ReadComposit(myComposit,source,comp_name);
 			return myComposit;
 		}
