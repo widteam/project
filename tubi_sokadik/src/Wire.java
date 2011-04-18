@@ -78,8 +78,6 @@ public class Wire {
 
 	/** METODUSOK */
 
-
-
 	/**
 	 * A Wire objektum ertekenek lekerdezesere szolgalo metodus
 	 * 
@@ -120,7 +118,7 @@ public class Wire {
 			if (objectsIn.isEmpty()) {
 				objectsIn.add(objectWhat);
 			} else {
-				// throw WireHasMultipleInputsException;
+				// throw new WireHasMultipleInputsException;
 			}
 		}
 		if (objectWhere != null && objectsOut != null) {
@@ -129,16 +127,22 @@ public class Wire {
 	};
 	/**
 	 * A Wire egyedi azonositojanak lekerdezesere szolgalo metodus.
-	 * 
-	 * @param
 	 * @return <i>A Wire objektum azonositoja</i>
 	 */
 	public String GetID() {
 		return ID;
 	};
+	/**
+	 * A Wire tipusanak lekerdezesere szolgalo metodus.
+	 * @return <i>A Wire objektum tipusa</i>
+	 */
 	public String GetType() {
 		return (ID.split("#")[1]).trim();
 	}
+	/**
+	 * A Wire nevenek lekerdezesere szolgalo metodus.
+	 * @return <i>A Wire objektum neve</i>
+	 */
 	public String GetName() {
 		return (ID.split("#")[2]).trim();
 	}

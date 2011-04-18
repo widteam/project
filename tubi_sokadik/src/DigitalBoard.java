@@ -44,10 +44,11 @@ public class DigitalBoard {
 	/**
 	 * Haromallapotu valtozo, amely a szimulacio aktualis allapotat tarolja
 	 */
-	@SuppressWarnings("unused")
 	private Status SimStatus;
-	
-	Composit MainComposit = null;
+	/**
+	 * Egy fo Composit, ez tartalmaz minden tovabbi elemet, Compositot
+	 */
+	private Composit MainComposit = null;
 	/** KONSTRUKTOR */
 	public DigitalBoard() {
 		SimStatus = Status.STOPPED;
@@ -125,7 +126,7 @@ public class DigitalBoard {
 		bhdlParser.CommandParser(MainComposit, strFileContents,main_commands);
 		MainComposit.buildHierarchy();
 		MainComposit.getFeedbacks();
-		Debug(true);
+		Debug();
 	}
 	public void Debug(boolean AllComponent){
 		/* KIIRATAS, DEBUG */
@@ -153,7 +154,7 @@ public class DigitalBoard {
 	 * A metodus meghivja a SetStatus metodust STOPPED parameterrel
 	 */
 	public void Stop() {
-		SetStatus(Status.RUNNING);
+		SetStatus(Status.STOPPED);
 	};
 
 	/**
