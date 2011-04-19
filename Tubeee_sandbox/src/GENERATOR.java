@@ -38,7 +38,7 @@ public class GENERATOR extends Input{
 	/**
 	 * Ebben taroljuk a kimenetre kikuldendo mintat. Ertelmezese binaris.
 	 */
-	private int Sequence;
+	private String Sequence;
 
 	/**
 	 * Az attributum tartja nyilvan az aktualis poziciot a szekvenciaban. 
@@ -58,7 +58,7 @@ public class GENERATOR extends Input{
 	 * @param StartSequence Letrehozaskor megadhato minta, ujabb ertek beallitasaig ezt ismetli
 	 * @param WiresOut A GENERATOR-hoz csatlakozo Wire objektum referenciaja
 	 */
-	public GENERATOR(String strCompositName, int StartFrequency, int StartSequence){
+	public GENERATOR(String strCompositName, int StartFrequency, String StartSequence){
 		String strIDNumber  = String.valueOf(GENERATORCounts++);
 		final String strClassName  = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter + strClassName + strIDNumber;
@@ -69,10 +69,12 @@ public class GENERATOR extends Input{
 		FrequencyCounter = StartFrequency;
 		Sequence = StartSequence;
 		SequencePos = 0;		
-		Value = 0;
+		if(StartSequence.startsWith("0")){
+			Value=0;
+		} else Value=1;
 
 	}
-	public GENERATOR(String strCompositName,String GeneratorName, int StartFrequency, int StartSequence){
+	public GENERATOR(String strCompositName, String GeneratorName, int StartFrequency, String StartSequence){
 		final String strIDName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter
 		+ GeneratorName;			
@@ -82,7 +84,9 @@ public class GENERATOR extends Input{
 		FrequencyCounter = StartFrequency;
 		Sequence = StartSequence;
 		SequencePos = 0;		
-		Value = 0;
+		if(StartSequence.startsWith("0")){
+			Value=0;
+		} else Value=1;
 
 	}	
 	
@@ -92,17 +96,22 @@ public class GENERATOR extends Input{
 	 */
 	public void Reset(){
 		SequencePos = 0;				// Poziciot alapra
-		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
+		if(Sequence.startsWith("0")){
+			Value=0;
+		} else Value=1;
+
 	};
 	
 	/**
 	 * a Frequency erteket allitja be, a parameterben megadott ertekre.
 	 * @param NewSequence Az a minta melyet be kivanunk allitani
 	 */
-	public void SetSequence(int NewSequence){
+	public void SetSequence(String NewSequence){
 		Sequence = NewSequence;					// Beallitjuk a szekvenciat
 		SequencePos = 0;							// Poziciot alapra
-		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
+		if(Sequence.startsWith("0")){
+			Value=0;
+		} else Value=1;
 	};
 	
 	/**
@@ -132,14 +141,16 @@ public class GENERATOR extends Input{
 			}else{
 				for(Wire OutPut:wireOut){
 					OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
-					if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciaban elore megyunk.. mar ha lehet
+					if(SequencePos >= Sequence.length()){	// a szekvenciaban elore megyunk.. mar ha lehet
 						SequencePos = 0;				
 					}else{
 						SequencePos++;
 					}						
 				}//end for
 			}
-			Value = Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszamoljuk az uj erteket
+			if((Sequence.toCharArray())[SequencePos]=='1') Value=1;
+			else Value=0;
+				//Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszamoljuk az uj erteket
 			FrequencyCounter = Frequency;	// Ujra az elejerol szamolunk
 		}else{
 			for(Wire OutPut:wireOut){

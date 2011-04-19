@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.*;
 /** 
  * <table border=0>
@@ -70,7 +69,6 @@ public class DigitalBoard {
 		SimStatus = Status.STOPPED;
 		ComponentList = new ArrayList<List<DigitalObject>>();
 		WireList = new ArrayList<Wire>();
-		ComponentList.add(new ArrayList<DigitalObject>());
 		// Composit MainComposit = new Composit("main");
 	}
 
@@ -78,17 +76,17 @@ public class DigitalBoard {
 	/**
 	 * Megkeres egy adott elemet egy Composit ComponentList listajaban
 	 */
-//	public DigitalObject GetElementByID(String ElementID) {
-//		if (ComponentList != null && !ComponentList.isEmpty()) {
-//			for (List<DigitalObject> sublist : ComponentList) {
-//				for (DigitalObject o : sublist) {
-//					if (o.ID.equalsIgnoreCase(ElementID))
-//						return (DigitalObject) o;
-//				}
-//			}
-//		}
-//		return null;
-//	};
+	public DigitalObject GetElementByID(String ElementID) {
+		if (ComponentList != null && !ComponentList.isEmpty()) {
+			for (List<DigitalObject> sublist : ComponentList) {
+				for (DigitalObject o : sublist) {
+					if (o.ID.equalsIgnoreCase(ElementID))
+						return (DigitalObject) o;
+				}
+			}
+		}
+		return null;
+	};
 
 	/**
 	 * A megfelelo parameterrel meghivja a ParseFile(String strFilePath)
@@ -100,7 +98,13 @@ public class DigitalBoard {
 	 *             ha a fajl nem letezik vagy nem olvashato
 	 */
 	public void LoadBoard(String strFilePath) {
-		ParseFile(strFilePath);
+		boolean exists = (new File(strFilePath)).exists();
+		if (!exists) {
+			// ParseFile(strFilePath);
+			// throw FileDoesNotExistException;
+		} else {
+			ParseFile(strFilePath);
+		}
 	};
 
 	/**
@@ -111,212 +115,198 @@ public class DigitalBoard {
 	 *            Az aramkort leiro dokumentum (*.bhdl) eleresi utvonala
 	 */
 	public void ParseFile(String strFilePath) {
-        ArrayList<ArrayList<String>> foundComposites = new ArrayList<ArrayList<String>>();//Ebben tároljuk a parszolt struktúrát
-        String strFileContents = "";//Beolvasott fájl tartalma
-        ///////////////////////////FÁJLBÓL olvasás//////////////////////////////
-        StringBuilder text = new StringBuilder();
-        String NL = System.getProperty("line.separator");
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(new FileInputStream(strFilePath));
-            while (scanner.hasNextLine()) {
-                text.append(scanner.nextLine());
-            }
-            strFileContents = text.toString();
-        } catch (Exception e) {
-            System.err.print(e.toString());
-        }
+		File file = new File(strFilePath);
+		List<DigitalObject> elementlist = new ArrayList<DigitalObject>();
+		// System.out.print(file.getAbsolutePath());
+//		BufferedInputStream bin = null;
+//		String strFileContents="";
+//		try {
+//			// FileInputStream object letrehozasa
+//			FileInputStream fin = new FileInputStream(file);
+//			// BufferedInputStream obkejtum letrehozasa a beolvasashoz
+//			bin = new BufferedInputStream(fin);
+//			// byte tomb letrehozasa, ebbe olvasunk be majd.
+//			byte[] contents = new byte[1024];
+//			int bytesRead = 0;
+//			
+//			while ((bytesRead = bin.read(contents)) != -1) {
+//				strFileContents = new String(contents, 0, bytesRead);
+//				System.out.print(strFileContents);
+//			}
+//		} catch (FileNotFoundException e) {
+//			System.out.println("File not found" + e);
+//		} catch (IOException ioe) {
+//			System.out.println("Exception while reading the file " + ioe);
+//		}
+//		
+//		// Tisztogatas
+//		
+//		strFileContents = bhdlParser.remove_Spaces(strFileContents);
+//		strFileContents = bhdlParser.remove_CR_LF(strFileContents); //nincs sortores
+//		
+//		/*
+//		 * MAIN composit megkeresese letrehozasa
+//		 */
+//		ComponentList.add(new ArrayList<DigitalObject>());
+//		String main_composit = bhdlParser.FindMainComposite(strFileContents);
+//		Composit main = bhdlParser.CreateMain(main_composit);
+//		String[] main_commands = bhdlParser.getCommands(main_composit);
+//		bhdlParser.CommandParser(main, main_commands, ComponentList.get(0));
+//
+//		
+//		
+//		/*
+//		 * ComponentList feltoltese
+//		 * 
+//		 * Feltetlezve, hogy a mintaillesztes mar megvolt tovabba az aritmetikai
+//		 * kifejezes is at lett alakitva RPN alakra, sot meg jobb ha van egy
+//		 * tombunk a componensekkel es a wirelist
+//		 */
+//
+//		/* Elkeszitem a WIre objektumokat, es a WireListet */
+		List<DigitalObject> tmp_components = new ArrayList<DigitalObject>();
+		/*****************************************************************
+		 * ************** TESZTARAMKOROK leirasa manualisan **************
+		 ******************************************************************/
 
-        // Tisztogatas
-        strFileContents = bhdlParser.remove("\n", strFileContents); //nincs sortores
-        strFileContents = bhdlParser.remove("\t", strFileContents); //nincs tab
+		if (file.getName() == "teszt1.bhdl") {
+			tmp_components = elementlist;
+		}
+		if (file.getName() == "teszt2.bhdl") {
+			// SWITCH letrehozasa
+			SWITCH sw01 = new SWITCH("main", "sw01");
+			tmp_components.add(sw01);
 
-        //Amig nem üres a file
-        int i = 0; //Ebben van eltárolva,hogy hányadik tömböt tároló tömböt érjük el. A tároló tömb a composit, egy eleme is tömb,ebben a parancsok vannak.
-        while (!strFileContents.equals("")) {
+			// Oscilloscope letrehozasa
+			Oscilloscope osc01 = new Oscilloscope("main", "osc01", 10);
+			tmp_components.add(osc01);
 
-            //Megkeressük composite-t
-            String composit = bhdlParser.find_next_Composite(strFileContents.toString());
+			Wire main_w02 = new Wire("main");
+			WireList.add(main_w02);
 
-            //Kivesszük régibõl
-            strFileContents = strFileContents.replace(composit, "");
+			Wire main_w01 = new Wire("main");
+			WireList.add(main_w01);
+			sw01.wireOut.add(main_w01);
+			main_w01.SetConnection(null, sw01);
 
-            //Hozzáadjuk a tömbhöz, egy tömb elsõ elemeként
-            ArrayList<String> tmp = new ArrayList<String>();
-            tmp.add(composit);
-            foundComposites.add(tmp);
-        }
+			// letrehozzuk a kaput
+			ANDGate main_ANDGate_0 = new ANDGate("main", main_w01, main_w02);
+			tmp_components.add(main_ANDGate_0);
 
-        System.out.println("\n Composit értelemzése \n");
+			// beallitjuk a drotokat
+			main_w01.SetConnection(main_ANDGate_0, sw01);
+			main_w02.SetConnection(main_ANDGate_0, main_ANDGate_0);
+			// a kimentet meg sehova nem kotjuk
+			// main_w02.SetConnection(null, main_ANDGate_0);
+			main_ANDGate_0.AddOutput(main_w02);
+			main_w02.SetConnection(osc01, null);
+			osc01.wireIn.add(main_w02);
+		}
+		if (file.getName() == "teszt4.bhdl") {
+			// SWITCH letrehozasa
+			SWITCH sw01 = new SWITCH("main", null);
+			tmp_components.add(sw01);
+			Wire main_w1 = new Wire("main");
+			WireList.add(main_w1);
+			main_w1.SetConnection(null, sw01);
+			sw01.wireOut.add(main_w1);
 
-        //Vannak már compositjaink egy tömbben
-        i = 0; //i ujrahazsnálása
-        while (i < foundComposites.size()) {//Végigmegyünk az összes compositon
-            String current_composit = foundComposites.get(i).get(0);//Kivesszük a vizsgált elemet
-            current_composit = current_composit.replace("composit ", "");//nem kell eleje
-            current_composit = current_composit.replace("endcomposit;", "");//Sem vége
+			// GENERATOR
+			GENERATOR gen01 = new GENERATOR("main", 1000, "11001100");
+			tmp_components.add(gen01);
+			Wire main_w2 = new Wire("main");
+			WireList.add(main_w2);
+			main_w2.SetConnection(null, gen01);
+			gen01.wireOut.add(main_w2);
 
-            //Header legyen az in,out
-            String header = bhdlParser.find_header(current_composit);//pl. main( in, out) kiszedése
-            current_composit = current_composit.replace(header, "");
-            foundComposites.get(i).remove(0);//Kivesszük a régi header
-            foundComposites.get(i).add(header);//Berakjuk headert
+			// LED
+			LED led01 = new LED("main", null);
+			tmp_components.add(led01);
 
-            while (!current_composit.equals("")) {//Régi teljes composittal dolgozunk
-                String command = bhdlParser.find_next_Command(current_composit);//Keressük meg ebben a köv parancsot
-                current_composit = current_composit.replace(command, "");//Kivesszük a cmpositból
-                foundComposites.get(i).add(command);
-            }
-            i++;
-        }
-        //KIíratjuk a dolgokat,végig megyünk a tömbön,amiben tömbök vannak,és azok minden elemét kiírjuk
-        i = 0;
+			// Oscilloscope letrehozasa
+			Oscilloscope osc01 = new Oscilloscope("main", null, 10);
+			tmp_components.add(osc01);
 
-        while (i < foundComposites.size()) {
-            int j = 0;
-            while (j < foundComposites.get(i).size()) {
-                System.out.print((j == 0 ? "Fejléc: " : "Parancs: ") + foundComposites.get(i).get(j));
-                j++;
-                System.out.println();
-            }
-            i++;
-        }
+			Wire feedback = new Wire("comp01");
+			WireList.add(feedback);
 
-        System.out.println("\n Parancs értelemzése \n");
+			// letrehozzuk az inverter kaput
+			INVERTER comp1_inv1 = new INVERTER("comp01", feedback);
+			tmp_components.add(comp1_inv1);
+			feedback.SetConnection(comp1_inv1, null);
+			Wire comp1_w1 = new Wire("comp01");
+			WireList.add(comp1_w1);
+			comp1_w1.SetConnection(null, comp1_inv1);
+			comp1_inv1.AddOutput(comp1_w1);
 
-        //Most már megvan összes parancs, componensekhez rendelve, illetve a komponensek
-        //Menjünk végig rajtuk és hozzuk létre az elemeket
-        //Header alapján kompozit létrehozása
-        i = 0;
+			// AND1 (!feedback-es)
+			ANDGate main_and1 = new ANDGate("comp01", comp1_w1, main_w1);
+			tmp_components.add(main_and1);
+			comp1_w1.SetConnection(main_and1, null);
+			main_w1.SetConnection(main_and1, null);
+			Wire comp1_w2 = new Wire("comp01");
+			WireList.add(comp1_w2);
+			comp1_w2.SetConnection(null, main_and1);
+			main_and1.AddOutput(comp1_w2);
 
-        while (i < foundComposites.size()) {
+			// AND2 (feedback-es)
+			ANDGate main_and2 = new ANDGate("comp01", feedback, main_w2);
+			tmp_components.add(main_and2);
+			feedback.SetConnection(main_and2, null);
+			main_w2.SetConnection(main_and2, null);
+			Wire comp1_w3 = new Wire("comp01");
+			WireList.add(comp1_w3);
+			comp1_w3.SetConnection(null, main_and2);
+			main_and2.AddOutput(comp1_w3);
 
-            String header = foundComposites.get(i).get(0);//Szedjük, ki a headert, az adott komponens, elsõ elemeként
-            String name = "";
-            Pattern regxp = Pattern.compile("^[a-zA-Z0-9]+$");//Kiszedjük a nevet
-            Matcher match = regxp.matcher(header);
-            if (match.find()) {
-                name = match.group();
-            }
-            header = header.replace(name, "");
+			// OR1 (a ket es kapus)
+			ORGate main_or1 = new ORGate("comp01", comp1_w2, comp1_w3);
+			tmp_components.add(main_or1);
+			comp1_w2.SetConnection(main_or1, null);
+			comp1_w3.SetConnection(main_or1, null);
+			// Wire comp1_w4 = new Wire("comp01");
+			// WireList.add(comp1_w4);
+			// comp1_w4.SetConnection(null, main_or1);
+			main_or1.AddOutput(feedback);
+			feedback.SetConnection(null, main_or1);
 
-            //Egyelõre csak kompozit jön létre
-            Composit comp = new Composit("", name);
+			// oszcilloszkop
+			osc01.wireIn.add(comp1_w3);
+			comp1_w3.SetConnection(osc01, null);
 
-            int j = 1;
-            while (j < foundComposites.get(i).size()) {//Menjünk a composit többi részén is végig
-                String command = "";
-                String current_com = foundComposites.get(i).get(j);
-                regxp = Pattern.compile(".+? ");//Kiszedjük a parancot
-                match = regxp.matcher(current_com);
-                if (match.find()) {
-                    command = match.group();
-                    command.replace(" ", "");
-                }
-                current_com = current_com.replace(command, "");//Kiszedjük a parancot eredeti sztringbõl
-                System.out.println("Parancs: " + command);
+			// LED
+			led01.wireIn.add(feedback);
+			feedback.SetConnection(led01, null);
 
-                ArrayList<String> params = new ArrayList<String>();//Adott paramétereit tároló tömb
-                String param = "";
-                
-                while (!current_com.equals("")) {
-                    regxp = Pattern.compile(".+?[ |&;=|]");//Paraméterválasztás
-                    match = regxp.matcher(current_com);
-                    if (match.find()) {
-                        param = match.group();
-                        param.replace(" ", "");
-                        param.replace(";", "");
-                        
-                        if (!param.equals("")) {
-                        	String par=param.replace(" ", "").replace(";", "");
-                            params.add(par);//Hozzáadjuk a paraméterhez
-                        }
-                        if(params.get(params.size()-1).endsWith(";")){
-                        	String a=params.get(params.size()-1);
-                        	a.replace(";", "");
-                        	params.set(params.size()-1,a);
-                        }
-                        System.out.println("Paraméter: " + param);
-                    }
-                    current_com = current_com.replace(param, "");//Kiszedjük parszolt paramétert
-                }
-                j++;
-                if(command.startsWith("switch")){
-                	ComponentList.get(0).add(new SWITCH(header, params.get(0)));
-                }
-                if(command.startsWith("generator")){
-                	ComponentList.get(0).add(new GENERATOR(header, params.get(0),1,0));
-                }
-                if(command.startsWith("led")){
-                	ComponentList.get(0).add(new LED(header, params.get(0)));
-                }
-                if(command.startsWith("assign")){
-                	DigitalObject a = getItemByID(params.get(0));
-                	DigitalObject b = getItemByID(params.get(2));
-                	DigitalObject c = getItemByID(params.get(4));
-                	if(params.get(3).equals("|")){
-                		Wire wirein1=new Wire(header), wirein2=new Wire(header), wireOut=new Wire(header);
-                		ORGate or=new ORGate(header, wirein1, wirein2);
-                		b.wireOut.add(wirein1);
-                		c.wireOut.add(wirein2);
-                		wirein1.SetConnection(or, b);//azt is bassza meg, aki ezt forditva találta ki
-                		wirein2.SetConnection(or, c);
-                		or.wireOut.add(wireOut);
-                		a.wireIn.add(wireOut);
-                		wireOut.SetConnection(a, or);
-                		ComponentList.get(0).add(or);
-                	}
-                	if(params.get(3).equals("&")){
-                		Wire wirein1=new Wire(header), wirein2=new Wire(header), wireOut=new Wire(header);
-                		ANDGate or=new ANDGate(header, wirein1, wirein2);
-                		b.wireOut.add(wirein1);
-                		c.wireOut.add(wirein2);
-                		wirein1.SetConnection(or, b);//azt is bassza meg, aki ezt forditva találta ki
-                		wirein2.SetConnection(or, c);
-                		or.wireOut.add(wireOut);
-                		a.wireIn.add(wireOut);
-                		wireOut.SetConnection(a, or);
-                		ComponentList.get(0).add(or);
-                	}
-                }
-            }//while
-            i++;
-        }
-
-        //Elemek létrehozása , bekötése
-
-        /* Elkeszitem a WIre objektumokat, es a WireListet */
-       // List<DigitalObject> tmp_components = new ArrayList<DigitalObject>();
-
-        //ComponentList.add(foundComposites);
-		//System.out.println(foundComposites);
-        HierarchyCounter cntr=new HierarchyCounter();
+		}
+		/*****************************************************************
+		 * ************** TESZTARAMKOROK leirasanak vege *************
+		 ******************************************************************/
+		ComponentList.add(tmp_components);
+		HierarchyCounter cntr=new HierarchyCounter();
 		cntr.CountHierarchy(WireList, ComponentList);
 		//Debug();
-		System.out.println(strFilePath+ "'s Board is loaded");
+		System.out.println(file.getName()+ "'s Board is loaded");
 		CountComponents();
 		runProto();
-
-    }
+		
+		
+	}
 	
 	public DigitalObject getItemByID(String eztkeresem){
 		for(int i=0; i<ComponentList.size();i++){//minden szint
 			for(int j=0; j<ComponentList.get(i).size();j++){//minden eleme
 				if(ComponentList.get(i).get(j).ID.equalsIgnoreCase(eztkeresem)) 
-					return ComponentList.get(i).get(j);//ha megtaláltuk, visszaadjuk
+					return ComponentList.get(i).get(j);
 				String id=ComponentList.get(i).get(j).ID;
 				id=id.split("#")[2];
-				if(id.equalsIgnoreCase(eztkeresem)) return ComponentList.get(i).get(j); //ha az id csak a nevet takarja, akkor is visszaadjuk
+				if(id.equalsIgnoreCase(eztkeresem)) return ComponentList.get(i).get(j);
 					
 			}
 		}
 		return null;
 	}
 		
-	/**
-	 * Kezeli a file betöltése után érkezõ parancsokat.
-	 * 
-	 */
 	public void runProto(){
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
@@ -365,15 +355,13 @@ public class DigitalBoard {
                 param2 = match.group();//Kimentjuk masodik parametert
                 param2 = param2.replace(" ",""); //Kivesszuk spacet
                            
-                //Koszonjuk JAVA, hogy nem lehet stringet switchbe rakni
-                //ha a kommand setFrequency gener_id freq
-                if (command.equalsIgnoreCase("setFrequency")){
-                	DigitalObject elem=getItemByID(param1);//ellenorzes, hogy jo e a nev
+                //Kosonjuk JAVA, hogy nem lehet stringet switchbe rakni
+                if (command.equals("setFrequency")){
+                	DigitalObject elem=getItemByID(param1);
                 	if(elem==null) System.out.println("x Error: Wrong Parameter: No object with id "+param1);
-                    int freq = Integer.parseInt(param2);//jo e a param
+                    int freq = Integer.parseInt(param2);
                     if(freq<=0) System.out.println("x Error: Frequency must be positive");
                     try {
-                    	//jo e az obj
                     	((GENERATOR)(elem)).SetFrequency(freq);
                     } catch(Exception ex)  {
                     	System.out.println("x Error: Wrong Parameter: Object is not Generator");
@@ -381,21 +369,17 @@ public class DigitalBoard {
                     System.out.println(param1+"'s frequency is set to " + freq);
                     CountComponents();
                     runProto();
-                 //ha stepComponents a kommand
-                } else if(command.equalsIgnoreCase("stepComponents")){
-                	StepComponents();//ujraszamol
+                } else if(command.equals("stepComponents")){
+                	StepComponents();
                 	System.out.println("Board circuit has stepped");
                 	runProto();
-                	//ha setoutput ??
-                } else if(command.equalsIgnoreCase("setOutput")){
+                } else if(command.equals("setOutput")){
                     System.out.println("Output is set to " + param1);
-                    //TODO?	
-                    //ha setInterval
-                } else if(command.equalsIgnoreCase("setInterval")){
+                    //TODO?
+                } else if(command.equals("setInterval")){
                     System.out.println("Boards interval is set to " + param1);
                     //TODO?
-                    //ha toggleswitch sw0 a kommand
-                } else if(command.equalsIgnoreCase("toggleSwitch")){
+                } else if(command.equals("toggleSwitch")){
                 	DigitalObject elem=getItemByID(param1);
                 	if(elem==null) System.out.println("x Error: Wrong Parameter: No object with id "+param1);
                      try {
@@ -406,48 +390,54 @@ public class DigitalBoard {
                     }
                     CountComponents();
                     runProto();
-                    //ha setSample osc 3 a kommand
-                } else if(command.equalsIgnoreCase("setSample")){
+                } else if(command.equals("setSample")){
                     System.out.println("For each Digitalobject in List");
                     System.out.println("Search for the name " + param1);
                     System.out.println("If it is OSCILLOSCOPE, call its SetSample with param " + param2);
                     int sample = Integer.parseInt(param2);
                     //TODO? int meg binary problem
                     CountComponents();
-                    //ha exit, kilép
-                } else if(command.equalsIgnoreCase("exit")){
+                } else if(command.equals("exit")){
                     System.exit(0);
                 } else {
-                    System.out.print("x Error: CommandNotFound\n");
+                    System.out.print("Unknown command\n");
                     runProto();
                 }
     		} catch (Exception e) {
     			System.out.println(e.toString());
     		} 
-        }//while(true)
-	
-	}//runproto
-	
-//	public void Debug(){
-//		/* KIIRATAS, DEBUG */
-//		int szint = 0;
-//		for (List<DigitalObject> sublist : ComponentList) {
-//			System.out.println();
-//			System.out.print("Szint: ");
-//			System.out.print(szint++);
-//			System.out.print("\t");
-//			for (DigitalObject o : sublist) {
-//				System.out.print(o.GetID() + ", ");
-//				if (o.Feedbacks != null && !o.Feedbacks.isEmpty()) {
-//					System.out.print("FEEDBACK [");
-//					for (DigitalObject f_o : o.Feedbacks) {
-//						System.out.print(" " + f_o.ID + ", ");
-//					}
-//					System.out.print("]");
-//				}
-//			}
+        }
+		
+//		try { // Szamma alakitjuk - ha tudjuk - a bevitt szoveget
+//			reader.readLine();//PETII, amit visszaad, azzal kezdj vmit
+//			//setSequence gen_name sequence(pl 01101010100) -> gen_name.setSequence(0x0110101010100) (binariba kell alakitani!!); count();
+//			//toggleSwitch sw_name -> sw_name.Toggle(); count();
+//			//step -> StepComponents();
+//		} catch (Exception e) {
+//			// line = "exit" ;
 //		}
-//	};
+	}
+	
+	public void Debug(){
+		/* KIIRATAS, DEBUG */
+		int szint = 0;
+		for (List<DigitalObject> sublist : ComponentList) {
+			System.out.println();
+			System.out.print("Szint: ");
+			System.out.print(szint++);
+			System.out.print("\t");
+			for (DigitalObject o : sublist) {
+				System.out.print(o.GetID() + ", ");
+				if (o.Feedbacks != null && !o.Feedbacks.isEmpty()) {
+					System.out.print("FEEDBACK [");
+					for (DigitalObject f_o : o.Feedbacks) {
+						System.out.print(" " + f_o.ID + ", ");
+					}
+					System.out.print("]");
+				}
+			}
+		}
+	};
 
 	/**
 	 * metodus meghivja a SetStatus metodust RUNING parameterrel
@@ -491,7 +481,7 @@ public class DigitalBoard {
 	 */
 	public void SetFrequency(int Frequency, String ElementID) {
 		GENERATOR tmp;
-		tmp = (GENERATOR) getItemByID(ElementID);
+		tmp = (GENERATOR) GetElementByID(ElementID);
 		tmp.SetFrequency(Frequency);
 	};
 
@@ -504,9 +494,9 @@ public class DigitalBoard {
 	 * @param ElementID
 	 *            A modositani kivant GENERATOR IDja
 	 */
-	public void SetSequence(int Sequence, String ElementID) {
+	public void SetSequence(String Sequence, String ElementID) {
 		GENERATOR GEN_to_setsequence; /* Temporalis valtozo */
-		GEN_to_setsequence = (GENERATOR) getItemByID(ElementID);
+		GEN_to_setsequence = (GENERATOR) GetElementByID(ElementID);
 		GEN_to_setsequence.SetSequence(Sequence);
 	};
 
@@ -520,7 +510,7 @@ public class DigitalBoard {
 	 */
 	public void Toggle(String ElementID) {
 		SWITCH SWITCH_to_toggle; /* Temporalis valtozo */
-		SWITCH_to_toggle = (SWITCH) getItemByID(ElementID);
+		SWITCH_to_toggle = (SWITCH) GetElementByID(ElementID);
 		SWITCH_to_toggle.Toggle();
 	};
 

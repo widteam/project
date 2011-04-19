@@ -1,0 +1,27 @@
+composit comp01(in w03,w04,out w05,w06)
+	inverter inv01;
+	andgate and01;
+	andgate and02;
+	orgate or01;
+	assign and01 = w03;
+	assign and02 = w04;
+	assign or01 = and01;
+	assign or01 = and02;
+	assign inv01 = or01;
+	assign and01 = inv01;
+	assign and02 = or01;
+	assign w05 = or01;
+	assign w06 = and02;
+endcomposit;
+
+composit main(in,out)
+	switch sw01;
+	generator gen01;
+	led led01;	
+	oscilloscope osc01(10);
+	wire w01;
+	wire w02;
+	comp01(in sw01,gen01,out w01,w02);
+	assign led01 = w01;
+	assign osc01 = w02;
+endcomposit;
