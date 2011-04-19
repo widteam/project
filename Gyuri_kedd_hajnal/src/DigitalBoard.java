@@ -298,7 +298,7 @@ public class DigitalBoard {
                     if (elem == null) {
                         System.out.println("x Error: Wrong Parameter: No object with id " + param1);
                     }
-
+                    else{
                     int freq = Integer.parseInt(param2);
 
                     if (freq <= 0) {
@@ -311,6 +311,7 @@ public class DigitalBoard {
                         System.out.println("x Error: Wrong Parameter: Object is not Generator");
                     }
                     System.out.println(param1 + "'s frequency is set to " + freq);
+                    }
                     
                 // stepComponents
                 } else if (command.equalsIgnoreCase("stepComponents")) {
