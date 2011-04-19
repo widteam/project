@@ -1,12 +1,10 @@
-composit comp01(in w01, w02,out w02)
+composit comp01(in w01,w02,out w03)
 	andgate and01;
 	inverter inv01;
-	wire w03
 	assign and01 = w01;
 	assign and01 = w02;
-	assign w03 = and01;
-	assign inv01 = w03;
-	assign w02 = inv01;
+	assign inv01 = and01;
+	assign w03 = inv01;
 endcomposit;
 
 composit main(in,out)
@@ -14,9 +12,8 @@ composit main(in,out)
 	led led01;	
 	wire w01;
 	wire w02;
-	composit comp01;
+	comp01(in sw01,w01,out w01);
 	assign comp01 = w01;
 	assign comp01 = w02;
-	assign w02 = comp01;
 	assign led01 = w01;
 endcomposit;

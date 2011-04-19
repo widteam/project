@@ -8,4 +8,4 @@ composit main(in,out)
 	assign w02 and01;
 	assign and01 w02;
 	assign osc01 w02;
-endcomposit
+endcomposit;
