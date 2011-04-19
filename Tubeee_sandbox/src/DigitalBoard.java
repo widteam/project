@@ -390,13 +390,17 @@ public class DigitalBoard {
                     }
                     CountComponents();
                     runProto();
-                } else if(command.equals("setSample")){
-                    System.out.println("For each Digitalobject in List");
-                    System.out.println("Search for the name " + param1);
-                    System.out.println("If it is OSCILLOSCOPE, call its SetSample with param " + param2);
-                    int sample = Integer.parseInt(param2);
-                    //TODO? int meg binary problem
+                } else if(command.equals("setSequence")){
+                	DigitalObject elem=getItemByID(param1);
+                	if(elem==null) System.out.println("x Error: Wrong Parameter: No object with id "+param1);
+                    try {
+                    	((GENERATOR)(elem)).SetSequence(param2);
+                    } catch(Exception ex)  {
+                    	System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                    }
+                    System.out.println(param1+"'s sequence is set to " + param2);
                     CountComponents();
+                    runProto();
                 } else if(command.equals("exit")){
                     System.exit(0);
                 } else {
