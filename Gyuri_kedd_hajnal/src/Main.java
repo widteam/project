@@ -33,6 +33,7 @@ public class main {
 				// DigitalBoard letrehozasa
 				DigitalBoard o0 = new DigitalBoard();
 				o0.LoadBoard("teszt1.bhdl");
+				o0.HandleUserCommand(reader);
 				break;
 			case 2: // LoadBoard visszacsatolassal
 				// DigitalBoard letrehozasa
