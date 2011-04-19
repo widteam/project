@@ -39,16 +39,19 @@ public class main {
 				// DigitalBoard letrehozasa
 				DigitalBoard o1 = new DigitalBoard();
 				o1.LoadBoard("teszt2.bhdl");
+				o1.HandleUserCommand(reader);
 				break;
 			case 3: // LoadBoard instabil
 				// DigitalBoard letrehozasa
 				DigitalBoard o2 = new DigitalBoard();
 				o2.LoadBoard("teszt3.bhdl");
+				o2.HandleUserCommand(reader);
 				break;
 			case 4: // LoadBoard instabil
 				// DigitalBoard letrehozasa
 				DigitalBoard o3 = new DigitalBoard();
 				o3.LoadBoard("teszt4.bhdl");
+				o3.HandleUserCommand(reader);
 				break;
 			default:
 				break;
