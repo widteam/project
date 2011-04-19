@@ -69,8 +69,7 @@ public class bhdlParser {
 	 */
 	public static String FindComposite(String source, String compname) {
 		// Reguláris Kifejezés
-		Pattern regexp = Pattern.compile("composit[ ]?" + compname
-				+ ".*?endcomposit;");
+		Pattern regexp = Pattern.compile("composit[ ]?" + compname + ".*?endcomposit;");
 		// Megkeressük a találatokat
 		Matcher match = regexp.matcher(source);
 		// Elsõ kell
@@ -78,10 +77,8 @@ public class bhdlParser {
 		String foundComposit = match.group();
 		return foundComposit;
 	}
-
 	/**
 	 * Megkeresi a main(in,out) szignoval lellatott compositot
-	 * 
 	 * @param source
 	 * @return a composit BHDL leirasa
 	 */
@@ -94,10 +91,8 @@ public class bhdlParser {
 		String foundComposit = match.group();
 		return foundComposit;
 	}
-
 	/**
 	 * Letrehozza a main(in,out) compositot
-	 * 
 	 * @return a main composit
 	 */
 	public static Composit CreateMain(String composit) {
@@ -118,8 +113,7 @@ public class bhdlParser {
 		return myComposit;
 	}
 
-	public static Composit ReadComposit(Composit ThisComposit, String source,
-			String composit_name) {
+	public static Composit ReadComposit(Composit ThisComposit, String source, String composit_name) {
 		String[] CompositCommands = null; // Egy kompozitvban levo utasitasok
 		CompositCommands = getCommands(FindComposite(source, composit_name));
 		CommandParser(ThisComposit, source, CompositCommands);
@@ -160,13 +154,9 @@ public class bhdlParser {
 	/**
 	 * Ertelmez egy BHDL parancsot. A sorokra mintaillesztest vegez es ha talal
 	 * egy mintat, a parancsnak megfeleloen jar el, hivj a fuggvenyeket
-	 * 
-	 * @param Owner
-	 *            a composit, melynek a parancsait ertelmezzuk.
-	 * @param source
-	 *            A teljes BHDL fajl
-	 * @param commands
-	 *            egy lista a parancsokbol
+	 * @param Owner a composit, melynek a parancsait ertelmezzuk.
+	 * @param source a teljes BHDL fajl
+	 * @param commands egy lista a parancsokbol
 	 */
 	public static void CommandParser(Composit Owner, String source,
 			String[] commands) {
@@ -621,114 +611,257 @@ public class bhdlParser {
 		match.find();
 
 		if (match.matches()) {
-			String rvalue = match.group(2).trim();
+			String rvalue = match.group(2).trim();			
 			String lvalue = match.group(1).trim();
 			String postfix = Infix2Postfix(rvalue);
-			/*********************************************************************/
-			/********** AZ ASSIGNBAN CSAK A VEGE LEHET HIBAS ************/
-			/*********************************************************************/
+			/**
+			 * DEBUGG KEZDETE
+			 */
+			System.out.println("Assign expression. ("+lvalue+"="+postfix+")");
+
 			String[] items = postfix.split(" ");
 			Stack<Wire> WireStack = new Stack<Wire>();
-
+						
 			// Kiertekeljuk a PostFixes alakot
-			for (String item : items) {
+			for(String item:items){
 				// ha nem operator
-				if (!isOperator(item)) {
-					// Hozzadjuk a veremhez
-					if (owner.GetWireByName(item) != null) {
+				if(!isOperator(item)){
+					// megnezzuk, hogy Wire-e
+					if(owner.GetWireByName(item)!=null){
+						// ekkor egyszeruen csak hozzadjuk a veremhez
 						WireStack.add(owner.GetWireByName(item));
-					} else if (owner.GetElementByName(item) != null) {
-						// ha meg nincs kesz a wire, gyorsan letrehozzuk
-						Wire w = new Wire(owner.GetName());
-						w.SetConnection(null, owner.GetElementByName(item));
-						owner.GetElementByName(item).wireOut.add(w);
-						owner.AddToWireList(w);
-
-						WireStack.add(w);
+					}
+					// h ez egy DigiObject
+					else if(owner.GetElementByName(item)!=null){
+						/*
+						 * Ha ez egy DigiObject, akkor ez csak egy 
+						 * kapu lehet; Compositnak ugyanis tobb kimenete
+						 * lehetne, igy nem lenn egyertelmu, hogy melyiekt keri
+						 * ezert az nem szerpelhet assignban
+						 * 
+						 * De ez sem eleg am; meg kell nezni, hogy 
+						 * a kapunak szerpelt-e mar kimenete a WireListben,
+						 * ha nem, letrehozunk egy Wire-t, ha igen akkor csak hozzadjuk
+						 * a veremhez (kapunakl egy kimeno Wire-je van)
+						 */
+						boolean WasIt = false;	// volt-e mar kimente a kapunak
+						
+						Wire GateOut = null;	// Ez lesz a kpau kimente, referencia
+						// Csekkoljuk a kapu osszes kimenetet
+						for(Wire w:owner.GetElementByName(item).wireOut){
+							// ha mar volt a WireListben
+							if(owner.GetWireByID(w.GetID())!=null){
+								GateOut = owner.GetWireByID(w.GetID());
+								WasIt=true;
+							}
+						}
+						// ha meg nem volt, letre kell hozni
+						if(!WasIt){
+							GateOut= new Wire(owner.GetName());
+							owner.AddToWireList(GateOut);
+							owner.GetElementByName(item).wireOut.add(GateOut);	
+						}
+						// A kapcsolatokat mindenfelekelppen be kell allitani
+						GateOut.SetConnection(null, owner.GetElementByName(item));
+						WireStack.add(GateOut);
 					}
 				}
-				/*
-				 * // ha operator (& | !) else if(isOperator(item)){ // meg kell
-				 * neznunk, hogy hagy operandust igenyel
-				 * if(NumOfOperand(item)==1){ if(item.equalsIgnoreCase("!")) {
-				 * Wire inv_in1 = WireStack.pop(); INVERTER myInverter = new
-				 * INVERTER(owner.GetName(), inv_in1);
-				 * inv_in1.SetConnection(myInverter, null); Wire inv_out = new
-				 * Wire(owner.GetName()); inv_out.SetConnection(null,
-				 * myInverter); owner.AddToWireList(inv_out);
-				 * myInverter.AddOutput(inv_out); WireStack.push(inv_out);
-				 * owner.getFirstLevelOfComponentList().add(myInverter); } }
-				 * if(NumOfOperand(item)==2){ if(item.equalsIgnoreCase("&")) {
-				 * Wire and_in1 = WireStack.pop(); Wire and_in2 =
-				 * WireStack.pop(); ANDGate myAnd = new ANDGate(owner.GetName(),
-				 * and_in1,and_in2); and_in1.SetConnection(myAnd, null);
-				 * and_in2.SetConnection(myAnd, null); Wire and_out = new
-				 * Wire(owner.GetName()); and_out.SetConnection(null, myAnd);
-				 * owner.AddToWireList(and_out); myAnd.AddOutput(and_out);
-				 * WireStack.push(and_out);
-				 * owner.getFirstLevelOfComponentList().add(myAnd); }
-				 * if(item.equalsIgnoreCase("|")) { Wire or_in1 =
-				 * WireStack.pop(); Wire or_in2 = WireStack.pop(); ORGate myOr =
-				 * new ORGate(owner.GetName(), or_in1,or_in2);
-				 * or_in1.SetConnection(myOr, null); or_in2.SetConnection(myOr,
-				 * null); Wire or_out = new Wire(owner.GetName());
-				 * or_out.SetConnection(null, myOr);
-				 * owner.AddToWireList(or_out); myOr.AddOutput(or_out);
-				 * WireStack.push(or_out);
-				 * owner.getFirstLevelOfComponentList().add(myOr); } }//end:
-				 * operandusok szama }//end if: ha operator
-				 */
-			}// end for: lista bejarasa, postfix kiertekel
+				// ha operator (& | !)
+				else if(isOperator(item)){
+					// meg kell neznunk, hogy hagy operandust igenyel
+					if(NumOfOperand(item)==1){
+						if(item.equalsIgnoreCase("!"))
+						{
+							Wire inv_in1 = WireStack.pop();	
+						
+							INVERTER myInverter = null;
+							Wire inv_out = null;
+							
+							/* Meg kell nezni, hogy volt-e mar olyan
+							 * kapu, aminek a mostani operandus a bemenete
+							 * (es csak ez a bemenete)
+							 * Ha van ilyen kapu akkor nem szabad ujat letrehozni
+							 */
+							boolean WasIt = false;
+							// Kapukat vegignezzuk
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								// Van-e ezek kozott Iverter, aminek van bemenete...
+								if(o.GetType().equalsIgnoreCase("Inverter") && o.wireIn!=null){
+									// ...es a mostani operandust tartalmazza
+									if( o.wireIn.contains(inv_in1)){
+										myInverter = (INVERTER) o;
+										// kapuknak csak egy kimenete van..
+										inv_out = myInverter.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}	
+							// ha nem volt ilyen kapu, akkor letrehozhatjuk
+							if(!WasIt){
+								myInverter = new INVERTER(owner.GetName(), inv_in1);
+								inv_out = new Wire(owner.GetName());
+								inv_in1.SetConnection(myInverter, null);							
+								inv_out.SetConnection(null, myInverter);
+								
+								myInverter.AddOutput(inv_out);
+								owner.AddToWireList(inv_out);
+								owner.getFirstLevelOfComponentList().add(myInverter);
+							}	
+							// a kimenetet mindenfelekeppen hozzaadjuk
+							WireStack.push(inv_out);
+							/**
+							 * DEBUG
+							 */
+							System.out.println(myInverter.GetName()+" has been assigned to "+inv_in1.GetName()+" output is "+inv_out.GetName());
+						}						
+					}
+					if(NumOfOperand(item)==2){
+						if(item.equalsIgnoreCase("&"))
+						{
+							Wire and_in1 = WireStack.pop();	
+							Wire and_in2 = WireStack.pop();	
+							
+							ANDGate myAnd=  null;
+							Wire and_out =null;
+							
+							/* Meg kell nezni, hogy volt-e mar olyan
+							 * ESkapu, aminek a mostani ket operandus a bemenetei lennenek
+							 * Ha van ilyen kapu akkor nem szabad ujat letrehozni
+							 */
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								// Van-e ezek kozott Iverter, aminek van bemenete...
+								if(o.GetType().equalsIgnoreCase("ANDGate") && o.wireIn!=null){
+									// ...es a mostani operandusokat tartalmazza
+									if( o.wireIn.contains(and_in1) && o.wireIn.contains(and_in2)){
+										myAnd = (ANDGate) o;
+										// kapuknak csak egy kimenete van..
+										and_out = myAnd.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}						
+
+							if(!WasIt){
+								myAnd=  new ANDGate(owner.GetName(), and_in1,and_in2);
+								and_out = new Wire(owner.GetName());
+								and_in1.SetConnection(myAnd, null);
+								and_in2.SetConnection(myAnd, null);
+								
+								and_out.SetConnection(null, myAnd);							
+								myAnd.AddOutput(and_out);
+								owner.AddToWireList(and_out);
+								owner.getFirstLevelOfComponentList().add(myAnd);
+							}
+							
+							WireStack.push(and_out);
+							/**
+							 * DEBUG
+							 */
+							System.out.println(myAnd.GetName()+" has been assigned to "+and_in1.GetName()+","+and_in2.GetName()+" output is "+and_out.GetName());
+							
+						}
+						if(item.equalsIgnoreCase("|"))
+						{
+							Wire  or_in1 = WireStack.pop();	
+							Wire  or_in2 = WireStack.pop();	
+							
+							ORGate myOr=  null;
+							Wire or_out = null;
+							/* Meg kell nezni, hogy volt-e mar olyan
+							 * VAGYkapu, aminek a mostani ket operandus a bemenetei lennenek
+							 * Ha van ilyen kapu akkor nem szabad ujat letrehozni
+							 */
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								// Van-e ezek kozott Iverter, aminek van bemenete...
+								if(o.GetType().equalsIgnoreCase("ORGate") && o.wireIn!=null){
+									// ...es a mostani operandusokat tartalmazza
+									if( o.wireIn.contains(or_in1) && o.wireIn.contains(or_in2)){
+										myOr = (ORGate) o;
+										// kapuknak csak egy kimenete van..
+										or_out = myOr.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}						
+							if(!WasIt){
+								myOr=  new ORGate(owner.GetName(), or_in1,or_in2);
+								or_out = new Wire(owner.GetName());
+								
+								or_in1.SetConnection(myOr, null);
+								or_in2.SetConnection(myOr, null);
+								
+								or_out.SetConnection(null, myOr);							
+								myOr.AddOutput(or_out);
+								owner.AddToWireList(or_out);
+								owner.getFirstLevelOfComponentList().add(myOr);
+							}
+							WireStack.push(or_out);
+							/**
+							 * DEBUG
+							 */
+							System.out.println(myOr.GetName()+" has been assigned to "+or_in1.GetName()+","+or_in2.GetName()+" output is "+or_out.GetName());
+						}
+					}//end: operandusok szama					
+				}//end if: ha operator				
+			}//end for: lista bejarasa, postfix kiertekel		
 
 			// ez a "vegeredmeny" ez a drot fog csatlakozni az lvaluehoz
 			assigned_wire = WireStack.pop();
 			/*
-			 * most megnezzuk, lvlaue hol s mikent letezik.
+			 *  most megnezzuk, lvlaue hol s mikent letezik.
 			 */
-
+			
 			// Ha ez egy wire a composit WireList-jeben
-			if (owner.GetWireByName(lvalue) != null) {
+			if(owner.GetWireByName(lvalue)!=null){
+				/* 
+				 * ha wire, akkor mar letezik. Hozzaadjuk a bemeno elemlistajahoz 
+				 * a vegeredmeny drot elemlistajat
+				 */				
+				owner.GetWireByName(lvalue).objectsIn.addAll(assigned_wire.objectsIn);
 				/*
-				 * ha wire, akkor mar letezik. Hozzaadjuk a bemeno
-				 * elemlistajahoz a vegeredmeny drot elemlistajat
+				 *  most ertesitek minden olyan objektumot, amely az assigned_wire-hez csatlakozik
+				 *  ugyanis az torlesre fog kerulni.
+				 *  az objektumok kimenetenek a Composit drotjat adom meg
 				 */
-				owner.GetWireByName(lvalue).objectsIn
-						.addAll(assigned_wire.objectsIn);
-				/*
-				 * most ertesitek minden olyan objektumot, amely az
-				 * assigned_wire-hez csatlakozik ugyanis az torlesre fog
-				 * kerulni. az objektumok kimenetenek a Composit drotjat adom
-				 * meg
-				 */
-				for (int i = 0; i < assigned_wire.objectsIn.size(); i++) {
+				for(int i=0;i<assigned_wire.objectsIn.size();i++){
 					DigitalObject o = assigned_wire.objectsIn.get(i);
 					/*
-					 * ha talalok az objektumnal egy olyan drotot ami az
-					 * assigned_wire-hez csatlakozna veletlen, azt lecserelem a
-					 * Composit Wire elemere
+					 * ha talalok az objektumnal egy olyan drotot ami 
+					 * az assigned_wire-hez csatlakozna veletlen, 
+					 * azt lecserelem a Composit Wire elemere
 					 */
-					for (Wire w : o.wireOut) {
-						if (w == assigned_wire) {
-							o.wireOut.set(o.wireOut.indexOf(w),
-									owner.GetWireByName(lvalue));
+					for(Wire w: o.wireOut){
+						if(w==assigned_wire){
+							o.wireOut.set(o.wireOut.indexOf(w), owner.GetWireByName(lvalue)) ;
 						}
-
+						
 					}
 				}
-				owner.RemoveFromWireList(assigned_wire);
+
+				/**
+				 * DEBUG
+				 */
+				System.out.println("Finally, "+owner.GetWireByName(lvalue).GetName()+" has been assigned to "+assigned_wire.GetName());
+				//owner.RemoveFromWireList(assigned_wire); EZ NEM KELL MERT SOHA NEM LETT HOZZAADVA a WIRELISThez
 			}
 			/*
-			 * Ha ez egy elem a Composit ComponentList, akkor elvileg neki nem
-			 * lesz nicns wire-je amit fel kell szabaditani, egyszeruen csak
-			 * hozzakotjuk
+			 *  Ha ez egy elem a Composit ComponentListbol, akkor elvileg neki nem lesz 
+			 *  nicns wire-je amit fel kell szabaditani, egyszeruen csak hozzakotjuk
 			 */
-			else if (owner.GetElementByName(lvalue) != null) {
+			else if(owner.GetElementByName(lvalue)!=null){
 				owner.GetElementByName(lvalue).wireIn.add(assigned_wire);
-				assigned_wire.SetConnection(owner.GetElementByName(lvalue),
-						null);
-				owner.AddToWireList(assigned_wire);
+				assigned_wire.SetConnection(owner.GetElementByName(lvalue), null);
+				owner.AddToWireList(assigned_wire);	
+				/**
+				 * DEBUG
+				 */
+				System.out.println("Finally, "+owner.GetElementByName(lvalue).GetName()+" has been assigned to "+assigned_wire.GetName());
 			}
-		}
+		}		
 		return assigned_wire;
 	}
 

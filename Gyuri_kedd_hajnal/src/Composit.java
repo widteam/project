@@ -277,6 +277,13 @@ public class Composit extends DigitalObject {
 								contain = true;
 							}
 						}
+						// HA esetleg a kapu kimentete a Composithoz csatlakozna
+						//(azaz megy ki a kulvilagba)
+						if (wire_obj == this) {
+							contain = true;
+						}
+
+
 						// ha nem volt meg korabbi szinten akkor most uj
 						// szinthez adjuk
 						if (!contain)
