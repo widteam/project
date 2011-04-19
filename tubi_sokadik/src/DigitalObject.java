@@ -112,6 +112,11 @@ public abstract class DigitalObject {
 	public String GetType() {
 		return (ID.split("#")[1]).trim();
 	}
+	/**
+	 * Visszaadja az objektumok nevet(amit a felhasznalo adott meg a BHDL fajlban vagy ami generalodott)
+	 * 
+	 * @return A DigitalObject  neve
+	 */
 	public String GetName() {
 		return (ID.split("#")[2]).trim();
 	}

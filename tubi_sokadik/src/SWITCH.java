@@ -77,7 +77,7 @@ public class SWITCH extends Input {
 	public int Count() {
 		/* Az OSSZES kimenetre kiadjuk a kiszamitott eredmenyt. */
 		if (wireOut == null || wireOut.isEmpty()) {
-			// throw InputNotConnectedException
+			// throw new InputNotConnectedException
 		}
 		for (Wire OutPut : wireOut) {
 			OutPut.SetValue(Value);

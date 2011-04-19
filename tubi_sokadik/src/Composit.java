@@ -3,19 +3,19 @@ import java.util.List;
 import java.util.Stack;
 
 public class Composit extends DigitalObject {
-	/* ATTRIBÚTUMOK */
-
+	/**
+	 * Leiras: Ez az attributum tarolja az összes kaput, kimenetet, bemenetet
+	 * hierarchikus sorrendben Ez nem mas, mint egy listabol szervezett tömb. A
+	 * tömb indexe azonositja a hierarchia szintet (0-Forrasok, 1-a forrasokhoz
+	 * csatlakozo elemek, stb) az egyes szinteken pedig egy lista van az
+	 * elemekröl
+	 */
 	private ArrayList<List<DigitalObject>> ComponentList;
-	/*
-	 * Leírás: Ez az attribútum tárolja az összes kaput, kimenetet, bemenetet
-	 * hierarchikus sorrendben Ez nem más, mint egy listából szervezett tömb. A
-	 * tömb indexe azonosítja a hierarchia szintet (0-Források, 1-a forrásokhoz
-	 * csatlakozó elemek, stb) az egyes szinteken pedig egy lista van az
-	 * elemekrõl
+
+	/**
+	 * Egyszeru lista a Wire objektumokbol
 	 */
 	private List<Wire> WireList;
-
-	// Leírás: Egyszerû lista a Wire objektumokból
 
 	/* KONSTRUKTOR */
 	public Composit(String strOwnerCompositName,String CompositName) {		
@@ -31,17 +31,17 @@ public class Composit extends DigitalObject {
 
 	/* METÓDUSOK */
 	public void SetFrequency(int Frequency, String ElementID) {
-		// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum
-		// frekvenciáját módosítja
+		// Leiras: A parameterben megadott azonositoju GENERATOR objektum
+		// frekvenciajat modositja
 		GENERATOR tmp;
 		tmp = (GENERATOR) GetElementByID(ElementID);
 		tmp.SetFrequency(Frequency);
 	};
 
 	public void SetSequence(int Sequence, String ElementID) {
-		// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum
-		// szekvenciáját módosítja
-		GENERATOR GEN_to_setsequence; /* Temporális változó */
+		// Leiras: A parameterben megadott azonositoju GENERATOR objektum
+		// szekvenciajat modositja
+		GENERATOR GEN_to_setsequence; /* Temporalis valtozo */
 		GEN_to_setsequence = (GENERATOR) GetElementByID(ElementID); /*
 																	 * GetElemetByIDvel
 																	 * megkapjuk
@@ -49,47 +49,47 @@ public class Composit extends DigitalObject {
 																	 * objektumot
 																	 */
 		GEN_to_setsequence.SetSequence(Sequence); /*
-												 * az generátor objektum
-												 * SetSequence(...) metódusát
-												 * meghívjuk
+												 * az generator objektum
+												 * SetSequence(...) metodusat
+												 * meghivjuk
 												 */
 
 	};
 	public void SetSwitch(int Value, String ElementID) {
-		SWITCH SW_to_set; /* Temporális változó */
+		SWITCH SW_to_set; /* Temporalis valtozo */
 		SW_to_set = (SWITCH) GetElementByID(ElementID); 
 		SW_to_set.Value = Value;
 
 	};
 	public void Toggle(String ElementID) {
 		/*
-		 * Leírás: A paraméterben megadott azonosítójú SWITCH objektum értékét
-		 * az ellenkezõre állítja azáltal, hogy meghívja az objektum hasonló
-		 * nevû paraméterét
+		 * Leiras: A parameterben megadott azonositoju SWITCH objektum erteket
+		 * az ellenkezöre allitja azaltal, hogy meghivja az objektum hasonlo
+		 * nevu parameteret
 		 */
-		SWITCH SWITCH_to_toggle; /* Temporális változó */
+		SWITCH SWITCH_to_toggle; /* Temporalis valtozo */
 		SWITCH_to_toggle = (SWITCH) GetElementByID(ElementID); /*
 																 * GetElemetByIDvel
 																 * megkapjuk,
 																 * majd egyet
 																 */
 		SWITCH_to_toggle.Toggle(); /*
-									 * az switch objektum Toggle() metódusát
-									 * meghívjuk
+									 * az switch objektum Toggle() metodusat
+									 * meghivjuk
 									 */
 
 	};
 
 	@Override
 	public void AddToFeedbacks(DigitalObject feedback) {
-		// Leírás: Hozzáadja a paraméterként kapott DigitalObjectet a Feedbacks
-		// tömbjéhez.
+		// Leiras: Hozzaadja a parameterkent kapott DigitalObjectet a Feedbacks
+		// tömbjehez.
 		if (Feedbacks != null)
-			Feedbacks.add(feedback); // Hozzáadjuk a feedbackshez
+			Feedbacks.add(feedback); // Hozzaadjuk a feedbackshez
 	};
 
 	public DigitalObject GetElementByID(String ElementID) {
-		// Leírás: Megkeres egy adott elemet a ComponentList listákban
+		// Leiras: Megkeres egy adott elemet a ComponentList listakban
 		
 		/**
 		 * Teljes ID alapjan
@@ -120,7 +120,7 @@ public class Composit extends DigitalObject {
 	}
 	
 	public Wire GetWireByID(String WireID) {
-		// Leírás: Megkeres egy adott drótot a WireList listákban
+		// Leiras: Megkeres egy adott drotot a WireList listakban
 		if (WireList != null && !WireList.isEmpty()) {
 			for (Wire w : WireList) {
 				if (w.GetID() == WireID)
@@ -130,7 +130,7 @@ public class Composit extends DigitalObject {
 		return null;
 	}
 	public Wire GetWireByName(String WireName) {
-		// Leírás: Megkeres egy adott drótot a WireList listákban
+		// Leiras: Megkeres egy adott drotot a WireList listakban
 		if (WireList != null && !WireList.isEmpty()) {
 			for (Wire w : WireList) {
 				if(w.GetName().equalsIgnoreCase(WireName))
@@ -140,7 +140,7 @@ public class Composit extends DigitalObject {
 		return null;
 	}	
 	public Wire ReplaceWire(Wire Mit, Wire Mivel) {
-		// Leírás: Megkeres egy adott drótot a WireList listákban
+		// Leiras: Megkeres egy adott drotot a WireList listakban
 		if (WireList != null && !WireList.isEmpty()) {
 			for (Wire w : WireList) {
 				if(w==Mit){
@@ -151,16 +151,17 @@ public class Composit extends DigitalObject {
 		return null;
 	}
 	/*
-	 * Itt van egy kisebb probléma. Kívülrõl kell stepet biztosítani, de blülrõl
-	 * meg step components van. Step hívjon stepcomponentset és mondja meg hogy
-	 * a részobjektumok stabilak-e?
+	 * Itt van egy kisebb problema. Kivulröl kell stepet biztositani, de blulröl
+	 * meg step components van. Step hivjon stepcomponentset es mondja meg hogy
+	 * a reszobjektumok stabilak-e?
 	 * 
 	 * @see DigitalObject#Step()
 	 */
-	@Override
 	public boolean Step() {
-		// TODO Auto-generated method stub
-		return false;
+		for(List <DigitalObject> sublist : ComponentList)
+			for(DigitalObject o : sublist)
+				if(!o.Step()) return false;       
+		return true;
 	};
 
 	public int Count() {
@@ -169,11 +170,11 @@ public class Composit extends DigitalObject {
 	}
 
 	public void StepComponents() {
-		// Leírás: Meghívja az összes iComponent interfészt megvalósító objektum
-		// Step() metódusát.
+		// Leiras: Meghivja az összes iComponent interfeszt megvalosito objektum
+		// Step() metodusat.
 
 		/*
-		 * Elvileg már fel van épülve a hierarchia így nekem elég megkapnom a
+		 * Elvileg mar fel van epulve a hierarchia igy nekem eleg megkapnom a
 		 * ComponentListet
 		 */
 		DigitalObject obj;

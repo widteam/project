@@ -120,7 +120,7 @@ public class bhdlParser {
 		CompositCommands = getCommands(FindComposite(source,composit_name));		
 		CommandParser(ThisComposit, source,CompositCommands);
 		ThisComposit.buildHierarchy();
-		//ThisComposit.getFeedbacks();
+		ThisComposit.getFeedbacks();
 		return ThisComposit;
 	}
 	
@@ -229,7 +229,6 @@ public class bhdlParser {
 		if(match.matches()){
 			String wirename = match.group(1).trim();
 			Wire myWire = new Wire(CompositName, wirename);
-			owner.AddToWireList(myWire);
 			return myWire;
 		}
 		return null;
@@ -322,12 +321,276 @@ public class bhdlParser {
 		return null;
 	}	
 	
+	private static  Wire assign(Composit owner, String command){
+		// Ahooz, hogy az Assign reszeit be tujuk olvasni, reszletes mintaillesztes
+		String reg_assign = "assign[ ]+([\\w]+)=(.*?);";
+		Pattern regexp = Pattern.compile(reg_assign);
+		Matcher match = regexp.matcher(command);
+		Wire assigned_wire =null;
+		match.find();
+
+		if(match.matches()){
+			String rvalue = match.group(2).trim();
+			String lvalue = match.group(1).trim();
+			String postfix = Infix2Postfix(rvalue);
+			
+			String[] items = postfix.split(" ");
+			Stack<Wire> WireStack = new Stack<Wire>();
+
+			// Kiertekeljuk a PostFixes alakot
+			for(String item:items){
+				// ha nem operator
+				if(!isOperator(item)){
+					// Hozzadjuk a veremhez
+					if(owner.GetWireByName(item)!=null){
+						WireStack.add(owner.GetWireByName(item));
+					}else if(owner.GetElementByName(item)!=null){
+						// ha meg nincs kesz a wire, gyorsan letrehozzuk
+						Wire w = new Wire(owner.GetName());
+						w.SetConnection(null, owner.GetElementByName(item));
+						owner.GetElementByName(item).wireOut.add(w);
+						owner.AddToWireList(w);
+						
+						WireStack.add(w);
+					}
+				}
+				// ha operator (& | !)
+				else if(isOperator(item)){
+					// meg kell neznunk, hogy hagy operandust igenyel
+					if(NumOfOperand(item)==1){
+						if(item.equalsIgnoreCase("!"))
+						{
+							Wire inv_in1 = WireStack.pop();	
+						
+							INVERTER myInverter = null;
+							Wire inv_out = null;
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								if(o.wireIn!=null && o.wireIn.size()==1){
+									if( o.wireIn.contains(inv_out)){
+										myInverter = (INVERTER) o;
+										inv_out = myInverter.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}								
+							if(!WasIt){
+								myInverter = new INVERTER(owner.GetName(), inv_in1);
+								inv_out = new Wire(owner.GetName());
+								inv_in1.SetConnection(myInverter, null);							
+								inv_out.SetConnection(null, myInverter);
+								
+								myInverter.AddOutput(inv_out);
+								owner.AddToWireList(inv_out);
+								owner.getFirstLevelOfComponentList().add(myInverter);
+							}	
+							WireStack.push(inv_out);
+						}
+					}
+					if(NumOfOperand(item)==2){
+						if(item.equalsIgnoreCase("&"))
+						{
+							Wire and_in1 = WireStack.pop();	
+							Wire and_in2 = WireStack.pop();	
+							
+							ANDGate myAnd=  null;
+							Wire and_out =null;
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								if(o.wireIn!=null && o.wireIn.size()==2){
+									if( o.wireIn.contains(and_in1)&& o.wireIn.contains(and_in2)){
+										myAnd = (ANDGate) o;
+										and_out = myAnd.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}								
+
+							if(!WasIt){
+								myAnd=  new ANDGate(owner.GetName(), and_in1,and_in2);
+								and_out = new Wire(owner.GetName());
+								and_in1.SetConnection(myAnd, null);
+								and_in2.SetConnection(myAnd, null);
+								
+								and_out.SetConnection(null, myAnd);							
+								myAnd.AddOutput(and_out);
+								owner.AddToWireList(and_out);
+								owner.getFirstLevelOfComponentList().add(myAnd);
+							}
+							
+							WireStack.push(and_out);
+							
+						}
+						if(item.equalsIgnoreCase("|"))
+						{
+							Wire  or_in1 = WireStack.pop();	
+							Wire  or_in2 = WireStack.pop();	
+							
+							ORGate myOr=  null;
+							Wire or_out = null;
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								if(o.wireIn!=null && o.wireIn.size()==2){
+									if( o.wireIn.contains(or_in1)&& o.wireIn.contains(or_in2)){
+										myOr = (ORGate) o;
+										or_out = myOr.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}
+							if(!WasIt){
+								myOr=  new ORGate(owner.GetName(), or_in1,or_in2);
+								or_out = new Wire(owner.GetName());
+								
+								or_in1.SetConnection(myOr, null);
+								or_in2.SetConnection(myOr, null);
+								
+								or_out.SetConnection(null, myOr);							
+								myOr.AddOutput(or_out);
+								owner.AddToWireList(or_out);
+								owner.getFirstLevelOfComponentList().add(myOr);
+							}
+							WireStack.push(or_out);
+						}
+					}//end: operandusok szama					
+				}//end if: ha operator				
+			}//end for: lista bejarasa, postfix kiertekel		
+
+			// ez a "vegeredmeny" ez a drot fog csatlakozni az lvaluehoz
+			assigned_wire = WireStack.pop();
+			/*
+			 *  most megnezzuk, lvlaue hol s mikent letezik.
+			 */
+			
+			// Ha ez egy wire a composit WireList-jeben
+			if(owner.GetWireByName(lvalue)!=null){
+				/* 
+				 * ha wire, akkor mar letezik. Hozzaadjuk a bemeno elemlistajahoz 
+				 * a vegeredmeny drot elemlistajat
+				 */				
+				owner.GetWireByName(lvalue).objectsIn.addAll(assigned_wire.objectsIn);
+				/*
+				 *  most ertesitek minden olyan objektumot, amely az assigned_wire-hez csatlakozik
+				 *  ugyanis az torlesre fog kerulni.
+				 *  az objektumok kimenetenek a Composit drotjat adom meg
+				 */
+				for(int i=0;i<assigned_wire.objectsIn.size();i++){
+					DigitalObject o = assigned_wire.objectsIn.get(i);
+					/*
+					 * ha talalok az objektumnal egy olyan drotot ami 
+					 * az assigned_wire-hez csatlakozna veletlen, 
+					 * azt lecserelem a Composit Wire elemere
+					 */
+					for(Wire w: o.wireOut){
+						if(w==assigned_wire){
+							o.wireOut.set(o.wireOut.indexOf(w), owner.GetWireByName(lvalue)) ;
+						}
+						
+					}
+				}
+				owner.RemoveFromWireList(assigned_wire);
+			}
+			/*
+			 *  Ha ez egy elem a Composit ComponentList, akkor elvileg neki nem lesz 
+			 *  nicns wire-je amit fel kell szabaditani, egyszeruen csak hozzakotjuk
+			 */
+			else if(owner.GetElementByName(lvalue)!=null){
+				owner.GetElementByName(lvalue).wireIn.add(assigned_wire);
+				assigned_wire.SetConnection(owner.GetElementByName(lvalue), null);
+				owner.AddToWireList(assigned_wire);	
+			}
+		}		
+		return assigned_wire;
+	}
+	/**
+	 * Infix2Postfix. Reverse Poland Notation
+	 * Ez a szakasz biztosan mukodik, NE nyulj hozza
+	 * @param InfixExpression Egy infix alaku kifejezes
+	 * @return A kifejezes Postfixes alakja
+	 */
+	private static String Infix2Postfix(String InfixExpression){
+		Stack<String> stack = new Stack<String>();
+		//String PostfixExpression ="";
+		StringBuffer buffer = new StringBuffer();
+		
+		String operandName ="";
+		InfixExpression = InfixExpression.replaceAll(" ", "");
+		for(int i = 0; i<InfixExpression.length();i++){
+			String ch = InfixExpression.substring(i,i+1);
+			if(!(isOperator(ch) || isLeftParental(ch) || isRightParental(ch))){
+				operandName+=ch;
+			}
+			else if (isLeftParental(ch)) {
+	                stack.push(ch);
+			}
+			else if (isOperator(ch)) {
+				buffer.append(operandName+" ");
+				operandName ="";
+                if (stack.empty() )
+                    stack.push(ch+" ");
+                else if (isLeftParental(stack.peek()) )
+                    stack.push(ch+" ");
+                else {
+                    while (!stack.empty() && !isLeftParental(stack.peek())
+                        && precedence(stack.peek()) >= precedence(ch))
+                        buffer.append(stack.pop());
+                    stack.push(ch+" ");
+                }
+            }
+            else if (isRightParental(ch)) {
+            	buffer.append(operandName+" ");
+            	operandName ="";
+                while (!stack.empty() && !isLeftParental(stack.peek()))
+                    buffer.append(stack.pop());
+                if (isLeftParental(stack.peek()))
+                    stack.pop();                
+            }	
+		}
+		buffer.append(operandName+" ");
+		 while (!stack.empty())
+	            if (!isLeftParental(stack.peek()))
+	                 buffer.append(stack.pop());
+		 return buffer.toString().trim().replaceAll("  ", " ");
+	}
+    private static int precedence(String ch) {
+    	int result = 0;
+    	if(ch.equalsIgnoreCase("&") || ch.equalsIgnoreCase("|") ||ch.equalsIgnoreCase("!") )
+    		result = 1;
+    	return result;
+    }
+    private static int NumOfOperand(String ch) {
+    	int result = 0;
+    	if(ch.equalsIgnoreCase("&") || ch.equalsIgnoreCase("|") )
+    		result = 2;
+    	else if(ch.equalsIgnoreCase("!"))
+    		result=1;
+    	return result;
+    }
+    private static  boolean isOperator(String ch) {
+       return (ch.equalsIgnoreCase("&") || ch.equalsIgnoreCase("|") || ch.equalsIgnoreCase("!"));  
+    }
+    private static boolean isLeftParental(String ch) {
+        return ch.equalsIgnoreCase("(");
+    }
+    private static boolean isRightParental(String ch) {
+    	return ch.equalsIgnoreCase(")");
+    }
 	
 	
 	
 	
 	
 	
+	
+	
+	
+	
+    
+    
+    
 	
 	/**
 	 * Letrehoz egy Compositot, es ertelmezi a tartalmat.
@@ -440,7 +703,7 @@ public class bhdlParser {
 				}
 				myComposit.wireIn.add(w);
 				w.SetConnection(myComposit,null);
-				owner.AddToWireList(w);
+				//owner.AddToWireList(w);
 			}
 			//Kimeno drotok
 			for(int i=0;i<WiresOut.length;i++){
@@ -487,210 +750,4 @@ public class bhdlParser {
 		return false;
 	}
 	
-	private static  Wire assign(Composit owner, String command){
-		// Ahooz, hogy az Assign reszeit be tujuk olvasni, reszletes mintaillesztes
-		String reg_assign = "assign[ ]+([\\w]+)=(.*?);";
-		Pattern regexp = Pattern.compile(reg_assign);
-		Matcher match = regexp.matcher(command);
-		Wire assigned_wire =null;
-		match.find();
-
-		if(match.matches()){
-			String rvalue = match.group(2).trim();
-			String lvalue = match.group(1).trim();
-			String postfix = Infix2Postfix(rvalue);
-			/*********************************************************************/
-			/**********     AZ ASSIGNBAN CSAK A VEGE LEHET HIBAS      ************/
-			/*********************************************************************/
-			String[] items = postfix.split(" ");
-			Stack<Wire> WireStack = new Stack<Wire>();
-
-			// Kiertekeljuk a PostFixes alakot
-			for(String item:items){
-				// ha nem operator
-				if(!isOperator(item)){
-					// Hozzadjuk a veremhez
-					if(owner.GetWireByName(item)!=null){
-						WireStack.add(owner.GetWireByName(item));
-					}else if(owner.GetElementByName(item)!=null){
-						// ha meg nincs kesz a wire, gyorsan letrehozzuk
-						Wire w = new Wire(owner.GetName());
-						w.SetConnection(null, owner.GetElementByName(item));
-						owner.GetElementByName(item).wireOut.add(w);
-						owner.AddToWireList(w);
-						
-						WireStack.add(w);
-					}
-				}
-				// ha operator (& | !)
-				else if(isOperator(item)){
-					// meg kell neznunk, hogy hagy operandust igenyel
-					if(NumOfOperand(item)==1){
-						if(item.equalsIgnoreCase("!"))
-						{
-							Wire inv_in1 = WireStack.pop();								
-							INVERTER myInverter = new INVERTER(owner.GetName(), inv_in1);
-							inv_in1.SetConnection(myInverter, null);
-							Wire inv_out = new Wire(owner.GetName());
-							inv_out.SetConnection(null, myInverter);
-							owner.AddToWireList(inv_out);
-							myInverter.AddOutput(inv_out);
-							WireStack.push(inv_out);
-							owner.getFirstLevelOfComponentList().add(myInverter);
-						}
-					}
-					if(NumOfOperand(item)==2){
-						if(item.equalsIgnoreCase("&"))
-						{
-							Wire and_in1 = WireStack.pop();	
-							Wire and_in2 = WireStack.pop();	
-							ANDGate myAnd = new ANDGate(owner.GetName(), and_in1,and_in2);
-							and_in1.SetConnection(myAnd, null);
-							and_in2.SetConnection(myAnd, null);
-							Wire and_out = new Wire(owner.GetName());
-							and_out.SetConnection(null, myAnd);
-							owner.AddToWireList(and_out);
-							myAnd.AddOutput(and_out);
-							WireStack.push(and_out);
-							owner.getFirstLevelOfComponentList().add(myAnd);
-						}
-						if(item.equalsIgnoreCase("|"))
-						{
-							Wire or_in1 = WireStack.pop();	
-							Wire or_in2 = WireStack.pop();	
-							ORGate myOr = new ORGate(owner.GetName(), or_in1,or_in2);
-							or_in1.SetConnection(myOr, null);
-							or_in2.SetConnection(myOr, null);
-							Wire or_out = new Wire(owner.GetName());
-							or_out.SetConnection(null, myOr);
-							owner.AddToWireList(or_out);
-							myOr.AddOutput(or_out);
-							WireStack.push(or_out);
-							owner.getFirstLevelOfComponentList().add(myOr);
-						}
-					}//end: operandusok szama					
-				}//end if: ha operator				
-			}//end for: lista bejarasa, postfix kiertekel		
-
-			// ez a "vegeredmeny" ez a drot fog csatlakozni az lvaluehoz
-			assigned_wire = WireStack.pop();
-			/*
-			 *  most megnezzuk, lvlaue hol s mikent letezik.
-			 */
-			
-			// Ha ez egy wire a composit WireList-jeben
-			if(owner.GetWireByName(lvalue)!=null){
-				/* 
-				 * ha wire, akkor mar letezik. Hozzaadjuk a bemeno elemlistajahoz 
-				 * a vegeredmeny drot elemlistajat
-				 */				
-				owner.GetWireByName(lvalue).objectsIn.addAll(assigned_wire.objectsIn);
-				/*
-				 *  most ertesitek minden olyan objektumot, amely az assigned_wire-hez csatlakozik
-				 *  ugyanis az torlesre fog kerulni.
-				 *  az objektumok kimenetenek a Composit drotjat adom meg
-				 */
-				for(int i=0;i<assigned_wire.objectsIn.size();i++){
-					DigitalObject o = assigned_wire.objectsIn.get(i);
-					/*
-					 * ha talalok az objektumnal egy olyan drotot ami 
-					 * az assigned_wire-hez csatlakozna veletlen, 
-					 * azt lecserelem a Composit Wire elemere
-					 */
-					for(Wire w: o.wireOut){
-						if(w==assigned_wire){
-							o.wireOut.set(o.wireOut.indexOf(w), owner.GetWireByName(lvalue)) ;
-						}
-						
-					}
-				}
-				owner.RemoveFromWireList(assigned_wire);
-			}
-			/*
-			 *  Ha ez egy elem a Composit ComponentList, akkor elvileg neki nem lesz 
-			 *  nicns wire-je amit fel kell szabaditani, egyszeruen csak hozzakotjuk
-			 */
-			else if(owner.GetElementByName(lvalue)!=null){
-				owner.GetElementByName(lvalue).wireIn.add(assigned_wire);
-				assigned_wire.SetConnection(owner.GetElementByName(lvalue), null);
-				owner.AddToWireList(assigned_wire);	
-			}
-		}		
-		return assigned_wire;
-	}
-
-	/**
-	 * Infix2Postfix. Reverse Poland Notation
-	 * Ez a szakasz biztosan mukodik, NE nyulj hozza
-	 * @param InfixExpression Egy infix alaku kifejezes
-	 * @return A kifejezes Postfixes alakja
-	 */
-	private static String Infix2Postfix(String InfixExpression){
-		Stack<String> stack = new Stack<String>();
-		//String PostfixExpression ="";
-		StringBuffer buffer = new StringBuffer();
-		
-		String operandName ="";
-		InfixExpression = InfixExpression.replaceAll(" ", "");
-		for(int i = 0; i<InfixExpression.length();i++){
-			String ch = InfixExpression.substring(i,i+1);
-			if(!(isOperator(ch) || isLeftParental(ch) || isRightParental(ch))){
-				operandName+=ch;
-			}
-			else if (isLeftParental(ch)) {
-	                stack.push(ch);
-			}
-			else if (isOperator(ch)) {
-				buffer.append(operandName+" ");
-				operandName ="";
-                if (stack.empty() )
-                    stack.push(ch+" ");
-                else if (isLeftParental(stack.peek()) )
-                    stack.push(ch+" ");
-                else {
-                    while (!stack.empty() && !isLeftParental(stack.peek())
-                        && precedence(stack.peek()) >= precedence(ch))
-                        buffer.append(stack.pop());
-                    stack.push(ch+" ");
-                }
-            }
-            else if (isRightParental(ch)) {
-            	buffer.append(operandName+" ");
-            	operandName ="";
-                while (!stack.empty() && !isLeftParental(stack.peek()))
-                    buffer.append(stack.pop());
-                if (isLeftParental(stack.peek()))
-                    stack.pop();                
-            }	
-		}
-		buffer.append(operandName+" ");
-		 while (!stack.empty())
-	            if (!isLeftParental(stack.peek()))
-	                 buffer.append(stack.pop());
-		 return buffer.toString().trim().replaceAll("  ", " ");
-	}
-    private static int precedence(String ch) {
-    	int result = 0;
-    	if(ch.equalsIgnoreCase("&") || ch.equalsIgnoreCase("|") ||ch.equalsIgnoreCase("!") )
-    		result = 1;
-    	return result;
-    }
-    private static int NumOfOperand(String ch) {
-    	int result = 0;
-    	if(ch.equalsIgnoreCase("&") || ch.equalsIgnoreCase("|") )
-    		result = 2;
-    	else if(ch.equalsIgnoreCase("!"))
-    		result=1;
-    	return result;
-    }
-
-    private static  boolean isOperator(String ch) {
-       return (ch.equalsIgnoreCase("&") || ch.equalsIgnoreCase("|") || ch.equalsIgnoreCase("!"));  
-    }
-    private static boolean isLeftParental(String ch) {
-        return ch.equalsIgnoreCase("(");
-    }
-    private static boolean isRightParental(String ch) {
-    	return ch.equalsIgnoreCase(")");
-    }
 }
