@@ -229,7 +229,6 @@ public class bhdlParser {
 		if(match.matches()){
 			String wirename = match.group(1).trim();
 			Wire myWire = new Wire(CompositName, wirename);
-			owner.AddToWireList(myWire);
 			return myWire;
 		}
 		return null;
@@ -361,15 +360,32 @@ public class bhdlParser {
 					if(NumOfOperand(item)==1){
 						if(item.equalsIgnoreCase("!"))
 						{
-							Wire inv_in1 = WireStack.pop();								
-							INVERTER myInverter = new INVERTER(owner.GetName(), inv_in1);
-							inv_in1.SetConnection(myInverter, null);
-							Wire inv_out = new Wire(owner.GetName());
-							inv_out.SetConnection(null, myInverter);
-							owner.AddToWireList(inv_out);
-							myInverter.AddOutput(inv_out);
+							Wire inv_in1 = WireStack.pop();	
+						
+							INVERTER myInverter = null;
+							Wire inv_out = null;
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								if(o.wireIn!=null && o.wireIn.size()==1){
+									if( o.wireIn.contains(inv_out)){
+										myInverter = (INVERTER) o;
+										inv_out = myInverter.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}								
+							if(!WasIt){
+								myInverter = new INVERTER(owner.GetName(), inv_in1);
+								inv_out = new Wire(owner.GetName());
+								inv_in1.SetConnection(myInverter, null);							
+								inv_out.SetConnection(null, myInverter);
+								
+								myInverter.AddOutput(inv_out);
+								owner.AddToWireList(inv_out);
+								owner.getFirstLevelOfComponentList().add(myInverter);
+							}	
 							WireStack.push(inv_out);
-							owner.getFirstLevelOfComponentList().add(myInverter);
 						}
 					}
 					if(NumOfOperand(item)==2){
@@ -377,29 +393,67 @@ public class bhdlParser {
 						{
 							Wire and_in1 = WireStack.pop();	
 							Wire and_in2 = WireStack.pop();	
-							ANDGate myAnd = new ANDGate(owner.GetName(), and_in1,and_in2);
-							and_in1.SetConnection(myAnd, null);
-							and_in2.SetConnection(myAnd, null);
-							Wire and_out = new Wire(owner.GetName());
-							and_out.SetConnection(null, myAnd);
-							owner.AddToWireList(and_out);
-							myAnd.AddOutput(and_out);
+							
+							ANDGate myAnd=  null;
+							Wire and_out =null;
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								if(o.wireIn!=null && o.wireIn.size()==2){
+									if( o.wireIn.contains(and_in1)&& o.wireIn.contains(and_in2)){
+										myAnd = (ANDGate) o;
+										and_out = myAnd.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}								
+
+							if(!WasIt){
+								myAnd=  new ANDGate(owner.GetName(), and_in1,and_in2);
+								and_out = new Wire(owner.GetName());
+								and_in1.SetConnection(myAnd, null);
+								and_in2.SetConnection(myAnd, null);
+								
+								and_out.SetConnection(null, myAnd);							
+								myAnd.AddOutput(and_out);
+								owner.AddToWireList(and_out);
+								owner.getFirstLevelOfComponentList().add(myAnd);
+							}
+							
 							WireStack.push(and_out);
-							owner.getFirstLevelOfComponentList().add(myAnd);
+							
 						}
 						if(item.equalsIgnoreCase("|"))
 						{
-							Wire or_in1 = WireStack.pop();	
-							Wire or_in2 = WireStack.pop();	
-							ORGate myOr = new ORGate(owner.GetName(), or_in1,or_in2);
-							or_in1.SetConnection(myOr, null);
-							or_in2.SetConnection(myOr, null);
-							Wire or_out = new Wire(owner.GetName());
-							or_out.SetConnection(null, myOr);
-							owner.AddToWireList(or_out);
-							myOr.AddOutput(or_out);
+							Wire  or_in1 = WireStack.pop();	
+							Wire  or_in2 = WireStack.pop();	
+							
+							ORGate myOr=  null;
+							Wire or_out = null;
+							boolean WasIt = false;
+							// olyan ES kapu,amihez ez a ket elem bemegy
+							for(DigitalObject o:owner.getFirstLevelOfComponentList()){
+								if(o.wireIn!=null && o.wireIn.size()==2){
+									if( o.wireIn.contains(or_in1)&& o.wireIn.contains(or_in2)){
+										myOr = (ORGate) o;
+										or_out = myOr.wireOut.get(0);
+										WasIt = true;
+									}
+								}
+							}
+							if(!WasIt){
+								myOr=  new ORGate(owner.GetName(), or_in1,or_in2);
+								or_out = new Wire(owner.GetName());
+								
+								or_in1.SetConnection(myOr, null);
+								or_in2.SetConnection(myOr, null);
+								
+								or_out.SetConnection(null, myOr);							
+								myOr.AddOutput(or_out);
+								owner.AddToWireList(or_out);
+								owner.getFirstLevelOfComponentList().add(myOr);
+							}
 							WireStack.push(or_out);
-							owner.getFirstLevelOfComponentList().add(myOr);
 						}
 					}//end: operandusok szama					
 				}//end if: ha operator				
@@ -649,7 +703,7 @@ public class bhdlParser {
 				}
 				myComposit.wireIn.add(w);
 				w.SetConnection(myComposit,null);
-				owner.AddToWireList(w);
+				//owner.AddToWireList(w);
 			}
 			//Kimeno drotok
 			for(int i=0;i<WiresOut.length;i++){
