@@ -172,6 +172,7 @@ public class bhdlParser {
 		String reg_andgate = "andgate[ ]+([\\w]+);";
 		String reg_orgate = "orgate[ ]+([\\w]+);";
 		String reg_inverter = "inverter[ ]+([\\w]+);";
+		String reg_pin = "pin[ ]+([\\w]+);";
 		String reg_set = "set[ ]+([\\w]+)=([\\d]+);";
 		String reg_comp = "([\\w, ]+)\\(in(( |[\\w]*,?)+)out(( |[\\w]*,?)+)\\)(.*)?;";
 		String reg_assign = "assign[ ]+([\\w]+)=(.*?);";
@@ -218,6 +219,11 @@ public class bhdlParser {
 				Owner.getFirstLevelOfComponentList().add(
 						CreateInverter(Owner, commands[i]));
 				System.out.println("INVERTER has been created.");
+			}
+			if (matching(reg_pin, commands[i]) != null) {
+				Owner.getFirstLevelOfComponentList().add(
+						CreatePin(Owner, commands[i]));
+				System.out.println("PIN has been created.");
 			}
 			if (matching(reg_set, commands[i]) != null) {
 				SettingElement(Owner, commands[i]);
@@ -438,7 +444,31 @@ public class bhdlParser {
 		}
 		return null;
 	}
+	
+	/**
+	 * Letrehoz egy INVERTER-t es a kimeno drotjat
+	 * 
+	 * @param myComposit
+	 *            Kompozit, melyen belul dolgozunk
+	 * @param command
+	 *            AZ aktualis parancs
+	 * @return a letrehozott elem
+	 */
+	private static PIN CreatePin(Composit owner, String command) {
+		String CompositName = owner.GetName();
+		String reg_pin = "pin[ ]+([\\w]+);";
+		Pattern regexp = Pattern.compile(reg_pin);
+		Matcher match = regexp.matcher(command);
 
+		match.find();
+
+		if (match.matches()) {
+			String pinname = match.group(1).trim();
+			PIN myPin = new PIN(CompositName, pinname);
+			return myPin;
+		}
+		return null;
+	}
 	/**
 	 * Letrehoz egy Compositot, es ertelmezi a tartalmat. REKURZIV eljaras!
 	 * 

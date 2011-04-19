@@ -78,6 +78,7 @@ public class DigitalBoard {
 		} else {
 			ParseFile(strFilePath);
 		}
+		
 	};
 
 	/**
