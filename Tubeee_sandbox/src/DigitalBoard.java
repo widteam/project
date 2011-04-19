@@ -212,7 +212,7 @@ public class DigitalBoard {
 			sw01.wireOut.add(main_w1);
 
 			// GENERATOR
-			GENERATOR gen01 = new GENERATOR("main", 1000, 11001100);
+			GENERATOR gen01 = new GENERATOR("main", 1000, "11001100");
 			tmp_components.add(gen01);
 			Wire main_w2 = new Wire("main");
 			WireList.add(main_w2);
@@ -390,17 +390,21 @@ public class DigitalBoard {
                     }
                     CountComponents();
                     runProto();
-                } else if(command.equals("setSample")){
-                    System.out.println("For each Digitalobject in List");
-                    System.out.println("Search for the name " + param1);
-                    System.out.println("If it is OSCILLOSCOPE, call its SetSample with param " + param2);
-                    int sample = Integer.parseInt(param2);
-                    //TODO? int meg binary problem
+                } else if(command.equals("setSequence")){
+                	DigitalObject elem=getItemByID(param1);
+                	if(elem==null) System.out.println("x Error: Wrong Parameter: No object with id "+param1);
+                    try {
+                    	((GENERATOR)(elem)).SetSequence(param2);
+                    } catch(Exception ex)  {
+                    	System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                    }
+                    System.out.println(param1+"'s sequence is set to " + param2);
                     CountComponents();
+                    runProto();
                 } else if(command.equals("exit")){
                     System.exit(0);
                 } else {
-                    System.out.print("x Error: CommandNotFound\n");
+                    System.out.print("Unknown command\n");
                     runProto();
                 }
     		} catch (Exception e) {
@@ -494,7 +498,7 @@ public class DigitalBoard {
 	 * @param ElementID
 	 *            A modositani kivant GENERATOR IDja
 	 */
-	public void SetSequence(int Sequence, String ElementID) {
+	public void SetSequence(String Sequence, String ElementID) {
 		GENERATOR GEN_to_setsequence; /* Temporalis valtozo */
 		GEN_to_setsequence = (GENERATOR) GetElementByID(ElementID);
 		GEN_to_setsequence.SetSequence(Sequence);

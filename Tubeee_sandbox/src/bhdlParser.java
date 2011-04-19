@@ -358,7 +358,7 @@ public class bhdlParser {
 
 		if(match.matches()){
 			String genname = match.group(1).trim();
-			GENERATOR myGenerator = new GENERATOR(CompositName, genname, 1000, 0);
+			GENERATOR myGenerator = new GENERATOR(CompositName, genname, 2, "0010");
 			Wire genout = new Wire(CompositName);
 			genout.SetConnection(null, myGenerator);
 			myGenerator.wireOut.add(genout);
@@ -401,13 +401,15 @@ public class bhdlParser {
 
 		match.find();
 		String elementname = match.group(1).trim();
-		int value = Integer.parseInt(match.group(3).trim());
+		String value2 = match.group(3).trim();
+		int value= Integer.parseInt(value2);
+		
 		String elementtype = comp.GetElementByID(elementname).GetType();
 		if (elementtype.equalsIgnoreCase("SWITCH")) {
 			comp.SetSwitch(value, elementname);
 			return true;
 		} else if (elementtype.equalsIgnoreCase("GENERATOR")) {
-			comp.SetSequence(value, elementname);
+			comp.SetSequence(value2, elementname);
 			return true;
 		}
 

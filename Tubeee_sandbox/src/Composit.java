@@ -37,7 +37,7 @@ public class Composit extends DigitalObject {
 		tmp.SetFrequency(Frequency);
 	};
 
-	public void SetSequence(int Sequence, String ElementID) {
+	public void SetSequence(String Sequence, String ElementID) {
 		// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum
 		// szekvenciáját módosítja
 		GENERATOR GEN_to_setsequence; /* Temporális változó */
