@@ -101,13 +101,9 @@ public class ORGate extends Gate {
 			if (wireIn.size() != 2) {
 				// throw ElementInputSizeException
 			} else {
-				Result = wireIn.get(0).GetValue();
-				if (Result == 0)
-					Result = wireIn.get(1).GetValue();
-				if (Result == -1)
-					Result = wireIn.get(1).GetValue();
-				else
-					Result = 1;
+				if((wireIn.get(0).GetValue() == -1) || (wireIn.get(1).GetValue() == -1)) Result = -1;
+				else if((wireIn.get(0).GetValue() == 1) || (wireIn.get(1).GetValue() == 1)) Result = 1;
+				else Result = 0;
 			}
 		}
 		/* Vegignezzuk az osszes kimenetet... */
@@ -158,6 +154,7 @@ public class ORGate extends Gate {
 			NewValue = Count();
 			Result = (PreviousValue == NewValue);
 		}
+		System.out.println(ID + " " + PreviousValue);
 		return Result;
 	};
 }

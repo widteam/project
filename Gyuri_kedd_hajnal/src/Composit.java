@@ -97,7 +97,7 @@ public class Composit extends DigitalObject {
 		if (ComponentList != null && !ComponentList.isEmpty()) {
 			for (List<DigitalObject> sublist : ComponentList) {
 				for (DigitalObject o : sublist) {
-					if (o.ID == ElementID)
+					if (o.ID.equalsIgnoreCase(ElementID))
 						return  o;
 				}
 			}

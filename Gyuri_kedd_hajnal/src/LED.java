@@ -86,7 +86,8 @@ public class LED extends Output {
 	 *         mindig stabil.
 	 */
 	public boolean Step() {
-		Count();
+		int i = Count();
+		System.out.println(ID + " " + i);
 		return true;
 	};
 }

@@ -292,7 +292,7 @@ public class DigitalBoard {
                 param2 = GetCmdParams(cmdLine)[2];
 
                 // setFrequency
-                if (command.equals("setFrequency")) {
+                if (command.equalsIgnoreCase("setFrequency")) {
                     DigitalObject elem = GetElementByID(param1);
 
                     if (elem == null) {
@@ -313,20 +313,21 @@ public class DigitalBoard {
                     System.out.println(param1 + "'s frequency is set to " + freq);
                     
                 // stepComponents
-                } else if (command.equals("stepComponents")) {
+                } else if (command.equalsIgnoreCase("stepComponents")) {
                     StepComponents();
                     System.out.println("Board circuit has stepped");
 
                 // setOutput
-                } else if (command.equals("setOutput")) {
+                } else if (command.equalsIgnoreCase("setOutput")) {
                     System.out.println("Output is set to " + param1);
 
                 // setInterval
-                } else if (command.equals("setInterval")) {
+                } else if (command.equalsIgnoreCase("setInterval")) {
                     System.out.println("Boards interval is set to " + param1);
 
                 // toggleSwitch
-                } else if (command.equals("toggleSwitch")) {
+                } else if (command.equalsIgnoreCase("toggleSwitch")) {
+                	System.out.println(param1);
                     DigitalObject elem = GetElementByID(param1);
                     if (elem == null) {
                         System.out.println("x Error: Wrong Parameter: No object with id " + param1);
@@ -339,7 +340,7 @@ public class DigitalBoard {
                     }
                     
                 // setSequence
-                } else if (command.equals("setSequence")) {
+                } else if (command.equalsIgnoreCase("setSequence")) {
                     DigitalObject elem = GetElementByID(param1);
                     if (elem == null) {
                         System.out.println("x Error: Wrong Parameter: No object with id " + param1);
@@ -352,7 +353,7 @@ public class DigitalBoard {
                     System.out.println(param1 + "'s sequence is set to " + param2);
 
                 // exit
-                } else if (command.equals("exit")) {
+                } else if (command.equalsIgnoreCase("exit")) {
                     System.exit(0);
                 } else {
                     System.out.println("Unknown command");
