@@ -1,19 +1,9 @@
 composit main(in,out)
 	switch sw01;
 	generator gen01;
-	led led01;	
-	oscilloscope osc01(10);
-	andgate and01;
-	andgate and02;
+	led led01;
 	orgate or01;
-	inverter inv01;
-	assign and01 = sw01;
-	assign and02 = gen01;
-	assign or01 = and01;	
-	assign and02 = or01;
-	assign or01 = and02;
+	assign or01 = gen01;
+	assign or01 = sw01;
 	assign led01 = or01;
-	assign osc01 = and02;
-	assign and01 = inv01;
-	assign inv01 = or01;
 endcomposit;

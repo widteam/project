@@ -3,15 +3,19 @@ composit comp01(in w03,w04,out w05,w06)
 	andgate and02;
 	orgate or01;
 	inverter inv01;
+	pin pin01;
+	pin pin02;
+	assign w05 = pin01;
+	assign w06 = pin02;
+	assign pin02 = and02;	
+	assign pin01 = or01;
+	assign inv01 = or01;
+	assign or01 = and02;
+	assign or01 = and01;
 	assign and01 = w03;
 	assign and02 = w04;	
 	assign and02 = or01;
-	assign or01 = and02;
-	assign w05 = or01;
-	assign w06 = and02;
-	assign or01 = and01;
 	assign and01 = inv01;
-	assign inv01 = or01;
 endcomposit;
 
 composit main(in,out)
