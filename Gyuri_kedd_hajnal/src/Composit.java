@@ -26,6 +26,7 @@ public class Composit extends DigitalObject {
 		wireOut = new ArrayList<Wire>();// Inicializaljuk a wireOut listat
 		ComponentList = new ArrayList<List<DigitalObject>>();
 		ComponentList.add(new ArrayList<DigitalObject>());
+		System.out.println("create "+CompositName+" (composit)");
 	}
 
 
@@ -38,7 +39,7 @@ public class Composit extends DigitalObject {
 		tmp.SetFrequency(Frequency);
 	};
 
-	public void SetSequence(int Sequence, String ElementID) {
+	public void SetSequence(String Sequence, String ElementID) {
 		// Leírás: A paraméterben megadott azonosítójú GENERATOR objektum
 		// szekvenciáját módosítja
 		GENERATOR GEN_to_setsequence; /* Temporális változó */
@@ -159,7 +160,25 @@ public class Composit extends DigitalObject {
 	 */
 	@Override
 	public boolean Step() {
-		// TODO Auto-generated method stub
+		DigitalObject obj;
+		for (List<DigitalObject> sublist : ComponentList) {
+			for (DigitalObject o : sublist) {
+				obj = (DigitalObject) o;
+				obj.Step();
+				//ha main
+				if(ID.startsWith("null")){
+					//ha output
+					if(obj.wireOut.size()==0){
+						System.out.println("<"+obj.GetName()+"> value is "+obj.wireIn.get(0).GetValue());
+						
+					}
+					//ha wire
+					for(int i=0; i<obj.wireOut.size();i++){
+						System.out.println("<"+obj.wireOut.get(i).GetName()+"> value is "+obj.wireOut.get(0).GetValue() );
+					}//for i
+				}//if
+			}//sublist
+		}//list digitalo
 		return false;
 	};
 
@@ -169,8 +188,14 @@ public class Composit extends DigitalObject {
 			for (DigitalObject o : sublist) {
 				obj = (DigitalObject) o;
 				obj.Count();
+				//ha main
 				if(ID.startsWith("null")){
-					//ha main, kiirjuk a wire értékét
+					//ha output
+					if(obj.wireOut.size()==0){
+						System.out.println("<"+obj.GetName()+"> value is "+obj.wireIn.get(0).GetValue());
+						
+					}
+					//ha wire
 					for(int i=0; i<obj.wireOut.size();i++){
 						System.out.println("<"+obj.wireOut.get(i).GetName()+"> value is "+obj.wireOut.get(0).GetValue() );
 					}//for i
@@ -181,20 +206,7 @@ public class Composit extends DigitalObject {
 	}
 
 	public void StepComponents() {
-		// Leírás: Meghívja az összes iComponent interfészt megvalósító objektum
-		// Step() metódusát.
-
-		/*
-		 * Elvileg már fel van épülve a hierarchia így nekem elég megkapnom a
-		 * ComponentListet
-		 */
-		DigitalObject obj;
-		for (List<DigitalObject> sublist : ComponentList) {
-			for (DigitalObject o : sublist) {
-				obj = (DigitalObject) o;
-				obj.Step();
-			}
-		}
+		Step();
 	}
 
 	/**

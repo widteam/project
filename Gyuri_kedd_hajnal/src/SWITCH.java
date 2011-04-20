@@ -93,7 +93,7 @@ public class SWITCH extends Input {
 	 */
 	public boolean Step() {
 		int i = Count(); // Meghivja a Count metodust
-		System.out.println(ID + " " + i);
+		//System.out.println(ID + " " + i);
 		return true; // A SWITCH mindig igazzal ter vissza
 	}
 }
