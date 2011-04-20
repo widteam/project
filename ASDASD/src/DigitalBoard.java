@@ -270,6 +270,23 @@ public class DigitalBoard {
         return new String[]{ command , param1 , param2 };
 
     }
+    /**
+	 * A parameterben megadott azonositoju OSCILLOSCOPE objektum buffermeretet
+	 * modositja
+	 *
+	 * @param SampleSize
+	 *            A mintavetelezes nagysaga
+	 * @param ElementID
+	 *            A modositani kivant Oscilloscope IDja
+	 */
+	public void SetSample(int SampleSize, String ElementID) {
+		Oscilloscope tmp;
+		tmp = (Oscilloscope) GetElementByID(ElementID);
+                if(SampleSize < 0)
+                    System.out.println("x Error: SampleSize must be positive");
+                else
+                    tmp.SetSample(SampleSize);
+	};
 
     public void HandleUserCommand(BufferedReader reader) {
 
@@ -313,6 +330,18 @@ public class DigitalBoard {
                         System.out.println(param1 + "'s frequency is set to " + freq);
                     } catch (Exception ex) {
                         System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                        continue;
+                    }
+                //SetSample
+                } else if (command.equalsIgnoreCase("setSample")) {
+                    try {
+                        SetSample(Integer.parseInt(param2), param1);
+                        System.out.println(param1 + "'s sample size is set to " + param2);
+                    }catch(NullPointerException e){
+                        System.out.println("x Error: Wrong Parameter: No object with id " + param1);
+                        continue;
+                    } catch (Exception ex) {
+                        System.out.println("x Error: Wrong Parameter: Object is not Oscilloscope");
                         continue;
                     }
                     

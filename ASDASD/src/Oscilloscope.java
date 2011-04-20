@@ -29,30 +29,43 @@ public class Oscilloscope extends Output {
 	private static int OscilloscopeCount;
 
 	/** A mintat tarolo FIFO lista */
-	private Queue<Integer> Samples;
+	private ArrayList<Integer> Samples;
+	
+	private int SampleSize;
+	
+	private int SizeCounter;
+	
 
 	/* KONSTRUKTOROK */
 	private void init(){
 		wireOut = new ArrayList<Wire>();
 		wireIn = new ArrayList<Wire>();		
 	}
-	public Oscilloscope(String strCompositName,  int SampleSize) {
+	public Oscilloscope(String strCompositName,  int Size) {
 		String strIDNumber = String.valueOf(OscilloscopeCount++);
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
 				+ strClassName + strIDNumber;
 		init();
-		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
+		SampleSize = Size;
+		SizeCounter = 0;
+		Samples = new ArrayList<Integer>();
 	}
 	
-	public Oscilloscope(String strCompositName,  String OscilloscopeName,int SampleSize) {
+	public Oscilloscope(String strCompositName, String OscilloscopeName, int Size) {
 		final String strClassName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
 		+ OscilloscopeName;
 		init();
-		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
+		SampleSize = Size;
+		SizeCounter = 0;
+		Samples = new ArrayList<Integer>();
 	}
 	/* METODUSOK */
+	
+	public void SetSample(int Size){
+		SampleSize = Size;
+	}
 	/**
 	 * Megkapja a bemenetenek erteket, es eltarolja azt.
 	 * 
@@ -71,11 +84,18 @@ public class Oscilloscope extends Output {
 			if (wireIn.size() != 1) {
 				// throw ElementInputSizeException
 			} else {
-				Value = Samples.poll(); // Utolso elem a mintabol kiesik
-				Samples.add(wireIn.get(0).GetValue()); // hozzaadjuk az uj
-														// erteket
+				if(SizeCounter==SampleSize){
+					SizeCounter--;
+					Samples.remove(0);
+				}
+				Samples.add(Value=wireIn.get(0).GetValue());
+				SizeCounter++;
 			}
 		}
+		System.out.print("Sample: ");
+		for(int i = 0; i<SizeCounter; i++)
+			System.out.print(Samples.get(i));
+		System.out.println(" ");
 		return Value;
 	}
 
