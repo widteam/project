@@ -183,6 +183,24 @@ public class DigitalBoard {
 		GENERATOR tmp;
 		tmp = (GENERATOR) GetElementByID(ElementID);
 		tmp.SetFrequency(Frequency);
+		
+
+        if (tmp == null) {
+            System.out.println("x Error: Wrong Parameter: No object with id " + ElementID);
+        } else{
+            if (Frequency <= 0) {
+                System.out.println("x Error: Frequency must be positive");
+        }
+
+        try {
+            tmp.SetFrequency(Frequency);
+        } catch (Exception ex) {
+            System.out.println("x Error: Wrong Parameter: Object is not Generator");
+        }
+        System.out.println(ElementID + "'s frequency is set to " + Frequency);
+        }
+
+		
 	};
 
 	/**
@@ -198,6 +216,17 @@ public class DigitalBoard {
 		GENERATOR GEN_to_setsequence; /* Temporalis valtozo */
 		GEN_to_setsequence = (GENERATOR) GetElementByID(ElementID);
 		GEN_to_setsequence.SetSequence(Sequence);
+		
+		if (GEN_to_setsequence == null) {
+              System.out.println("x Error: Wrong Parameter: No object with id " + ElementID);
+        }
+        try {
+              ((GENERATOR) (GEN_to_setsequence)).SetSequence(Sequence);
+        } catch (Exception ex) {
+              System.out.println("x Error: Wrong Parameter: Object is not Generator");
+        }
+        System.out.println(ElementID + "'s sequence is set to " + Sequence);
+
 	};
 
 	/**
@@ -209,9 +238,18 @@ public class DigitalBoard {
 	 *            A SWITCH ID-ja
 	 */
 	public void Toggle(String ElementID) {
+		
 		SWITCH SWITCH_to_toggle; /* Temporalis valtozo */
 		SWITCH_to_toggle = (SWITCH) GetElementByID(ElementID);
-		SWITCH_to_toggle.Toggle();
+		if (SWITCH_to_toggle == null) {
+            System.out.println("x Error: Wrong Parameter: No object with id " + ElementID);
+        }
+        try {
+            SWITCH_to_toggle.Toggle();
+            System.out.println(ElementID + "'s value is set to " + SWITCH_to_toggle.Value);
+        } catch (Exception ex) {
+            System.out.println("x Error: Wrong Parameter: Object is not Generator");
+        }
 	};
 
 	/**
@@ -294,66 +332,16 @@ public class DigitalBoard {
 
                 // setFrequency
                 if (command.equalsIgnoreCase("setFrequency")) {
-                    DigitalObject elem = GetElementByID(param1);
-
-                    if (elem == null) {
-                        System.out.println("x Error: Wrong Parameter: No object with id " + param1);
-                    }
-                    else{
-                    int freq = Integer.parseInt(param2);
-
-                    if (freq <= 0) {
-                        System.out.println("x Error: Frequency must be positive");
-                    }
-
-                    try {
-                        ((GENERATOR)elem).SetFrequency(freq);
-                    } catch (Exception ex) {
-                        System.out.println("x Error: Wrong Parameter: Object is not Generator");
-                    }
-                    System.out.println(param1 + "'s frequency is set to " + freq);
-                    }
-                    
+                    SetFrequency(Integer.parseInt(param2), param1);                    
                 // stepComponents
                 } else if (command.equalsIgnoreCase("stepComponents")) {
                     StepComponents();
-                    System.out.println("Board circuit has stepped");
-
-                // setOutput
-                } else if (command.equalsIgnoreCase("setOutput")) {
-                    System.out.println("Output is set to " + param1);
-
-                // setInterval
-                } else if (command.equalsIgnoreCase("setInterval")) {
-                    System.out.println("Boards interval is set to " + param1);
-
                 // toggleSwitch
                 } else if (command.equalsIgnoreCase("toggleSwitch")) {
-                	System.out.println(param1);
-                    DigitalObject elem = GetElementByID(param1);
-                    if (elem == null) {
-                        System.out.println("x Error: Wrong Parameter: No object with id " + param1);
-                    }
-                    try {
-                        ((SWITCH) (elem)).Toggle();
-                        System.out.println(param1 + "'s value is set to " + ((SWITCH) (elem)).Value);
-                    } catch (Exception ex) {
-                        System.out.println("x Error: Wrong Parameter: Object is not Generator");
-                    }
-                    
+                	Toggle(param1);
                 // setSequence
                 } else if (command.equalsIgnoreCase("setSequence")) {
-                    DigitalObject elem = GetElementByID(param1);
-                    if (elem == null) {
-                        System.out.println("x Error: Wrong Parameter: No object with id " + param1);
-                    }
-                    try {
-                        ((GENERATOR) (elem)).SetSequence(Integer.parseInt(param2));
-                    } catch (Exception ex) {
-                        System.out.println("x Error: Wrong Parameter: Object is not Generator");
-                    }
-                    System.out.println(param1 + "'s sequence is set to " + param2);
-
+                   SetSequence(Integer.parseInt(param2), param1);
                 // exit
                 } else if (command.equalsIgnoreCase("exit")) {
                     System.exit(0);
