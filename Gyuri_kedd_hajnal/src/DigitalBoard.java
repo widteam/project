@@ -1,11 +1,14 @@
 /*  IMPORTOK  */
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 /** 
  * <table border=0>
  * 	<tr align=left>
@@ -218,4 +221,149 @@ public class DigitalBoard {
 	public void StepComponents() {
 		MainComposit.StepComponents();
 	}	
+	public String[] GetCmdParams(String cmdLine) {
+
+        Pattern regxp;
+        Matcher match;
+
+        String command = "";
+        String param1 = "";
+        String param2 = "";
+        
+        //Regularis Kifejezes
+        regxp = Pattern.compile(".*? "); // Megkeressuk parancsot
+        //Megkeressuk a talalatokat
+        match = regxp.matcher(cmdLine);
+
+        if (match.find()) {
+            command = match.group();//Kimentjuk parancsot
+        } else {
+            regxp = Pattern.compile(".*");//Egyszavas parancs
+            match = regxp.matcher(cmdLine);
+            if (match.find()) {
+                command = match.group();//Kimentjuk parancsot
+            }
+        }
+
+        cmdLine = cmdLine.replace(command, "");//Kivesszuk talalatot,reszre keresunk cska
+        command = command.replace(" ", ""); //Kivesszuk spacet
+
+        match = regxp.matcher(cmdLine);
+        if (match.find()) {
+            param1 = match.group();//Kimentjuk elso parametert
+        } else {
+            regxp = Pattern.compile(".*");//Egyszavas parancs
+            match = regxp.matcher(cmdLine);
+            if (match.find()) {
+                param1 = match.group();//Kimentjuk parancsot
+            }
+        }
+
+        cmdLine = cmdLine.replace(param1, "");//Kivesszuk talalatot,reszre keresunk cska
+        param1 = param1.replace(" ", ""); //Kivesszuk spacet
+
+        regxp = Pattern.compile(".*");
+        match = regxp.matcher(cmdLine);
+        match.find();
+        param2 = match.group();//Kimentjuk masodik parametert
+        param2 = param2.replace(" ", ""); //Kivesszuk spacet
+
+        return new String[]{ command , param1 , param2 };
+
+    }
+
+    public void HandleUserCommand(BufferedReader reader) {
+
+        System.out.println("/*******Parancsok fogadasa*******/");
+
+        String cmdLine = "";
+
+        String command = "";
+        String param1 = "";
+        String param2 = "";
+
+        while (!cmdLine.contentEquals("exit")) {
+            try {
+                //  a bevitt szoveget
+                cmdLine = reader.readLine();
+
+                // parancs es parameterek meghatarozasa
+                command = GetCmdParams(cmdLine)[0];
+                param1 = GetCmdParams(cmdLine)[1];
+                param2 = GetCmdParams(cmdLine)[2];
+
+                // setFrequency
+                if (command.equalsIgnoreCase("setFrequency")) {
+                    DigitalObject elem = GetElementByID(param1);
+
+                    if (elem == null) {
+                        System.out.println("x Error: Wrong Parameter: No object with id " + param1);
+                    }
+                    else{
+                    int freq = Integer.parseInt(param2);
+
+                    if (freq <= 0) {
+                        System.out.println("x Error: Frequency must be positive");
+                    }
+
+                    try {
+                        ((GENERATOR)elem).SetFrequency(freq);
+                    } catch (Exception ex) {
+                        System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                    }
+                    System.out.println(param1 + "'s frequency is set to " + freq);
+                    }
+                    
+                // stepComponents
+                } else if (command.equalsIgnoreCase("stepComponents")) {
+                    StepComponents();
+                    System.out.println("Board circuit has stepped");
+
+                // setOutput
+                } else if (command.equalsIgnoreCase("setOutput")) {
+                    System.out.println("Output is set to " + param1);
+
+                // setInterval
+                } else if (command.equalsIgnoreCase("setInterval")) {
+                    System.out.println("Boards interval is set to " + param1);
+
+                // toggleSwitch
+                } else if (command.equalsIgnoreCase("toggleSwitch")) {
+                	System.out.println(param1);
+                    DigitalObject elem = GetElementByID(param1);
+                    if (elem == null) {
+                        System.out.println("x Error: Wrong Parameter: No object with id " + param1);
+                    }
+                    try {
+                        ((SWITCH) (elem)).Toggle();
+                        System.out.println(param1 + "'s value is set to " + ((SWITCH) (elem)).Value);
+                    } catch (Exception ex) {
+                        System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                    }
+                    
+                // setSequence
+                } else if (command.equalsIgnoreCase("setSequence")) {
+                    DigitalObject elem = GetElementByID(param1);
+                    if (elem == null) {
+                        System.out.println("x Error: Wrong Parameter: No object with id " + param1);
+                    }
+                    try {
+                        ((GENERATOR) (elem)).SetSequence(Integer.parseInt(param2));
+                    } catch (Exception ex) {
+                        System.out.println("x Error: Wrong Parameter: Object is not Generator");
+                    }
+                    System.out.println(param1 + "'s sequence is set to " + param2);
+
+                // exit
+                } else if (command.equalsIgnoreCase("exit")) {
+                    System.exit(0);
+                } else {
+                    System.out.println("Unknown command");
+                }
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
+        }
+    }
+
 }

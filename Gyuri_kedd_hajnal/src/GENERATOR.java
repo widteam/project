@@ -155,7 +155,8 @@ public class GENERATOR extends Input{
 	 * @return Mindig {@code  true } ertekkel ter vissza
 	 */
 	public boolean Step(){
-		Count();								// MEghivja a Count metodust
+		int i = Count();								// MEghivja a Count metodust
+		System.out.println(ID + " " + i);
 		return true;							// A GENERATOR mindig igazzal ter vissza
 	};
 
