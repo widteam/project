@@ -57,8 +57,10 @@ public class Wire {
 	public Wire(String strCompositName) {		
 		String strIDNumber = String.valueOf(WIRECounts++);
 		final String strClassName = this.getClass().getName();
+		String w00="w0";
+		if(WIRECounts>8)w00="w";
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
-				+ strClassName + strIDNumber;
+				+ w00 + (WIRECounts);
 
 		objectsIn = new ArrayList<DigitalObject>();
 		objectsOut = new ArrayList<DigitalObject>();

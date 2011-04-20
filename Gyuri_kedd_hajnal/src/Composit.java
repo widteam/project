@@ -97,7 +97,7 @@ public class Composit extends DigitalObject {
 		if (ComponentList != null && !ComponentList.isEmpty()) {
 			for (List<DigitalObject> sublist : ComponentList) {
 				for (DigitalObject o : sublist) {
-					if (o.ID.equalsIgnoreCase(ElementID))
+					if (o.ID.endsWith(ElementID))
 						return  o;
 				}
 			}
@@ -164,7 +164,19 @@ public class Composit extends DigitalObject {
 	};
 
 	public int Count() {
-		// TODO Auto-generated method stub
+		DigitalObject obj;
+		for (List<DigitalObject> sublist : ComponentList) {
+			for (DigitalObject o : sublist) {
+				obj = (DigitalObject) o;
+				obj.Count();
+				if(ID.startsWith("null")){
+					//ha main, kiirjuk a wire értékét
+					for(int i=0; i<obj.wireOut.size();i++){
+						System.out.println("<"+obj.wireOut.get(i).GetName()+"> value is "+obj.wireOut.get(0).GetValue() );
+					}//for i
+				}//if
+			}//sublist
+		}//list digitalo
 		return 0;
 	}
 
@@ -202,7 +214,10 @@ public class Composit extends DigitalObject {
 				break;
 			}				
 		}
-		if(!alreadyExist)WireList.add(wire);
+		if(!alreadyExist) {
+			WireList.add(wire);
+			System.out.println("create "+wire.GetName()+" (Wire)");
+		}
 	}
 	/**
 	 * Elvesz a WireList-bol egy elemet

@@ -13,14 +13,15 @@ public class main {
 		while (!line.contentEquals("exit")) { // Mig nem akar kilepni a
 												// feslhasznalo nem lepunk ki ;
 
-			System.out.println("TESZT SZAKASZ");
-			System.out.println("Kerem valasszon a lehetosegek kozul!");
+			System.out.println("Kérem töltse be az áramkört a loadboard xy.bhdl paranccsal! ");
 			System.out.println("  1 - TesztEset1 - Egyszeru aramkor");
 			System.out.println("  2 - TesztEset2 - Visszacsatolt stabil aramkor");
 			System.out.println("  3 - TesztEset3 - Instabil aramkor");
 			System.out.println("  4 - TesztEset3 - Bonyolult aramkor");
 			System.out.println("  exit - Kilepes");
-
+				
+			
+			
 			try { // Szamma alakitjuk - ha tudjuk - a bevitt szoveget
 				choice = Integer.decode(line);
 			} catch (Exception e) {

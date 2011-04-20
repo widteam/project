@@ -182,8 +182,8 @@ public class bhdlParser {
 		 */
 		for (int i = 0; i < commands.length; i++) {
 			if (matching(reg_wire, commands[i]) != null) {
+				
 				Owner.AddToWireList(CreateWire(Owner, commands[i]));
-				System.out.println("Wire has been created.");
 			}
 			if (matching(reg_led, commands[i]) != null) {
 				Owner.getFirstLevelOfComponentList().add(
@@ -231,7 +231,7 @@ public class bhdlParser {
 			}
 			if (matching(reg_assign, commands[i]) != null) {
 				assign(Owner, commands[i]);
-				System.out.println("Assign expression.");
+				//System.out.println("Assign expression.");
 			}
 			if (matching(reg_comp, commands[i]) != null) {
 				CreateComposit(Owner, source, commands[i]);
@@ -253,6 +253,7 @@ public class bhdlParser {
 	private static Wire CreateWire(Composit owner, String command) {
 		String CompositName = owner.GetName();
 		String reg_wire = "wire[ ]+([\\w]+)?;";
+		//String reg_wire = "w[ ]+([\\w]+)?;";
 		Pattern regexp = Pattern.compile(reg_wire);
 		Matcher match = regexp.matcher(command);
 
@@ -551,7 +552,7 @@ public class bhdlParser {
 					Wire w = new Wire(comp_name, wire_in);
 					w.SetConnection(null, myComposit);
 					myComposit.wireIn.add(w);
-					myComposit.AddToWireList(w);
+					//myComposit.AddToWireList(w);
 				}
 				// Kimeno drotok
 				for (String wire_out : HeaderWiresOut) {
@@ -647,7 +648,7 @@ public class bhdlParser {
 			/**
 			 * DEBUGG KEZDETE
 			 */
-			System.out.println("Assign expression. ("+lvalue+"="+postfix+")");
+			//System.out.println("Assign expression. ("+lvalue+"="+postfix+")");
 
 			String[] items = postfix.split(" ");
 			Stack<Wire> WireStack = new Stack<Wire>();
@@ -742,7 +743,7 @@ public class bhdlParser {
 							/**
 							 * DEBUG
 							 */
-							System.out.println(myInverter.GetName()+" has been assigned to "+inv_in1.GetName()+" output is "+inv_out.GetName());
+							//System.out.println(myInverter.GetName()+" has been assigned to "+inv_in1.GetName()+" output is "+inv_out.GetName());
 						}						
 					}
 					if(NumOfOperand(item)==2){
@@ -789,7 +790,7 @@ public class bhdlParser {
 							/**
 							 * DEBUG
 							 */
-							System.out.println(myAnd.GetName()+" has been assigned to "+and_in1.GetName()+","+and_in2.GetName()+" output is "+and_out.GetName());
+							//System.out.println(myAnd.GetName()+" has been assigned to "+and_in1.GetName()+","+and_in2.GetName()+" output is "+and_out.GetName());
 							
 						}
 						if(item.equalsIgnoreCase("|"))
@@ -833,7 +834,7 @@ public class bhdlParser {
 							/**
 							 * DEBUG
 							 */
-							System.out.println(myOr.GetName()+" has been assigned to "+or_in1.GetName()+","+or_in2.GetName()+" output is "+or_out.GetName());
+							//System.out.println(myOr.GetName()+" has been assigned to "+or_in1.GetName()+","+or_in2.GetName()+" output is "+or_out.GetName());
 						}
 					}//end: operandusok szama					
 				}//end if: ha operator				
@@ -875,7 +876,7 @@ public class bhdlParser {
 				/**
 				 * DEBUG
 				 */
-				System.out.println("Finally, "+owner.GetWireByName(lvalue).GetName()+" has been assigned to "+assigned_wire.GetName());
+				//System.out.println("Finally, "+owner.GetWireByName(lvalue).GetName()+" has been assigned to "+assigned_wire.GetName());
 				//owner.RemoveFromWireList(assigned_wire); EZ NEM KELL MERT SOHA NEM LETT HOZZAADVA a WIRELISThez
 			}
 			/*
@@ -889,7 +890,7 @@ public class bhdlParser {
 				/**
 				 * DEBUG
 				 */
-				System.out.println("Finally, "+owner.GetElementByName(lvalue).GetName()+" has been assigned to "+assigned_wire.GetName());
+				//System.out.println("Finally, "+owner.GetElementByName(lvalue).GetName()+" has been assigned to "+assigned_wire.GetName());
 			}
 		}		
 		return assigned_wire;

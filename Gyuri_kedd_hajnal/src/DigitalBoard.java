@@ -80,6 +80,7 @@ public class DigitalBoard {
 			// throw FileDoesNotExistException;
 		} else {
 			ParseFile(strFilePath);
+			CountComponents();
 		}
 		
 	};
@@ -107,7 +108,7 @@ public class DigitalBoard {
 			
 			while ((bytesRead = bin.read(contents)) != -1) {
 				strFileContents = new String(contents, 0, bytesRead);
-				System.out.print(strFileContents);
+				//System.out.print(strFileContents);
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found" + e);
@@ -129,7 +130,7 @@ public class DigitalBoard {
 		bhdlParser.CommandParser(MainComposit, strFileContents,main_commands);
 		MainComposit.buildHierarchy();
 		MainComposit.getFeedbacks();
-		Debug(true);
+		//Debug(true);
 	}
 	public void Debug(boolean AllComponent){
 		/* KIIRATAS, DEBUG */
@@ -243,12 +244,13 @@ public class DigitalBoard {
 		SWITCH_to_toggle = (SWITCH) GetElementByID(ElementID);
 		if (SWITCH_to_toggle == null) {
             System.out.println("x Error: Wrong Parameter: No object with id " + ElementID);
-        }
-        try {
-            SWITCH_to_toggle.Toggle();
-            System.out.println(ElementID + "'s value is set to " + SWITCH_to_toggle.Value);
-        } catch (Exception ex) {
-            System.out.println("x Error: Wrong Parameter: Object is not Generator");
+        } else {
+	        try {
+	            SWITCH_to_toggle.Toggle();
+	            System.out.println(ElementID + "'s value is set to " + SWITCH_to_toggle.Value);
+	        } catch (Exception ex) {
+	            System.out.println("x Error: Wrong Parameter: Object is not Switch");
+	        }
         }
 	};
 
@@ -258,6 +260,9 @@ public class DigitalBoard {
 	 */
 	public void StepComponents() {
 		MainComposit.StepComponents();
+	}	
+	public void CountComponents() {
+		MainComposit.Count();
 	}	
 	public String[] GetCmdParams(String cmdLine) {
 
@@ -332,7 +337,8 @@ public class DigitalBoard {
 
                 // setFrequency
                 if (command.equalsIgnoreCase("setFrequency")) {
-                    SetFrequency(Integer.parseInt(param2), param1);                    
+                    SetFrequency(Integer.parseInt(param2), param1);   
+                    
                 // stepComponents
                 } else if (command.equalsIgnoreCase("stepComponents")) {
                     StepComponents();
