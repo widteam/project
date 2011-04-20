@@ -107,7 +107,7 @@ public class INVERTER extends Gate {
 				Result = wireIn.get(0).GetValue();
 				if (Result == 0)
 					Result = 1;
-				if (Result == -1)
+				else if (Result == -1)
 					Result = -1;
 				else
 					Result = 0;
@@ -165,6 +165,7 @@ public class INVERTER extends Gate {
 			NewValue = Count();
 			Result = (PreviousValue == NewValue);
 		}
+		System.out.println(ID + " " + PreviousValue);
 		return Result;
 	};
 }

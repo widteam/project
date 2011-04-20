@@ -290,27 +290,30 @@ public class DigitalBoard {
                 command = GetCmdParams(cmdLine)[0];
                 param1 = GetCmdParams(cmdLine)[1];
                 param2 = GetCmdParams(cmdLine)[2];
-
+                DigitalObject elem = null;
+                
                 // setFrequency
                 if (command.equalsIgnoreCase("setFrequency")) {
-                    DigitalObject elem = GetElementByID(param1);
-
-                    if (elem == null) {
+                	try{
+                        elem = GetElementByID(param1);
+                    }catch(NullPointerException e){
                         System.out.println("x Error: Wrong Parameter: No object with id " + param1);
+                        continue;
                     }
-                    else{
+
                     int freq = Integer.parseInt(param2);
 
                     if (freq <= 0) {
                         System.out.println("x Error: Frequency must be positive");
+                        continue;
                     }
 
                     try {
                         ((GENERATOR)elem).SetFrequency(freq);
+                        System.out.println(param1 + "'s frequency is set to " + freq);
                     } catch (Exception ex) {
                         System.out.println("x Error: Wrong Parameter: Object is not Generator");
-                    }
-                    System.out.println(param1 + "'s frequency is set to " + freq);
+                        continue;
                     }
                     
                 // stepComponents
@@ -324,14 +327,16 @@ public class DigitalBoard {
 
                 // setInterval
                 } else if (command.equalsIgnoreCase("setInterval")) {
-                    System.out.println("Boards interval is set to " + param1);
+                	System.out.println("Boards interval is set to " + param1);
 
                 // toggleSwitch
                 } else if (command.equalsIgnoreCase("toggleSwitch")) {
-                	System.out.println(param1);
-                    DigitalObject elem = GetElementByID(param1);
-                    if (elem == null) {
+                    elem = GetElementByID(param1);
+                    try{
+                        elem = GetElementByID(param1);
+                    }catch(NullPointerException e){
                         System.out.println("x Error: Wrong Parameter: No object with id " + param1);
+                        continue;
                     }
                     try {
                         ((SWITCH) (elem)).Toggle();
@@ -342,10 +347,14 @@ public class DigitalBoard {
                     
                 // setSequence
                 } else if (command.equalsIgnoreCase("setSequence")) {
-                    DigitalObject elem = GetElementByID(param1);
-                    if (elem == null) {
+                    elem = GetElementByID(param1);
+                    try{
+                        elem = GetElementByID(param1);
+                    }catch(NullPointerException e){
                         System.out.println("x Error: Wrong Parameter: No object with id " + param1);
+                        continue;
                     }
+
                     try {
                         ((GENERATOR) (elem)).SetSequence(Integer.parseInt(param2));
                     } catch (Exception ex) {

@@ -99,15 +99,9 @@ public class ANDGate extends Gate {
 			if (wireIn.size() != 2) {
 				// throw ElementInputSizeException
 			} else {
-				Result = wireIn.get(0).GetValue();
-				if (Result == 0)
-					Result = 0;
-				if (Result == 1)
-					Result = wireIn.get(1).GetValue();
-				else if (wireIn.get(1).GetValue() == 0)
-					Result = 0;
-				else
-					Result = -1;
+				if(wireIn.get(0).GetValue() == 1 && wireIn.get(1).GetValue() == 1)Result = 1;
+				else if(wireIn.get(0).GetValue() == -1 && wireIn.get(1).GetValue() == -1)Result = -1;
+				else Result = 0;
 			}
 		}
 
@@ -159,6 +153,7 @@ public class ANDGate extends Gate {
 			NewValue = Count();
 			Result = (PreviousValue == NewValue);
 		}
+		System.out.println(ID + " " + PreviousValue);
 		return Result;
 	};
 }

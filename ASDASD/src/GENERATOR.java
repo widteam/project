@@ -102,7 +102,6 @@ public class GENERATOR extends Input{
 	public void SetSequence(int NewSequence){
 		Sequence = NewSequence;					// Beallitjuk a szekvenciat
 		SequencePos = 0;							// Poziciot alapra
-		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
 	};
 	
 	/**
@@ -123,29 +122,27 @@ public class GENERATOR extends Input{
 	 */
 	public int Count(){
 
-		int Result=0;
 		/* Az OSSZES kimenetre kiadjuk a kiszamitott eredmenyt.*/
 		FrequencyCounter--;					// Csokkentjuk a szamlalot
-		if(FrequencyCounter==0){				// HA megfelo szamu count eltelt mar
-			if(wireOut == null || wireOut.isEmpty()){	// ha nincs csatlakoztatva semmihez, hibat dob
+		//if(FrequencyCounter==0){				// HA megfelo szamu count eltelt mar
+			if(wireOut.isEmpty()){	// ha nincs csatlakoztatva semmihez, hibat dob
 				// throw InputNotConnectedException
-			}else{
-				for(Wire OutPut:wireOut){
-					OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
-					if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciaban elore megyunk.. mar ha lehet
-						SequencePos = 0;				
-					}else{
-						SequencePos++;
-					}						
-				}//end for
 			}
-			Value = Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszamoljuk az uj erteket
+			if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciaban elore megyunk.. mar ha lehet
+				SequencePos = 0;				
+			}					
+						
+			Value = Integer.toBinaryString(Sequence).charAt(SequencePos);	// Kiszamoljuk az uj erteket
+			if (Value == 49) Value = 1;
+			else if (Value == 48) Value = 0;
+			else Value = -1;
 			FrequencyCounter = Frequency;	// Ujra az elejerol szamolunk
-		}else{
+		//}else{
 			for(Wire OutPut:wireOut){
-				OutPut.SetValue(Result);
+				OutPut.SetValue(Value);
 			}
-		}
+			SequencePos++;
+		//}
 		return Value;	
 	};	
 	
@@ -156,7 +153,7 @@ public class GENERATOR extends Input{
 	 */
 	public boolean Step(){
 		int i = Count();								// MEghivja a Count metodust
-		System.out.println(ID + " " + i);
+		System.out.println(ID + " " + i + " Frequency: " + Frequency);
 		return true;							// A GENERATOR mindig igazzal ter vissza
 	};
 
