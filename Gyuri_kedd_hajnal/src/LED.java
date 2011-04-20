@@ -87,7 +87,7 @@ public class LED extends Output {
 	 */
 	public boolean Step() {
 		int i = Count();
-		System.out.println(ID + " " + i);
+		//System.out.println(ID + " " + i);
 		return true;
 	};
 }

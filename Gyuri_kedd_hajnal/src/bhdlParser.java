@@ -1,3 +1,4 @@
+import java.security.acl.Owner;
 import java.util.Stack;
 import java.util.regex.*;
 
@@ -182,48 +183,61 @@ public class bhdlParser {
 		 */
 		for (int i = 0; i < commands.length; i++) {
 			if (matching(reg_wire, commands[i]) != null) {
-				
 				Owner.AddToWireList(CreateWire(Owner, commands[i]));
 			}
 			if (matching(reg_led, commands[i]) != null) {
-				Owner.getFirstLevelOfComponentList().add(
-						CreateLed(Owner, commands[i]));
-				System.out.println("LED has been  created.");
+				LED l=CreateLed(Owner, commands[i]);
+				Owner.getFirstLevelOfComponentList().add(l);
+				if(l.ID.startsWith("main"))
+					System.out.println("create "+l.GetName()+" (LED)");
+				else System.out.println("create "+l.ID.split("#")[1].trim()+"_"+l.GetName()+" (LED)");
 			}
 			if (matching(reg_oscilloscope, commands[i]) != null) {
-				Owner.getFirstLevelOfComponentList().add(
-						CreateOscilloscope(Owner, commands[i]));
-				System.out.println("Oscilloscope  has been created.");
+				Oscilloscope o=CreateOscilloscope(Owner, commands[i]);
+				Owner.getFirstLevelOfComponentList().add(o);
+				if(o.ID.startsWith("main"))
+					System.out.println("create "+o.GetName()+" (OSCILLOSCOPE)");
+				else System.out.println("create "+o.ID.split("#")[1].trim()+"_"+o.GetName()+" (OSCILLOSCOPE)");
 			}
 			if (matching(reg_generator, commands[i]) != null) {
-				Owner.getFirstLevelOfComponentList().add(
-						CreateGenerator(Owner, commands[i]));
-				System.out.println("GENERATOR has been  created.");
+				GENERATOR g=CreateGenerator(Owner, commands[i]);
+				Owner.getFirstLevelOfComponentList().add(g);
+				if(g.ID.startsWith("main"))
+					System.out.println("create "+g.GetName()+" (GENERATOR)");
+				else System.out.println("create "+g.ID.split("#")[1].trim()+"_"+g.GetName()+" (GENERATOR)");
 			}
 			if (matching(reg_switch, commands[i]) != null) {
-				Owner.getFirstLevelOfComponentList().add(
-						CreateSwitch(Owner, commands[i]));
-				System.out.println("SWITCH has been created.");
+				SWITCH s=CreateSwitch(Owner, commands[i]);
+				Owner.getFirstLevelOfComponentList().add(s);
+				if(s.ID.startsWith("main"))
+					System.out.println("create "+s.GetName()+" (SWITCH)");
+				else System.out.println("create "+s.ID.split("#")[1].trim()+"_"+s.GetName()+" (SWITCH)");
 			}
 			if (matching(reg_andgate, commands[i]) != null) {
-				Owner.getFirstLevelOfComponentList().add(
-						CreateAndGate(Owner, commands[i]));
-				System.out.println("ANDGate has been created.");
+				ANDGate g=CreateAndGate(Owner, commands[i]);
+				Owner.getFirstLevelOfComponentList().add(g);
+				if(g.ID.startsWith("main"))
+					System.out.println("create "+g.GetName()+" (ANDGate)");
+				else System.out.println("create "+g.ID.split("#")[1].trim()+"_"+g.GetName()+" (ANDGate)");
 			}
 			if (matching(reg_orgate, commands[i]) != null) {
-				Owner.getFirstLevelOfComponentList().add(
-						CreateOrGate(Owner, commands[i]));
-				System.out.println("ORGate has been created.");
+				ORGate g=CreateOrGate(Owner, commands[i]);
+				Owner.getFirstLevelOfComponentList().add(g);
+				if(g.ID.startsWith("main"))
+					System.out.println("create "+g.GetName()+" (ORgate)");
+				else System.out.println("create "+g.ID.split("#")[1].trim()+"_"+g.GetName()+" (ORGate)");
 			}
 			if (matching(reg_inverter, commands[i]) != null) {
-				Owner.getFirstLevelOfComponentList().add(
-						CreateInverter(Owner, commands[i]));
-				System.out.println("INVERTER has been created.");
+				INVERTER inv=CreateInverter(Owner, commands[i]);
+				Owner.getFirstLevelOfComponentList().add(inv);
+				if(inv.ID.startsWith("main"))
+					System.out.println("create "+inv.GetName()+" (INVERTER)");
+				else System.out.println("create "+inv.ID.split("#")[1].trim()+"_"+inv.GetName()+" (INVERTER)");
 			}
 			if (matching(reg_pin, commands[i]) != null) {
 				Owner.getFirstLevelOfComponentList().add(
 						CreatePin(Owner, commands[i]));
-				System.out.println("PIN has been created.");
+				//System.out.println("PIN has been created.");
 			}
 			if (matching(reg_set, commands[i]) != null) {
 				SettingElement(Owner, commands[i]);
@@ -339,8 +353,7 @@ public class bhdlParser {
 
 		if (match.matches()) {
 			String genname = match.group(1).trim();
-			GENERATOR myGenerator = new GENERATOR(CompositName, genname, 1000,
-					0);
+			GENERATOR myGenerator = new GENERATOR(CompositName, genname, 1, "00");
 			return myGenerator;
 		}
 		return null;
@@ -619,10 +632,11 @@ public class bhdlParser {
 
 		match.find();
 		String elementname = match.group(1).trim();
-		int value = Integer.parseInt(match.group(3).trim());
+		String value = match.group(3).trim();
 		String elementtype = owner.GetElementByName(elementname).GetType();
 		if (elementtype.equalsIgnoreCase("SWITCH")) {
-			owner.SetSwitch(value, elementname);
+			owner.SetSwitch(Integer.parseInt(value), elementname);
+			//TODO ezitt mia fene, emberek????!!!!!
 			return true;
 		} else if (elementtype.equalsIgnoreCase("GENERATOR")) {
 			owner.SetSequence(value, elementname);

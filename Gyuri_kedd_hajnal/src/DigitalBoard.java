@@ -80,7 +80,9 @@ public class DigitalBoard {
 			// throw FileDoesNotExistException;
 		} else {
 			ParseFile(strFilePath);
+			System.out.println(strFilePath+"'s Board is loaded.");
 			CountComponents();
+			
 		}
 		
 	};
@@ -213,7 +215,7 @@ public class DigitalBoard {
 	 * @param ElementID
 	 *            A modositani kivant GENERATOR IDja
 	 */
-	public void SetSequence(int Sequence, String ElementID) {
+	public void SetSequence(String Sequence, String ElementID) {
 		GENERATOR GEN_to_setsequence; /* Temporalis valtozo */
 		GEN_to_setsequence = (GENERATOR) GetElementByID(ElementID);
 		GEN_to_setsequence.SetSequence(Sequence);
@@ -259,10 +261,14 @@ public class DigitalBoard {
 	 * metodusat.
 	 */
 	public void StepComponents() {
+		System.out.println("<main step>");
 		MainComposit.StepComponents();
+		System.out.println("");
 	}	
 	public void CountComponents() {
+		System.out.println("<main count>");
 		MainComposit.Count();
+		System.out.println("");
 	}	
 	public String[] GetCmdParams(String cmdLine) {
 
@@ -317,7 +323,7 @@ public class DigitalBoard {
 
     public void HandleUserCommand(BufferedReader reader) {
 
-        System.out.println("/*******Parancsok fogadasa*******/");
+        //System.out.println("/*******Parancsok fogadasa*******/");
 
         String cmdLine = "";
 
@@ -338,16 +344,19 @@ public class DigitalBoard {
                 // setFrequency
                 if (command.equalsIgnoreCase("setFrequency")) {
                     SetFrequency(Integer.parseInt(param2), param1);   
-                    
+                    CountComponents();
                 // stepComponents
-                } else if (command.equalsIgnoreCase("stepComponents")) {
+                } else if (command.equalsIgnoreCase("step")
+                		|| command.equalsIgnoreCase("stepComponents")) {
                     StepComponents();
                 // toggleSwitch
                 } else if (command.equalsIgnoreCase("toggleSwitch")) {
                 	Toggle(param1);
+                	CountComponents();
                 // setSequence
                 } else if (command.equalsIgnoreCase("setSequence")) {
-                   SetSequence(Integer.parseInt(param2), param1);
+                   SetSequence(param2, param1);
+                   CountComponents();
                 // exit
                 } else if (command.equalsIgnoreCase("exit")) {
                     System.exit(0);

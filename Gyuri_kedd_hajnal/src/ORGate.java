@@ -154,7 +154,7 @@ public class ORGate extends Gate {
 			NewValue = Count();
 			Result = (PreviousValue == NewValue);
 		}
-		System.out.println(ID + " " + PreviousValue);
+		//System.out.println(ID + " " + PreviousValue);
 		return Result;
 	};
 }

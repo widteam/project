@@ -38,7 +38,7 @@ public class GENERATOR extends Input{
 	/**
 	 * Ebben taroljuk a kimenetre kikuldendo mintat. Ertelmezese binaris.
 	 */
-	private int Sequence;
+	private String Sequence;
 
 	/**
 	 * Az attributum tartja nyilvan az aktualis poziciot a szekvenciaban. 
@@ -58,7 +58,7 @@ public class GENERATOR extends Input{
 	 * @param StartSequence Letrehozaskor megadhato minta, ujabb ertek beallitasaig ezt ismetli
 	 * @param WiresOut A GENERATOR-hoz csatlakozo Wire objektum referenciaja
 	 */
-	public GENERATOR(String strCompositName, int StartFrequency, int StartSequence){
+	public GENERATOR(String strCompositName, int StartFrequency, String StartSequence){
 		String strIDNumber  = String.valueOf(GENERATORCounts++);
 		final String strClassName  = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter + strClassName + strIDNumber;
@@ -72,7 +72,7 @@ public class GENERATOR extends Input{
 		Value = 0;
 
 	}
-	public GENERATOR(String strCompositName,String GeneratorName, int StartFrequency, int StartSequence){
+	public GENERATOR(String strCompositName,String GeneratorName, int StartFrequency, String StartSequence){
 		final String strIDName = this.getClass().getName();
 		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter
 		+ GeneratorName;			
@@ -92,17 +92,19 @@ public class GENERATOR extends Input{
 	 */
 	public void Reset(){
 		SequencePos = 0;				// Poziciot alapra
-		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
+		Value = Integer.parseInt(String.valueOf(Sequence.charAt(SequencePos)));	// Kiszamoljuk az uj erteket
+		for(Wire OutPut:wireOut){
+			OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
+		}//end for
 	};
 	
 	/**
 	 * a Frequency erteket allitja be, a parameterben megadott ertekre.
 	 * @param NewSequence Az a minta melyet be kivanunk allitani
 	 */
-	public void SetSequence(int NewSequence){
+	public void SetSequence(String NewSequence){
 		Sequence = NewSequence;					// Beallitjuk a szekvenciat
-		SequencePos = 0;							// Poziciot alapra
-		Value = Integer.toBinaryString(Sequence).charAt(SequencePos++); //Binarissa alakitjuk a szamot es vesszuk az MSB bitet
+		Reset();
 	};
 	
 	/**
@@ -122,31 +124,7 @@ public class GENERATOR extends Input{
 	 * @throws InputNotConnectedException Ha nem csatlakozik egyetlen masik digitalObjecthez sem
 	 */
 	public int Count(){
-
-		int Result=0;
-		/* Az OSSZES kimenetre kiadjuk a kiszamitott eredmenyt.*/
-		FrequencyCounter--;					// Csokkentjuk a szamlalot
-		if(FrequencyCounter==0){				// HA megfelo szamu count eltelt mar
-			if(wireOut == null || wireOut.isEmpty()){	// ha nincs csatlakoztatva semmihez, hibat dob
-				// throw InputNotConnectedException
-			}else{
-				for(Wire OutPut:wireOut){
-					OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
-					if(SequencePos >= Integer.toBinaryString(Sequence).length()){	// a szekvenciaban elore megyunk.. mar ha lehet
-						SequencePos = 0;				
-					}else{
-						SequencePos++;
-					}						
-				}//end for
-			}
-			Value = Integer.toBinaryString(Sequence).charAt(SequencePos++);	// Kiszamoljuk az uj erteket
-			FrequencyCounter = Frequency;	// Ujra az elejerol szamolunk
-		}else{
-			for(Wire OutPut:wireOut){
-				OutPut.SetValue(Result);
-			}
-		}
-		return Value;	
+		return 0; //mivel csak step-re változtat értéket, nincs dolgunk
 	};	
 	
 	/**
@@ -155,9 +133,37 @@ public class GENERATOR extends Input{
 	 * @return Mindig {@code  true } ertekkel ter vissza
 	 */
 	public boolean Step(){
-		int i = Count();								// MEghivja a Count metodust
-		System.out.println(ID + " " + i);
-		return true;							// A GENERATOR mindig igazzal ter vissza
+		int Result=0;
+		/* Az OSSZES kimenetre kiadjuk a kiszamitott eredmenyt.*/
+		FrequencyCounter--;					// Csokkentjuk a szamlalot
+		
+		if(FrequencyCounter==0){				// HA megfelo szamu count eltelt mar
+			if(wireOut == null || wireOut.isEmpty()){	// ha nincs csatlakoztatva semmihez, hibat dob
+				// throw InputNotConnectedException
+			}else{
+				if(SequencePos >= Sequence.length()){	// a szekvenciaban elore megyunk.. mar ha lehet
+					SequencePos = 0;				
+				}else{
+					SequencePos++;
+					Value = Integer.parseInt(String.valueOf(Sequence.charAt(SequencePos)));	// Kiszamoljuk az uj erteket
+					
+				}	
+				for(Wire OutPut:wireOut){
+					
+										
+					
+					OutPut.SetValue(Value);					//Kiadjuk a kimenetre az aktualis erteker
+				}//end for
+				FrequencyCounter = Frequency;	// Ujra az elejerol szamolunk
+			}
+			
+		}else{
+			for(Wire OutPut:wireOut){
+				OutPut.SetValue(Result);
+			}
+		}
+		wireOut.get(0).SetValue(Value);//a rákötött drótot értékeljük
+		return true;	// A GENERATOR mindig igazzal ter vissza
 	};
 
 }
