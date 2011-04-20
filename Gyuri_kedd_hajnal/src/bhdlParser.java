@@ -119,7 +119,7 @@ public class bhdlParser {
 		CompositCommands = getCommands(FindComposite(source, composit_name));
 		CommandParser(ThisComposit, source, CompositCommands);
 		ThisComposit.buildHierarchy();
-		ThisComposit.getFeedbacks();
+		//ThisComposit.getFeedbacks();
 		return ThisComposit;
 	}
 

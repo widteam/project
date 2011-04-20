@@ -25,7 +25,7 @@ public class PIN extends Gate{
 		wireIn.add(wirein1);
 	}
 	
-	public PIN(Wire wireout) {
+	public PIN(Wire wirein, Wire wireout) {
 		final String strIDDelimiter = "#";
 		String strIDNumber = String.valueOf(PINCounts++);
 		final String strClassName = this.getClass().getName();
@@ -35,6 +35,7 @@ public class PIN extends Gate{
 		wireIn = new ArrayList<Wire>();
 		wireOut = new ArrayList<Wire>();
 		wireOut.add(wireout);
+		wireIn.add(wirein);
 	}
 	
 	public PIN(String strCompositName, String pinName) {

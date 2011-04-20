@@ -131,7 +131,7 @@ public class DigitalBoard {
 		String[] main_commands = bhdlParser.getCommands(main_composit);
 		bhdlParser.CommandParser(MainComposit, strFileContents,main_commands);
 		MainComposit.buildHierarchy();
-		MainComposit.getFeedbacks();
+		//MainComposit.getFeedbacks();
 		//Debug(true);
 	}
 	public void Debug(boolean AllComponent){
