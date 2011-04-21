@@ -1,3 +1,3 @@
 @echo off
-java -jar TesztTubeee.jar
+java -jar TestByTubee_prerelease.jar
 pause
