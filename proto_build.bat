@@ -18,7 +18,7 @@ javac -d build\classes src\*.java
 echo Creating the executable...
 cd build\classes
 echo Main-Class: main>manifest.mf
-jar mcf manifest.mf ..\..\dist\prototype.jar *.class
+jar mcf manifest.mf ..\..\dist\proto.jar *.class
 del /q manifest.mf
 cd ..
 cd ..
