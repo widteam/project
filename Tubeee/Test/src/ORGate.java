@@ -65,8 +65,9 @@ public class ORGate extends Gate {
 		wireIn.add(wirein1);
 		wireIn.add(wirein2);
 		
-		if(DebugMode)
-			System.out.println(strClassName+" ("+ID+") has been  created automtic. (Inputs: "+ wirein1.GetID()+", "+wirein2.GetID());
+		// LOGOLAS
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created automtic.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 
 
@@ -76,25 +77,26 @@ public class ORGate extends Gate {
 	 * 
 	 * @return A belso implementalt igazsagtabla tovabba a ket bemenet alapjan
 	 *         kapott ertek
-	 * @throws ElementHasNoInputsException
+	 * @throws ExceptionElementHasNoInputs
 	 *             Ha a kapunak nincs bemenete
-	 * @throws ElementInputSizeException
+	 * @throws ExceptionElementInputSize
 	 *             Ha a kapunak nincs meg a megfelelo szamu bemenete (2 darab)
-	 * @throws ElementNotConnectedException
+	 * @throws ExceptionElementNotConnected
 	 *             Ha a kapu kimenetehez egyetlen tovabbi elem sem csatlakozik
 	 */
-	public int Count() throws ConnectionsException{
-		if(DebugMode)
-			System.out.println("<"+this.GetID()+" Count>");
+	public int Count() throws ExceptionsWithConnection{
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " count>");
+		
 		int Result = 0;
 
 		// Ertek kiszamolasa. HA van kozte 1, akkor 1es, ha csak X van kote, X
 		// kulonben 0
 		if (wireIn == null || wireIn.isEmpty()) {
-			 throw new ElementHasNoInputsException();
+			 throw new ExceptionElementHasNoInputs(this);
 		} else {
 			if (wireIn.size() != 2) {
-				 throw new ElementInputSizeException();
+				 throw new ExceptionElementInputSize(this);
 			} else {
 				if((wireIn.get(0).GetValue() == -1) || (wireIn.get(1).GetValue() == -1)) Result = -1;
 				else if((wireIn.get(0).GetValue() == 1) || (wireIn.get(1).GetValue() == 1)) Result = 1;
@@ -104,7 +106,7 @@ public class ORGate extends Gate {
 		/* Vegignezzuk az osszes kimenetet... */
 		if (wireOut == null || wireOut.isEmpty()) { // ha nincs csatlakoztatva
 													// semmihez, hibat dob
-			 throw new ElementNotConnectedException();
+			 throw new ExceptionElementNotConnected(this);
 		} else {
 			for (Wire OutPut : wireOut) {
 				OutPut.SetValue(Result);
@@ -122,21 +124,24 @@ public class ORGate extends Gate {
 	 *         kapuerteket az elozo ertekkel. Ha az utolso ketto megegyezik,
 	 *         stabil a kapu,{@code true} a visszateresi ertek, kulonben
 	 *         {@code false}
-	 * @throws ElementNotConnectedException  A kapu kimenetehez egyetlen tovabbi elem sem csatlakozik
-	 * @throws ElementInputSizeException A kapunak nincs meg a megfelelo szamu bemenete (2 darab)
-	 * @throws ElementHasNoInputsException A a kapunak nincs bemenete
-	 * @throws UnstableCircuitException Instabil aramkor!
+	 * @throws ExceptionElementNotConnected  A kapu kimenetehez egyetlen tovabbi elem sem csatlakozik
+	 * @throws ExceptionElementInputSize A kapunak nincs meg a megfelelo szamu bemenete (2 darab)
+	 * @throws ExceptionElementHasNoInputs A a kapunak nincs bemenete
+	 * @throws ExceptionUnstableCircuit Instabil aramkor!
 	 */
-	public boolean Step()throws  UnstableCircuitException, ConnectionsException  {
-		if(DebugMode)
-			System.out.println("<"+this.GetID()+" step>");
+	public boolean Step()throws  ExceptionUnstableCircuit, ExceptionsWithConnection  {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " step>");
+		
 		boolean Result = true; // A vegso eredmeny: Stabil-e az aramkor
 		PreviousValue = Count(); // Megnezzuk az elso futas erredmenyet
 
 		if (Feedbacks != null && !Feedbacks.isEmpty()) {// Ha nem ures a
 														// Feedback tomb
-			if(DebugMode)
-				System.out.println("FEEDBACK founded. First running result was " + PreviousValue);
+			// LOGOLAS;
+			Logger.Log(Logger.log_type.DEBUG, "Feedback founded");
+			Logger.Log(Logger.log_type.ADDITIONAL, "First running result was " + PreviousValue);
+	
 			int NewValue; // Lokalis valtozo
 			for (DigitalObject obj : Feedbacks) { // Feedback osses elemen vegig
 				obj.Count();
@@ -144,8 +149,10 @@ public class ORGate extends Gate {
 			NewValue = Count(); // Megnezzuk ujol az eredmenyt
 			Result = (PreviousValue == NewValue); // Elter-e a ketto?( Prev es a
 			PreviousValue=NewValue;										// mostani)
-			if(DebugMode)
-				System.out.println("Second running result is equal with the previous? "+ Result);
+
+			// LOGOLAS
+			Logger.Log(Logger.log_type.ADDITIONAL, "Second running result is"+NewValue+" Is equal with the previous? "+ Result);
+
 			
 			for (DigitalObject obj : Feedbacks) {
 				obj.Count();
@@ -153,19 +160,22 @@ public class ORGate extends Gate {
 			NewValue = Count();
 			Result = (PreviousValue == NewValue);
 			PreviousValue=NewValue;	
-			if(DebugMode)
-				System.out.println("Third running result is equal with the previous? "+ Result);
+			
+			// LOGOLAS
+			Logger.Log(Logger.log_type.ADDITIONAL, "Third running result is"+NewValue+" Is equal with the previous? "+ Result);
 			
 			for (DigitalObject obj : Feedbacks) {
 				obj.Count();
 			}
-			NewValue = Count();
-			Result = (PreviousValue == NewValue);
+
+			Result = (PreviousValue == NewValue);			
 			PreviousValue=NewValue;	
-			if(!Result) throw new UnstableCircuitException();
-			if(DebugMode)
-				System.out.println("Last running result. Gate is stable? "+ Result);
+			
+			// LOGOLAS
+			Logger.Log(Logger.log_type.ADDITIONAL, "Last running result is"+NewValue+" Gate is stable? "+ Result);
+			
+			if(!Result) throw new ExceptionUnstableCircuit(this);
 		}
 		return Result;
-	};
+	}
 }

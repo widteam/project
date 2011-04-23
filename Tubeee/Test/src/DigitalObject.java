@@ -55,10 +55,6 @@ public abstract class DigitalObject {
 	 */
 	protected List<DigitalObject> Feedbacks;
 
-	/** DEBUG-hoz szukseges, osztalyra jellemzo valtozo. {@code true} eseten 
-	 * kulonbozo fuggvenyek hivasakor informaciot szolgaltat.
-	 */
-	public static boolean DebugMode = false;
 	
 	/* KONSTRUKTOR */
 	public DigitalObject() {
@@ -75,10 +71,10 @@ public abstract class DigitalObject {
 	 * PIN-jein talalhato ertekkel ter vissza
 	 * 
 	 * @return A kapu, composit vagy bemenet kimeneteinek aktualis ertekei listaba szervezve
-	 * @throws ConnectionsException Az elemek kozotti helytelen kapcsolatokbl szarmazo hibak
-	 * @throws UnstableCircuitException 
+	 * @throws ExceptionsWithConnection Az elemek kozotti helytelen kapcsolatokbl szarmazo hibak
+	 * @throws ExceptionUnstableCircuit 
 	 */
-	abstract public int Count() throws ConnectionsException, UnstableCircuitException;
+	abstract public int Count() throws ExceptionsWithConnection, ExceptionUnstableCircuit;
 
 	/**
 	 * Feladata az adott elem ertekenek kiszamitasa, ill. annak eldontese, hogy
@@ -94,10 +90,10 @@ public abstract class DigitalObject {
 	 * 
 	 * @return {@code true} ha stabil az aramkori elem, kulonben {@code false}
 
-	 * @throws UnstableCircuitException Instabil aramkori visszacsatolas
-	 * @throws ConnectionsException Az elemek kozotti helytelen kapcsolatokbl szarmazo hibak
+	 * @throws ExceptionUnstableCircuit Instabil aramkori visszacsatolas
+	 * @throws ExceptionsWithConnection Az elemek kozotti helytelen kapcsolatokbl szarmazo hibak
 	 */
-	abstract public boolean Step() throws UnstableCircuitException, ConnectionsException;
+	abstract public boolean Step() throws ExceptionUnstableCircuit, ExceptionsWithConnection;
 
 	/**
 	 * Hozzaadja a parameterkent kapott DigitalObjectet a Feedbacks tombjehez.

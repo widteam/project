@@ -38,8 +38,9 @@ public class SWITCH extends Input {
 		
 		wireOut = new ArrayList<Wire>();		
 
-		if(DebugMode)
-			System.out.println(strClassName+" ("+ID+") has been  created by User.");
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created by User.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 	
 	/* METODUSOK */
@@ -50,8 +51,10 @@ public class SWITCH extends Input {
 		else
 			Value = 0;
 		
-		if(DebugMode)
-			System.out.println(this.GetID()+" has been  toggled. New value is "+ Value);
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, this.GetID()+" has been  toggled. New value is "+ Value);
+		Logger.Log(Logger.log_type.USER, this.GetName()+"'s value changed");
+			
 	};
 
 	/**
@@ -60,8 +63,9 @@ public class SWITCH extends Input {
 	 * @return A legutolso Toggle() utani erteket adja vissza	 
 	 */
 	public int Count() {
-		if(DebugMode)
-			System.out.println("<"+this.GetID()+" Count>");
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Count>");
+
 		return Value;
 	};
 
@@ -70,31 +74,38 @@ public class SWITCH extends Input {
 	 * es azt tovabbitja minden hozza csatlakozo drotnak
 	 * 
 	 * @return Mindig {@code  true } ertekkel ter vissza, SWITCH nem lehet isntabil
-	 * @throws InputNotConnectedException
+	 * @throws ExceptionElementNotConnected
 	 *             Ha nem csatlakozik egyetlen masik digitalObjecthez sem
 	 */
-	public boolean Step() {
-		if(DebugMode)
-			System.out.println("<"+this.GetID()+" Step>");
+	public boolean Step() throws ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Step>");
+		
 		Count();		
 		if (wireOut == null || wireOut.isEmpty()) {
-			// throw new InputNotConnectedException
+			 throw new ExceptionElementNotConnected(this);
 		}
 		for (Wire OutPut : wireOut) {
 			OutPut.SetValue(Value);
 		}
-		if(DebugMode)
-			System.out.println("All wires have benn set to "+Value );
+
 		return true; // A SWITCH mindig igazzal ter vissza
 	}
 	
+	/**
+	 * A metodus a Switch Value attributumat irja
+	 * @param value az uj ertek
+	 * @return a kapcsolo uj erteke
+	 */
 	public int SetValue(int value){
 		if(value==1)
 			Value=value;
 		else
 			Value = 0;
-		if(DebugMode)
-			System.out.println(this.GetID() + "set to "+Value );
+
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, this.GetID() + "set to "+Value );
+
 		return Value;
 	}
 }

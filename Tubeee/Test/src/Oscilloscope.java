@@ -40,8 +40,9 @@ public class Oscilloscope extends Output {
 		SampleSize = _SampleSize;
 		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
 		
-		if(DebugMode)
-			System.out.println(strClassName+" ("+ID+") has been  created by User.");
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created by User.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 	
 	/* METODUSOK */
@@ -49,22 +50,22 @@ public class Oscilloscope extends Output {
 	 * Megkapja a bemenetenek erteket, es eltarolja azt.
 	 * 
 	 * @return a minta legregebbi eleme
-	 * @throws ElementHasNoInputsException
+	 * @throws ExceptionElementHasNoInputs
 	 *             Amennyiben az objektumnak nincs bemenete
-	 * @throws ElementInputSizeException
+	 * @throws ExceptionElementInputSize
 	 *             Amennyiben az objektumnak nincs meg a megfelelo szamu
 	 *             bemenete
 	 */
-	public int Count() {
-		if(DebugMode){
-			System.out.println("<"+this.GetID()+" Count>");
-		}
+	public int Count() throws ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Count>");
+
 		/* Lekerdezzuk a bemenetek ertekeit */
 		if (wireIn == null || wireIn.isEmpty()) {
-			// throw new ElementHasNoInputsException;
+			 throw new ExceptionElementHasNoInputs(this);
 		} else {
 			if (wireIn.size() != 1) {
-				// throw new ElementInputSizeException
+				 throw new ExceptionElementInputSize(this);
 			} else {
 				Value=wireIn.get(0).GetValue();
 				if(Samples.size() <= SampleSize){
@@ -76,14 +77,14 @@ public class Oscilloscope extends Output {
 				}
 			}
 		}
-		if(DebugMode){
-			System.out.print("<"+this.GetID()+" Sample is [");
-			Iterator<Integer> it = Samples.iterator();
-			while(it.hasNext())
-				System.out.print(it.next());
-			
-			System.out.print("]\n");
-		}
+		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is "+Value+").");
+		
+		String str_values="";
+		Iterator<Integer> it = Samples.iterator();
+		while(it.hasNext())
+			str_values+=it.next();
+		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Sample is ["+str_values +"]");
+
 		return Value;
 	}
 
@@ -93,18 +94,29 @@ public class Oscilloscope extends Output {
 	 * 
 	 * @return mindig {@code true } ertekkel ter vissza, hiszen egy Output elem
 	 *         mindig stabil.
+	 * @throws ExceptionElementHasNoInputs
+	 *             Amennyiben az objektumnak nincs bemenete
+	 * @throws ExceptionElementInputSize
+	 *             Amennyiben az objektumnak nincs meg a megfelelo szamu
+	 * 
 	 */
-	public boolean Step() {
-		if (DebugMode)
-			System.out.println("<" + this.GetID() + " step>");
+	public boolean Step() throws ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " step>");
+		
 		Count();
 		return true;
 	}
 
+	/**
+	 * Beallitja az Oscilloscope tarolt mintajanak nagysagat
+	 * @param _SampleSize az uj tarolt minta hossza
+	 */
 	public void SetSample(int _SampleSize) {
-		if (DebugMode)
-			System.out.print(this.GetID() + "'s SampleSize set to "
-					+ _SampleSize);
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, this.GetID()+"'s SampleSize has been  set. New SampleSize is "+ SampleSize);
+		Logger.Log(Logger.log_type.USER, this.GetName()+"’s Sample size is set to "+SampleSize);
+
 		SampleSize = _SampleSize;
 		Samples = new ArrayBlockingQueue<Integer>(SampleSize);
 	}

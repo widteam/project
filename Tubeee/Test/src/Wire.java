@@ -28,11 +28,7 @@ public class Wire {
 	private static final String strIDDelimiter = "#";
 	/** Osztalyra jellemzo statikus tagvaltozo, a biztosan egyedi ID generalasara. */
 	private static int WIRECounts;
-	
-	/** DEBUG-hoz szukseges, osztalyra jellemzo valtozo. {@code true} eseten 
-	 * kulonbozo fuggvenyek hivasakor informaciot szolgaltat.
-	 */
-	public static boolean DebugMode = false;
+
 	/**
 	 * Egyedi karakteres azonosito, mely egyertelmuen meghataroz egy Wire
 	 * objektumot.
@@ -71,8 +67,9 @@ public class Wire {
 		objectsIn = new ArrayList<DigitalObject>();
 		objectsOut = new ArrayList<DigitalObject>();
 		
-		if(DebugMode)
-			System.out.println(strClassName+" ("+ID+") has been  created automtic.");
+		// LOGOLAS
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created automtic.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 	/**
 	 * KONSTRUKTOR
@@ -86,16 +83,19 @@ public class Wire {
 			String strIDNumber = String.valueOf(WIRECounts++);
 			ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
 			+ this.toString() + strIDNumber;
-			if(DebugMode)
-				System.out.println(strClassName+" ("+ID+") has been  created automtic.");
+			
+			// LOGOLAS
+			Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created automtic.");
+			Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 		}else{
 			ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter+ WireName;
 		}
 		objectsIn = new ArrayList<DigitalObject>();
 		objectsOut = new ArrayList<DigitalObject>();
 		
-		if(DebugMode)
-			System.out.println(strClassName+" ("+ID+") has been  created by User.");
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created by User.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 
 	/** METODUSOK */
@@ -108,7 +108,9 @@ public class Wire {
 	 * @param
 	 * @return <i>A wire erteke</i>
 	 */
-	public int GetValue() {
+	public int GetValue() {	
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is "+Value+").");	
 		return Value;
 	};
 
@@ -119,8 +121,8 @@ public class Wire {
 	 *            A kivant ertek
 	 */
 	public void SetValue(int NewValue) {
-		if(DebugMode)
-			System.out.println("Wire ("+this.GetID()+") set to " + NewValue);
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "Wire ("+this.GetID()+") set to " + NewValue);
 		Value = NewValue;
 	};
 
@@ -134,37 +136,39 @@ public class Wire {
 	 * @param objectWhat
 	 *            {@linkplain objectsIn} listaba kerulo DigitalObect
 	 * @return
-	 * @throws WireHasMultipleInputsException
+	 * @throws ExceptionWireHasMultipleInputs
 	 *             Ha a Wire-nek egynel tobb bemenete lenne
 	 */
 	public void SetConnection(DigitalObject objectWhere,
-			DigitalObject objectWhat) {
+			DigitalObject objectWhat) throws ExceptionWireHasMultipleInputs {
 		if (objectWhat != null && objectsIn != null) {
 			if (objectsIn.isEmpty()) {
 				objectsIn.add(objectWhat);
 			} else {
-				// throw WireHasMultipleInputsException;
+				 throw new ExceptionWireHasMultipleInputs(this);
 			}
 		}
 		if (objectWhere != null && objectsOut != null) {
 			objectsOut.add(objectWhere);
 		}
 		
-		if(DebugMode){
-			String Where = "nothing";
-			String What = "nothing";
-			if(objectWhere!=null)Where=objectWhere.GetID();
-			if(objectWhat!=null)What=objectWhat.GetID();
-			System.out.println(What + " added as input to " + ID + " object list");
-			System.out.println(Where + " added as output to " + ID + "object list" );
-		}
-	};
+		// LOGOLAS;
+		String Where = "nothing";
+		String What = "nothing";
+		if(objectWhere!=null)Where=objectWhere.GetID();
+		if(objectWhat!=null)What=objectWhat.GetID();
+		Logger.Log(Logger.log_type.DEBUG, What + " added as input to " + ID + " object list");
+		Logger.Log(Logger.log_type.DEBUG, Where + " added as output to " + ID + "object list");
+	}
 	
 	/**
 	 * A Wire egyedi azonositojanak lekerdezesere szolgalo metodus.
 	 * @return <i>A Wire objektum azonositoja</i>
 	 */
 	public String GetID() {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, "Wire (" +ID+") call GetID()");
+		
 		return ID;
 	};
 	/**
@@ -172,6 +176,9 @@ public class Wire {
 	 * @return <i>A Wire objektum neve. ID-bol nyert ertek!</i>
 	 */
 	public String GetName() {
-		return (ID.split("#")[2]).trim();
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, "Wire (" +ID+") call getName()");
+		
+		return (ID.split(strIDDelimiter)[2]).trim();
 	}
 }

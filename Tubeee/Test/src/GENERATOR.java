@@ -66,8 +66,8 @@ public class GENERATOR extends Input {
 	 */
 	public GENERATOR(String strCompositName, String GeneratorName,
 			int StartFrequency, String StartSequence) {
-		final String strIDName = this.getClass().getName();
-		ID = strCompositName + strIDDelimiter + strIDName + strIDDelimiter
+		final String strClassName = this.getClass().getName();
+		ID = strCompositName + strIDDelimiter + strClassName + strIDDelimiter
 				+ GeneratorName;
 		wireIn = null;
 		wireOut = new ArrayList<Wire>();
@@ -77,6 +77,9 @@ public class GENERATOR extends Input {
 		SequencePos = 0;
 		Value = 0;
 
+		// LOGOLAS
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created automtic.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 
 	/* METODUSOK */
@@ -84,11 +87,12 @@ public class GENERATOR extends Input {
 	 * A SequencePos. erteket allitja alapertelmezettre, azaz a minta elejere
 	 */
 	public void Reset() {
+		// LOGOLAS
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetType()+" (" +ID+") call Reset()");
+		
 		SequencePos = 0; // Poziciot alapra
 		Value = Integer.parseInt(String.valueOf(Sequence.charAt(SequencePos))); // Kiszamoljuk
-																				// az
-																				// uj
-																				// erteket
+																		// erteket
 		for (Wire OutPut : wireOut) {
 			OutPut.SetValue(Value); // Kiadjuk a kimenetre az aktualis erteker
 		}// end for
@@ -101,6 +105,11 @@ public class GENERATOR extends Input {
 	 *            Az a minta melyet be kivanunk allitani
 	 */
 	public void SetSequence(String NewSequence) {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, this.GetID()+"'s Sequence has been  set. New Sequence is "+ NewSequence);
+		Logger.Log(Logger.log_type.USER, this.GetName()+"’s Sequence is set to "+NewSequence);
+
+
 		Sequence = NewSequence; // Beallitjuk a szekvenciat
 		Reset();
 	};
@@ -113,6 +122,9 @@ public class GENERATOR extends Input {
 	 *            Az uj frekvencia erteke
 	 */
 	public void SetFrequency(int NewFrequency) {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, this.GetID()+"'s Frequency has been  set. New Frequency is "+ NewFrequency);
+		Logger.Log(Logger.log_type.USER, this.GetName()+"’s Frequency is set to "+NewFrequency);
 
 		Frequency = NewFrequency; // Beallitjuk a frekvenciat
 		FrequencyCounter = NewFrequency; // Hany count maradt meg hatra
@@ -120,15 +132,16 @@ public class GENERATOR extends Input {
 
 	
 	public int Count(){ 
-		if(DebugMode){
-			System.out.println("<"+this.GetID()+" Count>");
-		}
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Step>");
+		
 		if(SequencePos >= Sequence.length()){	// a szekvenciaban elore megyunk.. mar ha lehet
 			SequencePos = 0;				
 		}else{
 			SequencePos++;
 			Value = Integer.parseInt(String.valueOf(Sequence.charAt(SequencePos)));	// Kiszamoljuk az uj erteket
 		}	
+		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is "+Value+").");
 		return Value; 
 	}
 	 
@@ -139,10 +152,11 @@ public class GENERATOR extends Input {
 	 * @return Mindig {@code  true } ertekkel ter vissza * @throws
 	 *         InputNotConnectedException Ha nem csatlakozik egyetlen masik
 	 *         digitalObjecthez sem
+	 * @throws ExceptionElementNotConnected 
 	 */
-	public boolean Step() {
-		if (DebugMode)
-			System.out.println("<" + this.GetID() + " step>");
+	public boolean Step() throws ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Step>");
 
 		int Result = 0;
 		/* Az OSSZES kimenetre kiadjuk a kiszamitott eredmenyt. */
@@ -152,7 +166,7 @@ public class GENERATOR extends Input {
 			Count(); // vegre meghivhatjuk a Count()-ot
 			/* ha nincs drot csatlakoztava, hibat dob */
 			if (wireOut == null || wireOut.isEmpty()) {
-				// throw new InputNotConnectedException
+				 throw new ExceptionElementNotConnected(this);
 			} else {
 				for (Wire OutPut : wireOut) {
 					OutPut.SetValue(Value); // Kiadjuk a kimenetre az aktualis

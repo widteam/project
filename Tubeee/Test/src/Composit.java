@@ -44,6 +44,10 @@ public class Composit extends DigitalObject {
 
 		ComponentList = new ArrayList<List<DigitalObject>>();
 		ComponentList.add(new ArrayList<DigitalObject>());
+		
+		//LOGOLAS
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created by User.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 
 	/**
@@ -54,12 +58,17 @@ public class Composit extends DigitalObject {
 	 *            Az uj frekvencia
 	 * @param ElementID
 	 *            Az Objektum ID-je
+	 * @throws ExceptionObjectNotFound Ha a kert generator nem talalhato az aktualis Composit ComponentListjeben
 	 */
-	public void SetFrequency(int Frequency, String ElementID) {
+	public void SetFrequency(int Frequency, String ElementID) throws ExceptionObjectNotFound {	
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call SetFrequency("+Frequency+","+ElementID+")");
+		
 		GENERATOR tmp; // temporalis valtozo
 		// megprobaljuk megtalalni az objektumot
 		tmp = (GENERATOR) GetElementByID(ElementID);
-		tmp.SetFrequency(Frequency);
+		if(tmp==null) throw new ExceptionObjectNotFound(this,ElementID);
+		else tmp.SetFrequency(Frequency);
 	};
 
 	/**
@@ -69,14 +78,21 @@ public class Composit extends DigitalObject {
 	 *            A beallitani kivant szekvencia (pl. 110110010)
 	 * @param ElementID
 	 *            Az objektum ID-je
+	 * @throws ExceptionObjectNotFound 
 	 */
-	public void SetSequence(String Sequence, String ElementID) {
+	public void SetSequence(String Sequence, String ElementID) throws ExceptionObjectNotFound {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call SetSequence("+Sequence+","+ElementID+")");
+		
 		// Leiras: A parameterben megadott azonositoju GENERATOR objektum
 		// szekvenciajat modositja
 		GENERATOR GEN_to_setsequence; /* Temporalis valtozo */
 		/* GetElementByID-vel megkapjuk az objektumot */
 		GEN_to_setsequence = (GENERATOR) GetElementByID(ElementID);
-		GEN_to_setsequence.SetSequence(Sequence);
+		
+		if(GEN_to_setsequence==null) throw new ExceptionObjectNotFound(this,ElementID);
+		else GEN_to_setsequence.SetSequence(Sequence);
+
 
 	};
 
@@ -87,11 +103,17 @@ public class Composit extends DigitalObject {
 	 *            0,vagy 1 az Switch uj erteke
 	 * @param ElementID
 	 *            A beallitani kivant Switch ID-je
+	 * @throws ExceptionObjectNotFound 
 	 */
-	public void SetSwitch(int Value, String ElementID) {
+	public void SetSwitch(int Value, String ElementID) throws ExceptionObjectNotFound {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call SetSwitch("+Value+","+ElementID+")");
+		
 		SWITCH SW_to_set; /* Temporalis valtozo */
 		SW_to_set = (SWITCH) GetElementByID(ElementID);
-		SW_to_set.SetValue(Value);
+		
+		if(SW_to_set==null) throw new ExceptionObjectNotFound(this,ElementID);
+		else SW_to_set.SetValue(Value);
 
 	};
 
@@ -102,32 +124,39 @@ public class Composit extends DigitalObject {
 	 * 
 	 * @param ElementID
 	 * @return
+	 * @throws ExceptionObjectNotFound 
 	 */
-	public DigitalObject Toggle(String ElementID) {
+	public void Toggle(String ElementID) throws ExceptionObjectNotFound {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call Toggle("+ElementID+")");
 		SWITCH SWITCH_to_toggle; /* Temporalis valtozo */
 		SWITCH_to_toggle = (SWITCH) GetElementByID(ElementID);
-		SWITCH_to_toggle.Toggle();
-		return SWITCH_to_toggle;
+		
+		if(SWITCH_to_toggle==null) throw new ExceptionObjectNotFound(this,ElementID);
+		else SWITCH_to_toggle.Toggle();
 
 	};
 
 	/**
 	 * Beallitja egy megadott Oscilloscope tarolt mintajanak nagysagat
-	 * 
 	 * @param SampleSize
 	 *            Egy szam, ennyi mintat tarol
 	 * @param ElementID
 	 *            A beallitani kivant elem ID-je
+	 * @throws ExceptionObjectNotFound 
 	 */
-	public void SetSample(int SampleSize, String ElementID) {
+	public void SetSample(int SampleSize, String ElementID) throws ExceptionObjectNotFound {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call SetSample("+SampleSize+","+ElementID+")");
+		
 		Oscilloscope tmp;
 		tmp = (Oscilloscope) GetElementByID(ElementID);
-		if (SampleSize < 0) {
-			System.out.println("x Error: SampleSize must be positive");
-		} else {
-			tmp.SetSample(SampleSize);
-		}
+		
+		if(tmp==null) throw new ExceptionObjectNotFound(this,ElementID);
+		else tmp.SetSample(SampleSize);
+
 	}
+	
 
 	/**
 	 * Hozzaadja a parameterkent kapott DigitalObjectet a Feedbacks tömbjehez.
@@ -136,6 +165,9 @@ public class Composit extends DigitalObject {
 	 *            Az elem amit hozza kivanunk adni a Feedbacks listahoz
 	 */
 	public void AddToFeedbacks(DigitalObject feedback) {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call AddToFeedbacks("+feedback.GetID()+")");
+		
 		if (Feedbacks == null)
 			Feedbacks = new ArrayList<DigitalObject>();
 		Feedbacks.add(feedback); // Hozzaadjuk a feedbackshez
@@ -149,7 +181,10 @@ public class Composit extends DigitalObject {
 	 * @param ElementID
 	 * @return A kert objektum, ha nincs meg, null
 	 */
-	public DigitalObject GetElementByID(String ElementID) {
+	public DigitalObject GetElementByID(String ElementID){
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call GetElementByID("+ElementID+")");
+		
 		/**
 		 * Teljes ID alapjan
 		 */
@@ -172,7 +207,9 @@ public class Composit extends DigitalObject {
 	 * @param ElementID
 	 * @return A kert objektum, ha nincs meg, null
 	 */
-	public DigitalObject GetElementByName(String ElementName) {
+	public DigitalObject GetElementByName(String ElementName){
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call GetElementByName("+ElementName+")");
 		/**
 		 * Nev alapjan
 		 */
@@ -194,7 +231,9 @@ public class Composit extends DigitalObject {
 	 *            a keresett Wire ID-je
 	 * @return ha nincs talalt null, egyebkent a Wire
 	 */
-	public Wire GetWireByID(String WireID) {
+	public Wire GetWireByID(String WireID){
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call GetWireByID("+WireID+")");
 		// Leiras: Megkeres egy adott drotot a WireList listakban
 		if (WireList != null && !WireList.isEmpty()) {
 			for (Wire w : WireList) {
@@ -212,7 +251,10 @@ public class Composit extends DigitalObject {
 	 *            a keresett Wire neve
 	 * @return ha nincs talalt null, egyebkent a Wire
 	 */
-	public Wire GetWireByName(String WireName) {
+	public Wire GetWireByName(String WireName){
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call GetWireByName("+WireName+")");
+		
 		// Leiras: Megkeres egy adott drotot a WireList listakban
 		if (WireList != null && !WireList.isEmpty()) {
 			for (Wire w : WireList) {
@@ -229,10 +271,14 @@ public class Composit extends DigitalObject {
 	 * 
 	 * @return {@code true} ha a Composit stabil az adott bemeneti ertekekre,
 	 *         kulonben {@code false}
-	 * @throws ConnectionsException A Composit elemeinek kapcsoltaibol szarmazo hibak
-	 * @throws UnstableCircuitException  AZ aramkori elem nem stabil
+	 * @throws ExceptionsWithConnection A Composit elemeinek kapcsoltaibol szarmazo hibak
+	 * @throws ExceptionUnstableCircuit  AZ aramkori elem nem stabil
 	 */
-	public boolean Step() throws ConnectionsException, UnstableCircuitException {
+	public boolean Step() throws ExceptionsWithConnection, ExceptionUnstableCircuit {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " step>");
+		Logger.Log(Logger.log_type.USER, "<" + this.GetName()+ " step>");
+		
 		/*
 		 * Elozo ertekek tarolasara szolgalo lista (a COmpositnak tobb kimenete
 		 * is lehet)
@@ -252,12 +298,13 @@ public class Composit extends DigitalObject {
 		/* Ha nem ures a feedbacks , stabilitast vizsgalunk */
 		if (Feedbacks != null && !Feedbacks.isEmpty()) {
 
-			if (DebugMode) {
-				System.out
-						.print("FEEDBACK founded. First running result were [");
-				for (int i : PreviousValues)
-					System.out.print(i + ",");
-				System.out.print("]\n");
+			// LOGOLAS;
+			String prevv = "";
+			for (int i : PreviousValues)
+				prevv +=String.valueOf(i)+",";
+			Logger.Log(Logger.log_type.DEBUG, "Feedback founded");
+			Logger.Log(Logger.log_type.ADDITIONAL, "First running result was [" + prevv + "]");
+	
 			}
 
 			List<Integer> NewValues = new ArrayList<Integer>();
@@ -277,11 +324,14 @@ public class Composit extends DigitalObject {
 			PreviousValues = NewValues;
 			NewValues.clear();
 			// mostani)
-			if (DebugMode)
-				System.out
-						.println("Second running result is equal with the previous? "
-								+ Result);
-
+			
+			// LOGOLAS
+			String newv = "";
+			for (int i : PreviousValues)
+				newv +=String.valueOf(i)+",";
+			Logger.Log(Logger.log_type.ADDITIONAL, "Second running result is"+newv+" Is equal with the previous? "+ Result);
+			newv="";
+				
 			for (DigitalObject obj : Feedbacks) {
 				obj.Count();
 			}			
@@ -296,11 +346,14 @@ public class Composit extends DigitalObject {
 
 			PreviousValues = NewValues;
 			NewValues.clear();
-			if (DebugMode)
-				System.out
-						.println("Third running result is equal with the previous? "
-								+ Result);
+			
+			// LOGOLAS
+			for (int i : PreviousValues)
+				newv +=String.valueOf(i)+",";
+			Logger.Log(Logger.log_type.ADDITIONAL, "Third running result is"+newv+" Is equal with the previous? "+ Result);
+			newv="";
 
+			
 			for (DigitalObject obj : Feedbacks) {
 				obj.Count();
 			}			
@@ -315,11 +368,14 @@ public class Composit extends DigitalObject {
 
 			PreviousValues = NewValues;
 			NewValues.clear();
-			if(!Result) throw new UnstableCircuitException();
-			if (DebugMode)
-				System.out.println("Last running result. Gate is stable? "
-						+ Result);
-		}
+			if(!Result) throw new ExceptionUnstableCircuit(this);
+
+
+			for (int i : PreviousValues)
+				newv +=String.valueOf(i)+",";
+			Logger.Log(Logger.log_type.ADDITIONAL, "Last running result is"+newv+" Composit is stable? "+ Result);
+			newv="";
+		
 		return Result;
 	};
 
@@ -328,10 +384,13 @@ public class Composit extends DigitalObject {
 	 * Step()-eli
 	 * 
 	 * @return Mindig 0-val ter vissza.
-	 * @throws ConnectionsException 
-	 * @throws UnstableCircuitException 
+	 * @throws ExceptionsWithConnection 
+	 * @throws ExceptionUnstableCircuit 
 	 */
-	public int Count() throws UnstableCircuitException, ConnectionsException {
+	public int Count() throws ExceptionUnstableCircuit, ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " Count>");
+		
 		for (PIN p_in : pins_in) {
 			p_in.Step();
 		}
@@ -345,12 +404,13 @@ public class Composit extends DigitalObject {
 
 	/**
 	 * A Composit osszes elemere meghivja a Step() metodust
-	 * @throws ConnectionsException 
-	 * @throws UnstableCircuitException 
+	 * @throws ExceptionsWithConnection 
+	 * @throws ExceptionUnstableCircuit 
 	 */
-	public void StepComponents() throws UnstableCircuitException, ConnectionsException {
-		if (DebugMode)
-			System.out.println("<" + this.GetName() + " step componnets>");
+	public void StepComponents() throws ExceptionUnstableCircuit, ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " step componnets>");
+
 
 		for (List<DigitalObject> sublist : ComponentList) {
 			for (DigitalObject obj : sublist) {
@@ -364,8 +424,12 @@ public class Composit extends DigitalObject {
 	 * Hozzaad a WireList-hez egy elemet
 	 * 
 	 * @param wire
+	 * @throws ExceptionObjectNotFound 
 	 */
 	public void AddToWireList(Wire wire) {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call AddToWireList("+wire.GetID()+")");
+		
 		if (null == GetWireByID(wire.GetID()))
 			WireList.add(wire);
 	}
@@ -376,6 +440,9 @@ public class Composit extends DigitalObject {
 	 * @param wire
 	 */
 	public boolean RemoveFromWireList(Wire w) {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call RemoveFromWireList("+w.GetID()+")");
+		
 		return WireList.remove(w);
 	}
 
@@ -387,6 +454,9 @@ public class Composit extends DigitalObject {
 	 * azokat, amik meg nem szerepelnek a reendezett listaban.
 	 */
 	public void buildHierarchy() {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call buildHierarchy()");
+		
 		List<DigitalObject> tmp_components = this
 				.getFirstLevelOfComponentList();
 		// ComponentList tisztitasa
@@ -523,6 +593,9 @@ public class Composit extends DigitalObject {
 	 * Egy hierarchikusan felepitett Compositban megkeresi a visszacsatolasokat.
 	 */
 	public void getFeedbacks() {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.ADDITIONAL, this.GetID()+" call getFeedbacks()");
+		
 		List<DigitalObject> toCheck = new ArrayList<DigitalObject>();
 		List<DigitalObject> from_feedback_start = new ArrayList<DigitalObject>();
 		List<DigitalObject> from_feedback_end = new ArrayList<DigitalObject>();
@@ -572,9 +645,9 @@ public class Composit extends DigitalObject {
 							}
 						}
 						// most nezzuk meg korabbi szintekre
-						for (int i = 0; i < iHierarchy + 1; i++) {
+						for (int i = 0; i < iHierarchy; i++) {
 							// Talaltunk egy feedbacket
-							if (ComponentList.get(i).contains(wire_obj)) {
+							if (ComponentList.get(i).contains(wire_obj) || obj==wire_obj) {
 
 								feedback_start = wire_obj;
 								feedback_end = obj;
@@ -709,28 +782,28 @@ public class Composit extends DigitalObject {
 			GetMyComposits(compi_list);
 
 			for (Composit c : compi_list) {
-				System.out.println();
-				System.out.print(c.GetName());
+				Logger.Log(Logger.log_type.DEBUG,"");
+				Logger.Log(Logger.log_type.DEBUG,c.GetName());
 				c.Debug(false);
-				System.out.println();
+				Logger.Log(Logger.log_type.DEBUG,"");
 			}
 		} else {
 			int szint = 0;
 			for (List<DigitalObject> sublist : ComponentList) {
 				System.out.println();
-				System.out.print("Szint: ");
-				System.out.print(szint++);
-				System.out.print("\t");
+				Logger.Log(Logger.log_type.DEBUG,"Szint: "+(szint++)+"\t");
+				String level="";
 				for (DigitalObject o : sublist) {
-					System.out.print(o.GetID() + ", ");
+					level+=o.GetID() + ", ";
 					if (o.Feedbacks != null && !o.Feedbacks.isEmpty()) {
-						System.out.print("FEEDBACK [");
+						level+="FEEDBACK [";
 						for (DigitalObject f_o : o.Feedbacks) {
-							System.out.print(" " + f_o.ID + ", ");
+							level+=" " + f_o.ID + ", ";
 						}
-						System.out.print("]");
+						level+="]";
 					}
 				}
+				Logger.Log(Logger.log_type.DEBUG,level);
 			}
 		}
 	}

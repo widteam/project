@@ -1,17 +1,20 @@
 import java.util.Stack;
 import java.util.regex.*;
+
 /**
- * a BHDL fajl beolvasasara szolgalo Class.
- * Beolvas egy fajlt, ertelmezi azt, felepiti a leirt aramkort
+ * a BHDL fajl beolvasasara szolgalo Class. Beolvas egy fajlt, ertelmezi azt,
+ * felepiti a leirt aramkort
+ * 
  * @author Tamas
- *
+ * 
  */
 public class bhdlParser {
-	/** DEBUG-hoz szukseges, osztalyra jellemzo valtozo. {@code true} eseten 
+	/**
+	 * DEBUG-hoz szukseges, osztalyra jellemzo valtozo. {@code true} eseten
 	 * kulonbozo fuggvenyek hivasakor informaciot szolgaltat.
 	 */
-	public static boolean DebugMode = false;
-	
+	// public static boolean DebugMode = false;
+
 	/**
 	 * Fuggveny mely ellenori, talalhato-e egy adott szovegben a regularis
 	 * kifejezesnek megfeleltetheto reszlet
@@ -70,11 +73,11 @@ public class bhdlParser {
 	}
 
 	/**
-	 * find_next_Composite:visszaadja a következõ Composite-ot a fájlból
+	 * Egy megadott nevvel ellatott Composit kodjat nyeri ki a forrasbol
 	 * 
 	 * @param source
-	 *            :A fájl,ami Composite-kat tartalmaz
-	 * @return A kivett Comopsite
+	 *            :A fajl,ami Composite-kat tartalmaz
+	 * @return A kivett Comopsite ha talalt, vagy egy ures string
 	 * @author Peti
 	 */
 	public static String FindComposite(String source, String compname) {
@@ -83,9 +86,9 @@ public class bhdlParser {
 				+ ".*?endcomposit;");
 		// Megkeressük a talalatokat
 		Matcher match = regexp.matcher(source);
-		// Elso kell
-		match.find();
-		String foundComposit = match.group();
+		String foundComposit = "";
+		if (match.find())
+			foundComposit = match.group();
 		return foundComposit;
 	}
 
@@ -93,15 +96,16 @@ public class bhdlParser {
 	 * Megkeresi a main(in,out) szignoval ellatott compositot
 	 * 
 	 * @param source
-	 * @return a composit BHDL leirasa
+	 * @return a composit BHDL leirasa ha talalt, ha nem ures String
 	 */
 	public static String FindMainComposit(String source) {
 		// Reguláris Kifejezés
 		String regexp_ = "composit[ ]?(main)\\(in(( |[\\w]*,?)+),out(( |[\\w]*,?)+)\\)(.*)?endcomposit;";
 		Pattern regexp = Pattern.compile(regexp_);
 		Matcher match = regexp.matcher(source);
-		match.find();
-		String foundComposit = match.group();
+		String foundComposit = "";
+		if (match.find())
+			foundComposit = match.group();
 		return foundComposit;
 	}
 
@@ -117,29 +121,40 @@ public class bhdlParser {
 		// Megkeressuk a talalatokat
 		Matcher match = regexp.matcher(composit);
 		String CompositName = "";
-		// keresunk
-		match.find();
+
+		Composit myComposit = null;
+
 		// ha volt talalat
 		if (match.matches() && match.groupCount() > 1) {
 			CompositName = match.group(1);
+			// a composit letrehozasa
+			myComposit = new Composit("null", CompositName);
 		}
-		// a composit letrehozasa
-		Composit myComposit = new Composit("null", CompositName);
 		return myComposit;
 	}
 
 	/**
 	 * Egy Composit tartalmat olvassa be es ertelmezi.
-	 * @param ThisComposit Referencia, melyik Composit-bol hivtuk a fuggvenyt
-	 * @param source A teljes BHDL fajl (tisztitva)
-	 * @param composit_name a Composit, melyiket be akarjuk olvasni
+	 * 
+	 * @param ThisComposit
+	 *            Referencia, melyik Composit-bol hivtuk a fuggvenyt
+	 * @param source
+	 *            A teljes BHDL fajl (tisztitva)
+	 * @param composit_name
+	 *            a Composit, melyiket be akarjuk olvasni
 	 * @return A beolvasott, elemekkel feltoltott, rendezett Composit
+	 * @throws ExceptionWrongBoard
+	 *             Rosszul formazott BHDL fajl
 	 */
 	public static Composit ReadComposit(Composit ThisComposit, String source,
-			String composit_name) {
+			String composit_name) throws ExceptionWrongBoard {
 		String[] CompositCommands = null; // Egy kompozitvban levo utasitasok
 		CompositCommands = getCommands(FindComposite(source, composit_name));
-		CommandParser(ThisComposit, source, CompositCommands);
+		try {
+			CommandParser(ThisComposit, source, CompositCommands);
+		} catch (Exception e) {
+			throw new ExceptionWrongBoard(ThisComposit);
+		}
 		ThisComposit.buildHierarchy();
 		ThisComposit.getFeedbacks();
 		return ThisComposit;
@@ -155,7 +170,7 @@ public class bhdlParser {
 	 */
 	public static String[] getCommands(String bhdlcomposit) {
 		// Egy regularis kifejezes ami illeszkedik egy composit elemre.
-		String rege = "composit[ ]?([\\w, ]+)\\(in(( |[\\w]*,?)+),out(( |[\\w]*,?)+)\\)(.*)?endcomposit;";
+		String rege = "composit[ ]?([\\w ]+)\\(in(( |[\\w]*,?)+),[ ]?out(( |[\\w]*,?)+)\\)(.*)?endcomposit;";
 		Pattern regexp = Pattern.compile(rege);
 		// Megkeressuk a talalatokat
 		Matcher match = regexp.matcher(bhdlcomposit);
@@ -184,9 +199,10 @@ public class bhdlParser {
 	 *            A teljes BHDL fajl
 	 * @param commands
 	 *            egy lista a parancsokbol
+	 * @throws ExceptionWrongBoard
 	 */
 	public static void CommandParser(Composit Owner, String source,
-			String[] commands) {
+			String[] commands) throws ExceptionWrongBoard {
 		/*
 		 * Kulonbozo regularis kifejezesek mely segitsegevel megkaphatoak a
 		 * reszletek is
@@ -224,20 +240,26 @@ public class bhdlParser {
 						CreateSwitch(Owner, commands[i]));
 			}
 			if (matching(reg_set, commands[i]) != null) {
-				if(DebugMode)
-					System.out.println("Setting an element");
-				SettingElement(Owner, commands[i]);
+				try {
+					SettingElement(Owner, commands[i]);
+				} catch (Exception e) {
+					throw new ExceptionWrongBoard(Owner);
+				}
 			}
 			if (matching(reg_assign, commands[i]) != null) {
-				if(DebugMode)
-					System.out.println("Assign expression. ("+commands[i]+")");
-				assign(Owner, commands[i]);
+				try {
+					assign(Owner, commands[i]);
+				} catch (ExceptionWireHasMultipleInputs e) {
+					throw new ExceptionWrongBoard(Owner);
+				}
 			}
 			if (matching(reg_comp, commands[i]) != null) {
-				if(DebugMode)
-					System.out.println("Composit embedding");
-				Owner.getFirstLevelOfComponentList().add(
-						CreateComposit(Owner, source, commands[i]));
+				try {
+					Owner.getFirstLevelOfComponentList().add(
+							CreateComposit(Owner, source, commands[i]));
+				} catch (ExceptionWireHasMultipleInputs e) {
+					throw new ExceptionWrongBoard(Owner);
+				}
 
 			}
 		}
@@ -371,7 +393,8 @@ public class bhdlParser {
 		return null;
 	}
 
-	private static Wire assign(Composit owner, String command) {
+	private static Wire assign(Composit owner, String command)
+			throws ExceptionWireHasMultipleInputs {
 		// Ahhoz, hogy az Assign reszeit be tujuk olvasni, reszletes
 		// mintaillesztes
 		String reg_assign = "assign[ ]+([\\w]+)=(.*?);";
@@ -458,7 +481,8 @@ public class bhdlParser {
 								// bemenete...
 								if (o.GetType().equalsIgnoreCase("Inverter")
 										&& o.wireIn != null) {
-									// ...es a mostani operandust tartalmazza
+									// ...es a mostani operandust
+									// tartalmazza
 									if (o.wireIn.contains(inv_in1)) {
 										myInverter = (INVERTER) o;
 										// kapuknak csak egy kimenete van..
@@ -507,7 +531,8 @@ public class bhdlParser {
 								// bemenete...
 								if (o.GetType().equalsIgnoreCase("ANDGate")
 										&& o.wireIn != null) {
-									// ...es a mostani operandusokat tartalmazza
+									// ...es a mostani operandusokat
+									// tartalmazza
 									if (o.wireIn.contains(and_in1)
 											&& o.wireIn.contains(and_in2)) {
 										myAnd = (ANDGate) o;
@@ -531,7 +556,7 @@ public class bhdlParser {
 								owner.getFirstLevelOfComponentList().add(myAnd);
 							}
 
-							WireStack.push(and_out);							
+							WireStack.push(and_out);
 						}
 						if (item.equalsIgnoreCase("|")) {
 							Wire or_in1 = WireStack.pop();
@@ -553,7 +578,8 @@ public class bhdlParser {
 								// bemenete...
 								if (o.GetType().equalsIgnoreCase("ORGate")
 										&& o.wireIn != null) {
-									// ...es a mostani operandusokat tartalmazza
+									// ...es a mostani operandusokat
+									// tartalmazza
 									if (o.wireIn.contains(or_in1)
 											&& o.wireIn.contains(or_in2)) {
 										myOr = (ORGate) o;
@@ -576,7 +602,7 @@ public class bhdlParser {
 								owner.AddToWireList(or_out);
 								owner.getFirstLevelOfComponentList().add(myOr);
 							}
-							WireStack.push(or_out);							
+							WireStack.push(or_out);
 						}
 					}// end: operandusok szama
 				}// end if: ha operator
@@ -588,14 +614,13 @@ public class bhdlParser {
 			DigitalObject LastObject = assigned_wire.objectsIn.get(0);
 
 			/*
-			 * Ez itt a legnehezebb es legbonyolultabb resz.
-			 * Majdnem minden esetet feltuntettem, mar csak azert is, hogy 
-			 * magam kevesse zavarodjak bele... 
+			 * Ez itt a legnehezebb es legbonyolultabb resz. Majdnem minden
+			 * esetet feltuntettem, mar csak azert is, hogy magam kevesse
+			 * zavarodjak bele...
 			 * 
-			 * - drotnak csak egy bemenete lehet. 
-			 * - kapunak lehetoseg szerint egy kimeno drotja legyen, 
-			 * de lehet tobb is
-			 * - ha elertun ka Composit szelehez azt kulon neznunk kell
+			 * - drotnak csak egy bemenete lehet. - kapunak lehetoseg szerint
+			 * egy kimeno drotja legyen, de lehet tobb is - ha elertun ka
+			 * Composit szelehez azt kulon neznunk kell
 			 */
 			/* HA PIN-hez akarjuk csatlakoztatni a legutolso objektumot */
 			if (LastObject.GetType().equalsIgnoreCase("PIN")) {
@@ -610,24 +635,27 @@ public class bhdlParser {
 							// drot kap PIN-t
 						} else {// ha meg a PIN droja nincs csatlakoztatva
 							owner.RemoveFromWireList(pin.wireOut); // eltavolitjuk
-																	// a csonkot
+																	// a
+																	// csonkot
 							pin.wireOut = LValueWire; // PIN-t hozzakotjuk a
 														// drothoz
-							LValueWire.SetConnection(pin, null); // a Drotot a
+							LValueWire.SetConnection(pin, null); // a Drotot
+																	// a
 																	// PINhez
 						}
 					} else if (owner.GetElementByName(lvalue) != null) {
 						DigitalObject LValueObject = owner
 								.GetElementByName(lvalue);
 						if (pin.wireOut == null) {
-							// Ilyen elvileg nem lehet, hiszen minden PIN kap
+							// Ilyen elvileg nem lehet, hiszen minden PIN
+							// kap
 							// drotot
 						} else {
 							pin.wireOut.SetConnection(LValueObject, null);
 							LValueObject.wireIn.add(pin.wireOut);
 						}
 					}
-				/* Ha ez egy Compositbol kimeno PIN */
+					/* Ha ez egy Compositbol kimeno PIN */
 				} else if (pin.ContainerComposit.pins_out.contains(pin)) {
 					if (owner.GetWireByName(lvalue) != null) {
 						Wire LValueWire = owner.GetWireByName(lvalue);
@@ -639,9 +667,11 @@ public class bhdlParser {
 								owner.RemoveFromWireList(pin.wireOut); // eltavolitjuk
 																		// a
 																		// csonkot
-								pin.wireOut = LValueWire; // PIN-t hozzakotjuk a
+								pin.wireOut = LValueWire; // PIN-t
+															// hozzakotjuk a
 															// drothoz
-								LValueWire.SetConnection(pin, null); // a Drotot
+								LValueWire.SetConnection(pin, null); // a
+																		// Drotot
 																		// a
 																		// PINhez
 							}
@@ -690,7 +720,7 @@ public class bhdlParser {
 							LastObject.wireOut.add(LValueWire);
 							LValueWire.SetConnection(null, LastObject);
 						}
-					}					
+					}
 
 				} else if (owner.GetElementByName(lvalue) != null) {
 					DigitalObject LValueObject = owner.GetElementByName(lvalue);
@@ -699,16 +729,16 @@ public class bhdlParser {
 
 				}
 			}
-
 		}
+
 		return assigned_wire;
 	}
 
 	/**
 	 * Infix2Postfix. Reverse Poland Notation Ez a szakasz biztosan mukodik, NE
-	 * nyulj hozza
-	 * Mivel a !(Inverter) aritmetikaja egy picit mas, modositasokat igenyelt az
-	 * ismert algoritmus.
+	 * nyulj hozza Mivel a !(Inverter) aritmetikaja egy picit mas, modositasokat
+	 * igenyelt az ismert algoritmus.
+	 * 
 	 * @param InfixExpression
 	 *            Egy infix alaku kifejezes
 	 * @return A kifejezes Postfixes alakja
@@ -747,8 +777,9 @@ public class bhdlParser {
 					while (!stack.empty() && !isLeftParental(stack.peek())
 							&& Precedence(stack.peek()) >= Precedence(tag)) {
 						buffer.append(stack.pop() + " ");
-						stack.push(tag);
 					}
+					stack.push(tag);
+
 				}
 			} else if (isRightParental(tag)) {
 				while (!stack_inv.empty() && !isLeftParental(stack_inv.peek())) {
@@ -826,9 +857,13 @@ public class bhdlParser {
 	 *            egy composit hivasos eljaras (pl. : composit(in sw1,gen1 out
 	 *            led1); )
 	 * @return a letrehozott composit
+	 * @throws ExceptionWireHasMultipleInputs
+	 * @throws ExceptionWrongBoard
+	 *             Rosszul formazott BHDL
 	 */
 	private static Composit CreateComposit(Composit owner, String source,
-			String command) {
+			String command) throws ExceptionWireHasMultipleInputs,
+			ExceptionWrongBoard {
 		// Lekerdezzuk a szulo nevet
 		String OwnerName = owner.GetName();
 		// Minta amely illeszkedik a composit hivasra
@@ -926,7 +961,6 @@ public class bhdlParser {
 				 * ReadComposit(myComposit,source,comp_name); *
 				 */
 				ReadComposit(myComposit, source, comp_name);
-		
 
 				/*
 				 * Ez pedig ahogy kivulrol nez ki az osszekottetes A drotok a
@@ -982,12 +1016,19 @@ public class bhdlParser {
 	}
 
 	/**
-	 * Elvileg lehetoseg van a BHDL fajlban is megadni az Inputok kezdo ertekeit... 
-	 * @param owner a Composit, melyben a parancsot talaltuk
-	 * @param command maga a prancs
+	 * Elvileg lehetoseg van a BHDL fajlban is megadni az Inputok kezdo
+	 * ertekeit...
+	 * 
+	 * @param owner
+	 *            a Composit, melyben a parancsot talaltuk
+	 * @param command
+	 *            maga a prancs
 	 * @return true, ha allitott az elemn, false egyebkent
+	 * @throws ExceptionObjectNotFound
+	 * @throws NumberFormatException
 	 */
-	private static boolean SettingElement(Composit owner, String command) {
+	private static boolean SettingElement(Composit owner, String command)
+			throws NumberFormatException, ExceptionObjectNotFound {
 		String reg_set = "set[ ]+([\\w]+)=([\\d]+);";
 		Pattern regexp = Pattern.compile(reg_set);
 		Matcher match = regexp.matcher(command);
@@ -997,10 +1038,12 @@ public class bhdlParser {
 		String value = match.group(2).trim();
 		String elementtype = owner.GetElementByName(elementname).GetType();
 		if (elementtype.equalsIgnoreCase("SWITCH")) {
-			owner.SetSwitch(Integer.parseInt(value), owner.GetElementByName(elementname).GetID());
+			owner.SetSwitch(Integer.parseInt(value),
+					owner.GetElementByName(elementname).GetID());
 			return true;
 		} else if (elementtype.equalsIgnoreCase("GENERATOR")) {
-			owner.SetSequence(value, owner.GetElementByName(elementname).GetID());
+			owner.SetSequence(value, owner.GetElementByName(elementname)
+					.GetID());
 			return true;
 		}
 

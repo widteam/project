@@ -42,9 +42,9 @@ public class LED extends Output {
 		wireOut = new ArrayList<Wire>();
 		wireIn = new ArrayList<Wire>();
 
-		if (DebugMode)
-			System.out.println(strClassName + " (" + ID
-					+ ") has been  created by User.");
+		// LOGOLAS
+		Logger.Log(Logger.log_type.DEBUG, strClassName+" ("+ID+") has been  created by User.");
+		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 
 	/* METODUSOK */
@@ -52,23 +52,27 @@ public class LED extends Output {
 	 * A bemenet erteket megjeleniti
 	 * 
 	 * @return egyetlen bemenetenek erteke
-	 * @throws ElementHasNoInputsException
+	 * @throws ExceptionElementHasNoInputs
 	 *             Ha a LED-nek nincs bemenete
-	 * @throws ElementInputSizeException
+	 * @throws ExceptionElementInputSize
 	 *             Ha a LED-nek nincs meg a megfelelo szamu bemenete (1 darab)
 	 */
-	public int Count() {
+	public int Count() throws ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " Count>");
+		
 		/* Lekerdezzuk a bemenetek ertekeit */
-		System.out.println("<" + this.GetID() + " Count>");
 		if (wireIn == null || wireIn.isEmpty()) {
-			// throw new ElementHasNoInputsException;
+			throw new ExceptionElementHasNoInputs(this);
 		} else {
 			if (wireIn.size() != 1) {
-				// throw new ElementInputSizeException
+				throw new ExceptionElementInputSize(this);
 			} else {
 				Value = wireIn.get(0).GetValue();
 			}
 		}
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.INFO, "<" + this.GetName() + "> value is "+Value);
 		return Value;
 	};
 
@@ -78,10 +82,15 @@ public class LED extends Output {
 	 * 
 	 * @return mindig {@code true } ertekkel ter vissza, hiszen egy Output elem
 	 *         mindig stabil.
+	 * @throws ExceptionElementHasNoInputs
+	 *             Ha a LED-nek nincs bemenete
+	 * @throws ExceptionElementInputSize
+	 *             Ha a LED-nek nincs meg a megfelelo szamu bemenete (1 darab)
 	 */
-	public boolean Step() {
-		if(DebugMode)
-			System.out.println("<" + this.GetID() + " step>");
+	public boolean Step() throws ExceptionsWithConnection {
+		// LOGOLAS;
+		Logger.Log(Logger.log_type.DEBUG, "<" + this.GetID() + " Step>");
+		
 		Count();
 		return true;
 	};

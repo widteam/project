@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+
 /** 
  * <table border=0>
  * 	<tr align=left>
@@ -39,13 +40,7 @@ import java.io.IOException;
 
 public class DigitalBoard{
 	/* ATTRIBUTUMOK */
-	/** DEBUG-hoz szukseges, osztalyra jellemzo valtozo. {@code true} eseten 
-	 * kulonbozo fuggvenyek hivasakor informaciot szolgaltat.
-	 */
-	public static boolean DebugMode = false;
-	// RUNNING allapotban hanyszor fusson le az egesz
-	public static int MaxNumOfRound = 3;
-	
+
 	/**
 	 * Haromallapotu valtozo, amely a szimulacio aktualis allapotat tarolja
 	 */
@@ -64,6 +59,7 @@ public class DigitalBoard{
 	 * Megkeres egy adott elemet egy Composit ComponentList listajaban
 	 */
 	public DigitalObject GetElementByID(String ElementID) {
+		Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's GetElementByID("+ElementID+")");
 		return MainComposit.GetElementByID(ElementID);
 	};
 
@@ -74,8 +70,10 @@ public class DigitalBoard{
 	 * @param strFilePath
 	 *            Az aramkort leiro dokumentum (*.bhdl) eleresi utvonala
 	 * @throws IOException 
+	 * @throws ExceptionWrongBoard 
 	 */
-	public void LoadBoard(String strFilePath) throws IOException {
+	public void LoadBoard(String strFilePath) throws IOException,  ExceptionWrongBoard {
+		Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's GetElementByID("+strFilePath+")");
 		boolean exists = (new File(strFilePath)).exists();
 		if (!exists) {
 			 throw new FileNotFoundException();
@@ -91,8 +89,12 @@ public class DigitalBoard{
 	 * @param strFilePath
 	 *            Az aramkort leiro dokumentum (*.bhdl) eleresi utvonala
 	 * @throws IOException 
+	 * @throws ExceptionWireHasMultipleInputs 
+	 * @throws ExceptionWrongBoard 
 	 */
-	public void ParseFile(String strFilePath) throws IOException {
+	public void ParseFile(String strFilePath) throws IOException, ExceptionWrongBoard {
+		Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's GetElementByID("+strFilePath+")");
+		
 		File file = new File(strFilePath);
 		BufferedInputStream bin = null;
 		String strFileContents = "";
@@ -107,8 +109,7 @@ public class DigitalBoard{
 
 		while ((bytesRead = bin.read(contents)) != -1) {
 			strFileContents = new String(contents, 0, bytesRead);
-			if (DebugMode)
-				System.out.println(strFileContents + "\n");
+			Logger.Log(Logger.log_type.DEBUG, strFileContents);
 		}
 
 		// Tisztogatas
@@ -122,35 +123,21 @@ public class DigitalBoard{
 		String main_composit = bhdlParser.FindMainComposit(strFileContents);
 		MainComposit = bhdlParser.CreateMain(main_composit);
 		bhdlParser.ReadComposit(MainComposit, strFileContents, MainComposit.GetName());
+		
 		Debug(true);
 	}
 	public void Debug(boolean AllComponent){
 		/* KIIRATAS, DEBUG */
 		MainComposit.Debug(AllComponent);
 	};
-	public void Debug(){
-		/* KIIRATAS, DEBUG */
-		MainComposit.Debug(false);
-	};
+	
 	/**
 	 * metodus meghivja a SetStatus metodust RUNING parameterrel
-	 * @throws ConnectionsException 
-	 * @throws UnstableCircuitException 
+	 * @throws ExceptionsWithConnection 
+	 * @throws ExceptionUnstableCircuit 
 	 */
-	public void Run() throws UnstableCircuitException, ConnectionsException {
-		SetStatus(Status.RUNNING);
-		
-		boolean exit=false;
-		int RunCounter=0;
-		while(SimStatus == Status.RUNNING && !exit){
-			if(DebugMode){
-				System.out.println(RunCounter + ". Round.");
-			}
-			MainComposit.StepComponents();
-			RunCounter++;
-			if(RunCounter >= MaxNumOfRound)
-				exit=true;
-		}
+	public void Run() throws ExceptionUnstableCircuit, ExceptionsWithConnection {
+		SetStatus(Status.RUNNING);		
 	}
 
 	/**
@@ -165,7 +152,7 @@ public class DigitalBoard{
      * A metodus meghivja a SetStatus metodust STOPPED parameterrel
      */
     public void Stop() {
-        SetStatus(Status.RUNNING);
+        SetStatus(Status.STOPPED);       
     }
 
 
@@ -177,6 +164,7 @@ public class DigitalBoard{
      */
     private void SetStatus(Status NewStatus) {
         SimStatus = NewStatus;
+        Logger.Log(Logger.log_type.DEBUG, "DigitalBoard's new status is "+SimStatus.toString());
     }
 
     /**
@@ -187,8 +175,10 @@ public class DigitalBoard{
      *            Az uj frekvencia
      * @param ElementID
      *            A modositani kivant GENERATOR IDja
+     * @throws ExceptionObjectNotFound 
      */
-    public void SetFrequency(int Frequency, String ElementID) {
+    public void SetFrequency(int Frequency, String ElementID) throws ExceptionObjectNotFound {
+    	Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's SetFrequency("+Frequency+","+ElementID+")");
     	MainComposit.SetFrequency(Frequency, ElementID);
     }
 
@@ -201,8 +191,10 @@ public class DigitalBoard{
      *            az uj szekvencia, minta
      * @param ElementID
      *            A modositani kivant GENERATOR IDja
+     * @throws ExceptionObjectNotFound 
      */
-    public void SetSequence(String Sequence, String ElementID) {
+    public void SetSequence(String Sequence, String ElementID) throws ExceptionObjectNotFound {
+    	Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's SetSequence("+Sequence+","+ElementID+")");
     	MainComposit.SetSequence(Sequence, ElementID);
     }
 
@@ -213,9 +205,11 @@ public class DigitalBoard{
      *
      * @param ElementID
      *            A SWITCH ID-ja
+     * @throws ExceptionObjectNotFound 
      */
-    public void Toggle(String ElementID) {
-        MainComposit.Toggle(ElementID);
+    public void Toggle(String ElementID) throws ExceptionObjectNotFound {
+    	Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's Toggle("+ElementID+")");
+    	MainComposit.Toggle(ElementID);
     }
 
     /**
@@ -226,20 +220,29 @@ public class DigitalBoard{
      *            A mintavetelezes nagysaga
      * @param ElementID
      *            A modositani kivant Oscilloscope IDja
+     * @throws ExceptionObjectNotFound 
      */
-    public void SetSample(int SampleSize, String ElementID) {
+    public void SetSample(int SampleSize, String ElementID) throws ExceptionObjectNotFound {
+    	Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's SetSample("+SampleSize+","+ElementID+")");
     	MainComposit.SetSample(SampleSize, ElementID);
     }
 
     /**
      * Meghivja az osszes iComponent interfeszt megvalosito objektum Step()
      * metodusat.
-     * @throws ConnectionsException 
-     * @throws UnstableCircuitException 
+     * @throws ExceptionsWithConnection 
+     * @throws ExceptionUnstableCircuit 
      */
-    public void StepComponents() throws UnstableCircuitException, ConnectionsException {
-        MainComposit.StepComponents();
+    public void StepComponents() throws ExceptionUnstableCircuit, ExceptionsWithConnection {
+    	Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's StepComponents()");
+    	if(SimStatus == Status.RUNNING)
+    		MainComposit.StepComponents();
+    	else if(SimStatus == Status.PAUSED){
+    		MainComposit.StepComponents();
+    	}
     }
 
-   
+   public Status GetStatus(){
+	   return SimStatus;
+   }
 }
