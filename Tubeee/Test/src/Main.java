@@ -127,18 +127,18 @@ public class Main {
 	
 		System.out.println("Parancs         Parameterlista   Hatas");
 		System.out.println("loadBoard       XY               Betolt egy BHDL fajlt");
-		System.out.println("setFrequency    FREKV  ELEM_ID   Generator frekv.-t allitja");
-		System.out.println("setSample       MERET  ELEM_ID   Oscilloscope mintajanak nagysagat allitja");
+		System.out.println("setFrequency    ELEM_ID   FREKV  Generator frekv.-t allitja");
+		System.out.println("setSample       ELEM_ID  MERET   Oscilloscope mintajanak nagysagat allitja");
 		System.out.println("stepComponents                   Egyet leptet az aramkoron");
 		System.out.println("run                              Elinditja a szimulaciot.");
 		System.out.println("pause                            felfuggeszti a szimulaciot.");
 		System.out.println("stop                             megallitja a szimulaciot.");
 		System.out.println("toggleSwitch    ELEM_ID          fel/le kapcsolja az adott elemet");
-		System.out.println("setSequence     SZEKV  ELEM_ID   Beallitja az adott Generator szekvenciajat");
+		System.out.println("setSequence     ELEM_ID  SZEKV   Beallitja az adott Generator szekvenciajat");
 		System.out.println("\n");
 		
 		System.out.println("setOutput       MOD              0-fajlba ir,1 STDOUT,2 mindketto");
-		System.out.println("setLogfile      FILE             beallitja a logolashoz hasznalt fajlt");
+		/*System.out.println("setLogfile      FILE             beallitja a logolashoz hasznalt fajlt");*/
 		System.out.println("setLogmode      MOD              0-3 logolasi szintek");
 		System.out.println("setInterval     DELAY            A futattast mukodteto Timer delaye MSben");
 		
@@ -185,9 +185,9 @@ public class Main {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: UnknownError: Meghatarozhatatlan tortent!");
 					}
-
+				} 
 				// setSample [ssampl]
-				} else if (command.equalsIgnoreCase("setSample") || command.equalsIgnoreCase("ssampl")) {
+				else if (command.equalsIgnoreCase("setSample") || command.equalsIgnoreCase("ssampl")) {
 					try {
 						Board.SetSample(Integer.parseInt(param2), param1);
 						Logger.Log(Logger.log_type.INFO, param1
@@ -206,9 +206,9 @@ public class Main {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: UnknownError: Meghatarozhatatlan tortent!");
 					}
-				
+				}
 				// LoadBoard [lb]
-				}else if (command.equalsIgnoreCase("loadBoard") || command.equalsIgnoreCase("lb")) {
+				else if (command.equalsIgnoreCase("loadBoard") || command.equalsIgnoreCase("lb")) {
 					try {
 						Board.LoadBoard(param1);
 						Logger.Log(Logger.log_type.INFO, param1 + " is loaded");
@@ -221,10 +221,11 @@ public class Main {
 					} catch (Exception e2) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: UnknownError: Meghatarozhatatlan tortent!");
-					}
-
+					}	
+				}
+				
 				// stepComponents [step]
-				} else if (command.equalsIgnoreCase("stepComponents") || command.equalsIgnoreCase("step")) {
+				else if (command.equalsIgnoreCase("stepComponents") || command.equalsIgnoreCase("step")) {
 					try {						
 						if(Board.GetStatus() != Status.STOPPED)
 					  		Board.StepComponents();						
@@ -263,10 +264,10 @@ public class Main {
 					} catch (Exception e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: UnnownError: Meghatarozhatatlan tortent!");
-					}
-					
+					}					
+				} 
 				// run
-				} else if (command.equalsIgnoreCase("run")) {
+				else if (command.equalsIgnoreCase("run")) {
 					try {						
 						Board.Run();
 						BoardClock.setDelay(TimerIntervalInMS);
@@ -276,105 +277,108 @@ public class Main {
 						
 						Logger.Log(Logger.log_type.INFO,
 								"Simulation is running");
-						continue;
-						
+
 					} catch (ExceptionElementHasNoInputs ehni) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: ElementHasNoInput: A megjelolt elemnek nincs bemenete! /Hiba itt: "
 										+ ehni.TheObject.GetName() + "/");
 						Board.Stop();
+						BoardClock.removeActionListener(TimerTask);
 						BoardClock.stop();
-						continue;
 					} catch (ExceptionElementNotConnected ehni) {
 						Logger.Log(
 								Logger.log_type.ERROR,
 								"i Warning: ElementHasNoOutput: Egy kimenettel rendelkezo elem nem csatlakozik tovabbi aramkori elemhez!/Hiba itt: "
 										+ ehni.TheObject.GetName() + "/");
 						Board.Stop();
+						BoardClock.removeActionListener(TimerTask);
 						BoardClock.stop();
-						continue;
 					} catch (ExceptionUnstableCircuit instab) {
 						Logger.Log(
 								Logger.log_type.ERROR,
 								"x Error: UnstableCircuit: Instabil aramkor, a szimulacio nem futtathato. /Hiba itt: "
 										+ instab.TheObject.GetName() + "/");
 						Board.Stop();
+						BoardClock.removeActionListener(TimerTask);
 						BoardClock.stop();
-						continue;
 					} catch (ExceptionWireHasMultipleInputs e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: WireHasMultipleInputs: Nem egyertelmu Wire bemenet! /Hiba itt: "
 										+ e.TheObject.GetName() + "/");
 						Board.Stop();
+						BoardClock.removeActionListener(TimerTask);
 						BoardClock.stop();
-						continue;
 					} catch (ExceptionElementInputSize e) {
 						Logger.Log(
 								Logger.log_type.ERROR,
 								"x Error: UnstableCircuit: A megjelolt elem nem rendelkezik a megfelelo szamu bemenettel! /Hiba itt: "
 										+ e.TheObject.GetName() + "/");
 						Board.Stop();
+						BoardClock.removeActionListener(TimerTask);
 						BoardClock.stop();
-						continue;
 					} catch (ExceptionsWithConnection e) {
 						Logger.Log(
 								Logger.log_type.ERROR,
 								"x Error: ErrorWithConnections: Meghatarozhattalan hiba tortent az aramkori kapcsolatok letrehozasakor!");
 						Board.Stop();
+						BoardClock.removeActionListener(TimerTask);
 						BoardClock.stop();
-						continue;
 					} catch (NullPointerException e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
-						continue;
+						BoardClock.removeActionListener(TimerTask);
+						BoardClock.stop();
 					} catch (Exception e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: UnnownError: Meghatarozhatatlan tortent!");
+						BoardClock.removeActionListener(TimerTask);
+						BoardClock.stop();
 					}
-					
+				} 
+				
 				// pause
-				} else if (command.equalsIgnoreCase("pause")) {
+				else if (command.equalsIgnoreCase("pause")) {
 					Logger.Log(Logger.log_type.INFO,
 							"Simulation is not running");
-					Board.Pause();
-					continue;
+					Board.Pause();				
+				} 
 				// Stop
-				} else if (command.equalsIgnoreCase("stop")) {
+				else if (command.equalsIgnoreCase("stop")) {
 					Logger.Log(Logger.log_type.INFO, "Simulation stopped");
 					Board.Stop();
-					continue;
-					// setOutput
-				} else if (command.equalsIgnoreCase("setOutput")) {
-					Logger.Log(Logger.log_type.INFO, "Output is set to "
+				
+				} 
+				// setOutput
+				else if (command.equalsIgnoreCase("setOutput")) {
+					Logger.Log(Logger.log_type.INFO, "Output mode is set to "
 							+ param1);
 					Logger.log_mode = Integer.parseInt(param1);
-					continue;
-					// setLogfile
-				} else if (command.equalsIgnoreCase("setLogfile")) {
+				} 
+				// setLogfile
+				/*else if (command.equalsIgnoreCase("setLogfile")) {
 					Logger.Log(Logger.log_type.INFO, "Log file is set to"
 							+ param1);
 					Logger.log_file = param1;
-					continue;
-					// setInterval
-				} else if (command.equals("setInterval")) {
+				
+				}*/ 
+				// setInterval [sint]
+				else if (command.equals("setInterval") || command.equals("sint")) {
 					Logger.Log(Logger.log_type.INFO,
 							"Boards interval is set to " + param1);
 					BoardClock.setDelay(Integer.parseInt(param1));
-					continue;
-					// toggleSwitch
-				} else if (command.equalsIgnoreCase("toggleSwitch")) {
+				
+				// toggleSwitch [ts] [toggle]
+				} else if (command.equalsIgnoreCase("toggleSwitch") || command.equalsIgnoreCase("toggle") || command.equalsIgnoreCase("ts")) {
 					try {
 						Board.Toggle(param1);
-						continue;
+
 					} catch (ExceptionObjectNotFound e1) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x ERROR: ObjectNotFound: Nincs elem a megadott azonositoval! /"
 										+ e1.ItemID + "/");
-						continue;
 					} catch (NullPointerException e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
-						continue;
 					} catch (Exception e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: UnknownError: Meghatarozhatatlan tortent!");
@@ -382,28 +386,26 @@ public class Main {
 					
 					
 
-					// setSequence
-				} else if (command.equalsIgnoreCase("setSequence")) {
+				// setSequence [sseq]
+				} else if (command.equalsIgnoreCase("setSequence") || command.equalsIgnoreCase("sseq")) {
 					try {
 						Board.SetSequence(param2, param1);
 						Logger.Log(Logger.log_type.INFO, param1
 								+ "'s sequence is set to " + param2);
-						continue;
 					} catch (ExceptionObjectNotFound e1) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x ERROR: ObjectNotFound: Nincs elem a megadott azonositoval! /"
 										+ e1.ItemID + "/");
-						continue;
 					} catch (NullPointerException e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
-						continue;
 					} catch (Exception e) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x Error: UnknownError: Meghatarozhatatlan tortent!");
 					}
-
-					// exit
+					
+					
+				// exit
 				} else if (command.equalsIgnoreCase("exit")) {
 					System.exit(0);
 
@@ -412,15 +414,18 @@ public class Main {
 						Logger.logging_level = Logger.log_levels.LOW;
 						Logger.Log(Logger.log_type.INFO,
 								"Log mode set to LOW (Essential)");
-					} else if (Integer.parseInt(param1) == 1) {
+					} 
+					else if (Integer.parseInt(param1) == 1) {
 						Logger.logging_level = Logger.log_levels.MEDIUM;
 						Logger.Log(Logger.log_type.INFO,
 								"Log mode set to MEDIUM (User info)");
-					} else if (Integer.parseInt(param1) == 2) {
+					} 
+					else if (Integer.parseInt(param1) == 2) {
 						Logger.logging_level = Logger.log_levels.HIGH;
 						Logger.Log(Logger.log_type.INFO,
 								"Log mode set to HIGH (Debug mode)");
-					} else if (Integer.parseInt(param1) == 3) {
+					} 
+					else if (Integer.parseInt(param1) == 3) {
 						Logger.logging_level = Logger.log_levels.EXTREME;
 						Logger.Log(Logger.log_type.INFO,
 								"Log mode set to EXTREME (Show all function call)");

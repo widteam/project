@@ -110,7 +110,7 @@ public class Wire {
 	 */
 	public int GetValue() {	
 		// LOGOLAS;
-		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is "+Value+").");	
+		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is "+Value);	
 		return Value;
 	};
 

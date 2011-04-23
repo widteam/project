@@ -68,7 +68,7 @@ public class Oscilloscope extends Output {
 				 throw new ExceptionElementInputSize(this);
 			} else {
 				Value=wireIn.get(0).GetValue();
-				if(Samples.size() <= SampleSize){
+				if(Samples.size() < SampleSize){
 					Samples.add(Value); // hozzaadjuk az uj erteket
 				}
 				else {
