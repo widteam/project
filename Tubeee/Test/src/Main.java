@@ -82,6 +82,7 @@ public class Main {
 		int TimerIntervalInMS = 5000;
 		Timer BoardClock;
 
+		String  boardpath = "";
 		ActionListener TimerTask = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 
@@ -169,8 +170,6 @@ public class Main {
 				if (command.equalsIgnoreCase("setFrequency") || command.equalsIgnoreCase("sfreq")) {
 					try {
 						Board.SetFrequency(Integer.parseInt(param2), param1);
-						Logger.Log(Logger.log_type.INFO, param1
-								+ "'s frequency is set to " + param2);
 					} catch (NumberFormatException e1) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x ERROR: Wrong Parameter: /" + param2 + "/");
@@ -190,8 +189,6 @@ public class Main {
 				else if (command.equalsIgnoreCase("setSample") || command.equalsIgnoreCase("ssampl")) {
 					try {
 						Board.SetSample(Integer.parseInt(param2), param1);
-						Logger.Log(Logger.log_type.INFO, param1
-								+ "'s sample size is set to " + param2);
 					} catch (NumberFormatException e2) {
 						Logger.Log(Logger.log_type.ERROR,
 								"x ERROR: Wrong Parameter: /" + param2 + "/");
@@ -211,6 +208,7 @@ public class Main {
 				else if (command.equalsIgnoreCase("loadBoard") || command.equalsIgnoreCase("lb")) {
 					try {
 						Board.LoadBoard(param1);
+						boardpath = param1;
 						Logger.Log(Logger.log_type.INFO, param1 + " is loaded");
 					} catch (IOException e2) {
 						Logger.Log(Logger.log_type.ERROR,
@@ -345,7 +343,8 @@ public class Main {
 				// Stop
 				else if (command.equalsIgnoreCase("stop")) {
 					Logger.Log(Logger.log_type.INFO, "Simulation stopped");
-					Board.Stop();
+					Board.LoadBoard(boardpath);
+					BoardClock.stop();
 				
 				} 
 				// setOutput

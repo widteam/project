@@ -158,7 +158,6 @@ public class GENERATOR extends Input {
 		// LOGOLAS;
 		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Step>");
 
-		int Result = 0;
 		/* Az OSSZES kimenetre kiadjuk a kiszamitott eredmenyt. */
 		FrequencyCounter--; // Csokkentjuk a szamlalot
 
@@ -177,7 +176,7 @@ public class GENERATOR extends Input {
 
 		} else {
 			for (Wire OutPut : wireOut) {
-				OutPut.SetValue(Result);
+				OutPut.SetValue(Value);
 			}
 		}
 		wireOut.get(0).SetValue(Value);// a rakotott drotot ertesitjuk

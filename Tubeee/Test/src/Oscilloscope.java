@@ -77,13 +77,12 @@ public class Oscilloscope extends Output {
 				}
 			}
 		}
-		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is "+Value+").");
 		
 		String str_values="";
 		Iterator<Integer> it = Samples.iterator();
 		while(it.hasNext())
 			str_values+=it.next();
-		Logger.Log(Logger.log_type.DEBUG, "<"+this.GetID()+" Sample is ["+str_values +"]");
+		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is ["+str_values +"]");
 
 		return Value;
 	}
