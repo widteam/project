@@ -700,10 +700,9 @@ public class Composit extends DigitalObject {
 													fbwo = tmp.ContainerComposit;
 												}
 											}
-											if(!from_feedback_start.contains(fbwo)){
-												from_feedback_start.add(fbwo);
-												count++;
-											}
+											from_feedback_start.add(fbwo);
+											count++;
+											
 										}
 									}
 								}
