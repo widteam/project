@@ -222,7 +222,7 @@ public class bhdlParser {
 		String reg_generator = "generator[ ]+([\\w]+)?;";
 		String reg_switch = "switch[ ]+([\\w]+);";
 		String reg_set = "set[ ]+([\\w]+)=([\\d]+);";
-		String reg_comp = "([\\w, ]+)\\(in(( |[\\w]*,?)+)out(( |[\\w]*,?)+)\\)(.*)?;";
+		String reg_comp = "([\\w ]+)\\(in(( |[\\w]*,?)+),\\s*out(( |[\\w]*,?)+)\\)(.*?);";
 		String reg_assign = "assign[ ]+([\\w]+)=(.*?);";
 		/*
 		 * Vegignezzuk az osszes parancsot, illeszkedik-e valamelyik kifejezesre
@@ -683,7 +683,7 @@ public class bhdlParser {
 						if (pin.wireOut != null) {
 							if (pin.wireOut.objectsOut != null
 									&& !pin.wireOut.objectsOut.isEmpty()) {
-								// elvileg ilyet nem kene kapnunk
+								//elvileg ilyen nincs...
 							} else {
 								owner.RemoveFromWireList(pin.wireOut); // eltavolitjuk
 																		// a
@@ -888,7 +888,7 @@ public class bhdlParser {
 		// Lekerdezzuk a szulo nevet
 		String OwnerName = owner.GetName();
 		// Minta amely illeszkedik a composit hivasra
-		String reg_comp = "([\\w, ]+)\\(in(( |[\\w]*,?)+)out(( |[\\w]*,?)+)\\)(.*?);";
+		String reg_comp = "([\\w ]+)\\(in(( |[\\w]*,?)+),\\s*out(( |[\\w]*,?)+)\\)(.*?);";
 		Pattern regexp = Pattern.compile(reg_comp);
 		Matcher match = regexp.matcher(command);
 
@@ -925,8 +925,8 @@ public class bhdlParser {
 
 			// a Composit headerjenek megkeresesehez hasznalt mintaillesztes
 			String CompositeHeader = FindComposite(source, comp_name);
-			String strHederRegexp = "([\\w, ]+)\\(in(( |[\\w]*,?)+)out(( |[\\w]*,?)+)\\)(.*)?;";
-			Pattern HeaderRegexp = Pattern.compile(strHederRegexp);
+			String strHeaderRegexp = "([\\w, ]+)\\(in(( |[\\w]*,?)+),\\s*out(( |[\\w]*,?)+)\\)(.*)?;";
+			Pattern HeaderRegexp = Pattern.compile(strHeaderRegexp);
 			Matcher MatchingHeader = HeaderRegexp.matcher(CompositeHeader);
 
 			MatchingHeader.find();
@@ -955,6 +955,10 @@ public class bhdlParser {
 				// Bemeno drotok
 				for (String wire_in : HeaderWiresIn) {
 					// Letrehozzuk a PIN-t
+					
+					//biztonsag, ha nem regexpelt volna jol
+					if(wire_in.isEmpty())continue;
+					
 					PIN pin = new PIN(myComposit, "PIN" + wire_in);
 					myComposit.pins_in.add(pin);
 
@@ -968,6 +972,11 @@ public class bhdlParser {
 
 				for (String wire_out : HeaderWiresOut) {
 					// Letrehozzuk a PIN-t
+					
+					//biztonsag, ha nem regexpelt volna jol
+					if(wire_out.isEmpty())continue;
+					
+					
 					PIN pin = new PIN(myComposit, "PIN" + wire_out);
 					myComposit.pins_out.add(pin);
 

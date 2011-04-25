@@ -38,7 +38,9 @@ public class Composit extends DigitalObject {
 		ID = strOwnerCompositName + strIDDelimiter + strClassName
 				+ strIDDelimiter + CompositName;
 		WireList = new ArrayList<Wire>();
-
+		
+		Feedbacks = new ArrayList<DigitalObject>();
+		
 		pins_in = new ArrayList<PIN>();
 		pins_out = new ArrayList<PIN>();
 
@@ -698,9 +700,10 @@ public class Composit extends DigitalObject {
 													fbwo = tmp.ContainerComposit;
 												}
 											}
-
-											from_feedback_start.add(fbwo);
-											count++;
+											if(!from_feedback_start.contains(fbwo)){
+												from_feedback_start.add(fbwo);
+												count++;
+											}
 										}
 									}
 								}
@@ -758,7 +761,7 @@ public class Composit extends DigitalObject {
 										.size(); index++) {
 									DigitalObject d_o = from_feedback_end
 											.get(index);
-									if (from_feedback_start.contains(d_o)) {
+									if (from_feedback_start.contains(d_o) && !feedback_start.Feedbacks.contains(d_o)) {
 										feedback_start.AddToFeedbacks(d_o);
 									}
 								}
