@@ -1,18 +1,12 @@
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.Timer;
+import javax.swing.*;
+
+
+
 
 public class Controller implements ActionListener {
 
@@ -39,6 +33,8 @@ public class Controller implements ActionListener {
 	/* Gombok */
 	/** Rakattintva betölti a modellt (hálózatot). */
 	JButton loadBoardButton;
+	/** Rakattintva betölti a modellt (hálózatot). */
+	JButton loadSpecBoardButton;
 	/** Rakattintva futtatja a hálózatot. */
 	JButton runButton;
 	/** Rakattintva megállítja a hálózat futását. */
@@ -59,6 +55,7 @@ public class Controller implements ActionListener {
 	
 	// ActionCommandek
 	protected final static String LOAD_BOARD = "loadBoard";
+	protected final static String LOAD_BOARD_1 = "loadBoard1";
 	protected final static String RUN_SIMULATION = "run";
 	protected final static String STOP_SIMULATION = "stop";
 	protected final static String PAUSE_SIMULATION = "pause";
@@ -85,6 +82,11 @@ public class Controller implements ActionListener {
 		loadBoardButton.setActionCommand(LOAD_BOARD);
 		loadBoardButton.addActionListener(this);
 
+		/* Teszthez by csomák.. debugot segiti, ha van egy gyorsgomb */
+		loadSpecBoardButton = new JButton("Load1es", new ImageIcon("__KEP__HELYE__"));
+		loadSpecBoardButton.setActionCommand(LOAD_BOARD_1);
+		loadSpecBoardButton.addActionListener(this);
+		
 		/* Run */
 		runButton = new JButton("Run", new ImageIcon("__KEP__HELYE__"));
 		runButton.setActionCommand(RUN_SIMULATION);
@@ -122,12 +124,13 @@ public class Controller implements ActionListener {
 
 		// panelhez hozzaadom az elemeket
 		pane.add(loadBoardButton);
+		pane.add(loadSpecBoardButton);
 		pane.add(runButton);
 		pane.add(pauseButton);
 		pane.add(stopButton);
 		pane.add(stopButton);			
 		pane.add(exitButton);
-		pane.add(eventList);
+		//pane.add(eventList);
 		
 		// letrehozom a frame-t
 		frame = new JFrame("DigitalCircuit Simulator  - WID");
@@ -143,7 +146,8 @@ public class Controller implements ActionListener {
 		Logger.logging_level = Logger.log_levels.MEDIUM;
 		Logger.listModel=listModel;
 	}
-
+	
+	
 	public void actionPerformed(ActionEvent event) {
 
 		String command = event.getActionCommand();
@@ -160,6 +164,27 @@ public class Controller implements ActionListener {
 		    }
 		}
 		
+		if (command.equalsIgnoreCase("loadBoard1")) {
+			try {
+				digitalboard.LoadBoard("teszt4.bhdl");
+				Logger.Log(Logger.log_type.INFO, path + " is loaded");
+				boardView bdv=new boardView(digitalboard);
+				bdv.setSize(500,500);
+				frame.add(bdv);
+				bdv.paintComponent(frame.getGraphics());
+			} catch (IOException e2) {
+				Logger.Log(Logger.log_type.ERROR,
+						"x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
+			} catch (ExceptionWrongBoard e2) {
+				Logger.Log(Logger.log_type.ERROR,
+						"x Error: WrongBoard: Rosszul formazott BHDL fajl!");
+			} catch (Exception e) {
+				Logger.Log(Logger.log_type.ERROR,
+						"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
+								+ e.toString() + " File: " + path);
+			}
+		}
+		
 		if (command.equalsIgnoreCase("loadBoard")) {
 			/* FileBrowser letrehozasa a palya meghatarozasara */
 			JFileChooser chooser = new JFileChooser();
@@ -170,6 +195,10 @@ public class Controller implements ActionListener {
 				try {
 					digitalboard.LoadBoard(path);
 					Logger.Log(Logger.log_type.INFO, path + " is loaded");
+					boardView bdv=new boardView(digitalboard);
+					bdv.setSize(500,500);
+					frame.add(bdv);
+					bdv.paintComponent(frame.getGraphics());
 				} catch (IOException e2) {
 					Logger.Log(Logger.log_type.ERROR,
 							"x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");

@@ -16,12 +16,12 @@ public class Composit extends DigitalObject {
 	 * csatlakozo elemek, stb) az egyes szinteken pedig egy lista van az
 	 * elemekröl
 	 */
-	private ArrayList<List<DigitalObject>> ComponentList;
+	public ArrayList<List<DigitalObject>> ComponentList;
 
 	/**
 	 * Egyszeru lista a Wire objektumokbol
 	 */
-	private List<Wire> WireList;
+	public List<Wire> WireList;
 
 	/**
 	 * PIN elemekbol allo lista, melybe a kivulrol erkezo drotok futnak

@@ -48,7 +48,7 @@ public class DigitalBoard{
 	/**
 	 * Egy fo Composit, ez tartalmaz minden tovabbi elemet, Compositot
 	 */
-	private Composit MainComposit = null;
+	public Composit MainComposit = null;
 	/** KONSTRUKTOR */
 	public DigitalBoard() {
 		SimStatus = Status.STOPPED;
