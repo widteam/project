@@ -8,4 +8,5 @@ composit main(in,out)
 	wire w01;		
 	comp01(in sw01,w01,out w01);
 	assign led01 = w01;
+	set sw01=1;
 endcomposit;

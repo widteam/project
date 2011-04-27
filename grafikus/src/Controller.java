@@ -166,10 +166,10 @@ public class Controller implements ActionListener {
 		
 		if (command.equalsIgnoreCase("loadBoard1")) {
 			try {
-				digitalboard.LoadBoard("teszt4.bhdl");
+				digitalboard.LoadBoard("teszt5.bhdl");
 				Logger.Log(Logger.log_type.INFO, path + " is loaded");
 				boardView bdv=new boardView(digitalboard);
-				bdv.setSize(500,500);
+				//bdv.setSize(500,500);
 				frame.add(bdv);
 				bdv.paintComponent(frame.getGraphics());
 			} catch (IOException e2) {
