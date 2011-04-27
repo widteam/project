@@ -5,9 +5,6 @@ import java.io.IOException;
 
 import javax.swing.*;
 
-
-
-
 public class Controller implements ActionListener {
 
 	private int maxX = 500;
@@ -16,9 +13,9 @@ public class Controller implements ActionListener {
 	/* a MODELL */
 	/** A modellt tartalmazó változó. */
 	DigitalBoard digitalboard;
-	
+
 	/* a VIEW */
-	// ////////////
+	private boardView BoardView;
 
 	/* Frame-k */
 	/** Az ablak, amelyben fut az alkalmazásunk. */
@@ -46,13 +43,14 @@ public class Controller implements ActionListener {
 	/** Rakattintva kilep a programbol */
 	JButton exitButton;
 
+	JPanel pane;
 	/* Listek */
 	/**
 	 * A program lefutása során elõforduló események jelzése a felhasználó felé.
 	 */
 	JList eventList;
 	DefaultListModel listModel = new DefaultListModel();
-	
+
 	// ActionCommandek
 	protected final static String LOAD_BOARD = "loadBoard";
 	protected final static String LOAD_BOARD_1 = "loadBoard1";
@@ -66,6 +64,9 @@ public class Controller implements ActionListener {
 	public Controller() {
 		// A modell inicializálása
 		digitalboard = new DigitalBoard();
+		// a view inicializalasa
+		BoardView = new boardView(digitalboard);
+		//BoardView.setSize(500, 500);
 
 		// Kepernyo meretenek lekerese
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -76,17 +77,18 @@ public class Controller implements ActionListener {
 		/* Timer */
 		timer = new Timer(delay, this);
 		timer.setActionCommand(TICK);
-		
+
 		/* Load Board */
 		loadBoardButton = new JButton("Load", new ImageIcon("__KEP__HELYE__"));
 		loadBoardButton.setActionCommand(LOAD_BOARD);
 		loadBoardButton.addActionListener(this);
 
 		/* Teszthez by csomák.. debugot segiti, ha van egy gyorsgomb */
-		loadSpecBoardButton = new JButton("Load1es", new ImageIcon("__KEP__HELYE__"));
+		loadSpecBoardButton = new JButton("Load1es", new ImageIcon(
+				"__KEP__HELYE__"));
 		loadSpecBoardButton.setActionCommand(LOAD_BOARD_1);
 		loadSpecBoardButton.addActionListener(this);
-		
+
 		/* Run */
 		runButton = new JButton("Run", new ImageIcon("__KEP__HELYE__"));
 		runButton.setActionCommand(RUN_SIMULATION);
@@ -106,48 +108,45 @@ public class Controller implements ActionListener {
 		exitButton = new JButton("Exit", new ImageIcon("__KEP__HELYE__"));
 		exitButton.setActionCommand(EXIT);
 		exitButton.addActionListener(this);
-		
+
 		/* Step Components */
 		stepButton = new JButton("Step", new ImageIcon("__KEP__HELYE__"));
 		stepButton.setActionCommand(STEP);
 		stepButton.addActionListener(this);
 
-		eventList = new JList(listModel); //data has type Object[]
+		eventList = new JList(listModel); // data has type Object[]
 		eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		eventList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		eventList.setVisibleRowCount(-1);
 
-
-
 		// Panel letrehozasa
-		JPanel pane = new JPanel();
+		pane = new JPanel();
 
 		// panelhez hozzaadom az elemeket
-		pane.add(loadBoardButton);
-		pane.add(loadSpecBoardButton);
-		pane.add(runButton);
-		pane.add(pauseButton);
-		pane.add(stopButton);
-		pane.add(stopButton);			
-		pane.add(exitButton);
-		//pane.add(eventList);
-		
+		BoardView.add(loadBoardButton);
+		BoardView.add(loadSpecBoardButton);
+		BoardView.add(runButton);
+		BoardView.add(pauseButton);
+		BoardView.add(stopButton);
+		BoardView.add(stopButton);
+		BoardView.add(exitButton);
+		BoardView.add(eventList);
+
 		// letrehozom a frame-t
 		frame = new JFrame("DigitalCircuit Simulator  - WID");
 		// ha bezarjuk reagaljon ra
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// frame-hez a panelt
-		frame.add(pane);
+		frame.add(BoardView);
 
 		frame.setSize(maxX, maxY);
+
 		frame.setVisible(true);
 
 		Logger.logging_level = Logger.log_levels.MEDIUM;
-		Logger.listModel=listModel;
+		Logger.listModel = listModel;
 	}
-	
-	
+
 	public void actionPerformed(ActionEvent event) {
 
 		String command = event.getActionCommand();
@@ -155,23 +154,20 @@ public class Controller implements ActionListener {
 
 		/* FILTER */
 		class BHDLFileFilter extends javax.swing.filechooser.FileFilter {
-		    public boolean accept(java.io.File f) {
-		        return f.isDirectory() || f.getName().toLowerCase().endsWith(".bhdl");
-		    }
-		    
-		    public String getDescription() {
-		        return "ButaHDL fajlok (*.bhdl)";
-		    }
+			public boolean accept(java.io.File f) {
+				return f.isDirectory()
+						|| f.getName().toLowerCase().endsWith(".bhdl");
+			}
+
+			public String getDescription() {
+				return "ButaHDL fajlok (*.bhdl)";
+			}
 		}
-		
+
 		if (command.equalsIgnoreCase("loadBoard1")) {
 			try {
-				digitalboard.LoadBoard("teszt5.bhdl");
+				digitalboard.LoadBoard("teszt4.bhdl");
 				Logger.Log(Logger.log_type.INFO, path + " is loaded");
-				boardView bdv=new boardView(digitalboard);
-				//bdv.setSize(500,500);
-				frame.add(bdv);
-				bdv.paintComponent(frame.getGraphics());
 			} catch (IOException e2) {
 				Logger.Log(Logger.log_type.ERROR,
 						"x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
@@ -182,12 +178,14 @@ public class Controller implements ActionListener {
 				Logger.Log(Logger.log_type.ERROR,
 						"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
 								+ e.toString() + " File: " + path);
+			} finally {
+				frame.repaint();
 			}
 		}
-		
+
 		if (command.equalsIgnoreCase("loadBoard")) {
 			/* FileBrowser letrehozasa a palya meghatarozasara */
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = new JFileChooser(new java.io.File("").getAbsolutePath());
 			chooser.setFileFilter(new BHDLFileFilter());
 			int rVal = chooser.showOpenDialog(frame);
 			if (rVal == JFileChooser.APPROVE_OPTION) {
@@ -195,10 +193,6 @@ public class Controller implements ActionListener {
 				try {
 					digitalboard.LoadBoard(path);
 					Logger.Log(Logger.log_type.INFO, path + " is loaded");
-					boardView bdv=new boardView(digitalboard);
-					bdv.setSize(500,500);
-					frame.add(bdv);
-					bdv.paintComponent(frame.getGraphics());
 				} catch (IOException e2) {
 					Logger.Log(Logger.log_type.ERROR,
 							"x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
@@ -209,13 +203,15 @@ public class Controller implements ActionListener {
 					Logger.Log(Logger.log_type.ERROR,
 							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
 									+ e.toString() + " File: " + path);
+				} finally {
+					frame.repaint();
 				}
 			}
 			if (rVal == JFileChooser.CANCEL_OPTION) {
 				path = "";
 			}
 		}// end loadboard
-		// stepComponents [step]
+			// stepComponents [step]
 		else if (command.equalsIgnoreCase("stepComponents")) {
 			try {
 				if (digitalboard.GetStatus() != Status.STOPPED)
@@ -256,19 +252,23 @@ public class Controller implements ActionListener {
 				Logger.Log(Logger.log_type.ERROR,
 						"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
 								+ e.toString());
+			} finally {
+				frame.repaint();
 			}
 		}// end stepComponents
-		// run
+			// run
 		else if (command.equalsIgnoreCase("run")) {
 			digitalboard.Run();
 			timer.start();
 			Logger.Log(Logger.log_type.INFO, "Simulation started.");
+			frame.repaint();
 		}
 
 		// pause
 		else if (command.equalsIgnoreCase("pause")) {
 			Logger.Log(Logger.log_type.INFO, "Simulation is not running");
 			digitalboard.Pause();
+			frame.repaint();
 		}
 		// Stop
 		else if (command.equalsIgnoreCase("stop")) {
@@ -288,10 +288,11 @@ public class Controller implements ActionListener {
 			}
 			timer.stop();
 			Logger.Log(Logger.log_type.INFO, "Simulation stopped");
+			frame.repaint();
 		}
 		// tick
 		else if (command.equalsIgnoreCase("tick")) {
-			if (digitalboard.GetStatus() == Status.RUNNING){
+			if (digitalboard.GetStatus() == Status.RUNNING) {
 				try {
 					digitalboard.StepComponents();
 				} catch (ExceptionElementHasNoInputs ehni) {
@@ -351,10 +352,13 @@ public class Controller implements ActionListener {
 					digitalboard.Stop();
 					timer.stop();
 
-				}//end try
-			}//end if board==running
-			else if(command.equalsIgnoreCase("exit")){
+				} finally {
+					frame.repaint();
+				}// end try
+			}// end if board==running
+			else if (command.equalsIgnoreCase("exit")) {
 				System.exit(1);
+				frame.repaint();
 			}
 		}// end tick
 	}
