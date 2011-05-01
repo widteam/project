@@ -33,15 +33,17 @@ public class viewElem {
 
 	public void addPinIn(viewElem e){
 		pins_in.add(e);
+		pinInNo=pins_in.size()-1;
 	}
 	public void addPinOut(viewElem e){
 		pins_out.add(e);
+		pinOuNo=pins_out.size()-1;
 	}
 	public viewElem getNextPinIn(){
 		pinInNo++;
 		if(pinInNo>pins_in.size()-1) pinInNo=0;
 		if(pins_in.size()==0) 
-			return null;
+			return null;//hiba
 		return pins_in.get(pinInNo);
 	}
 	public viewElem getNextPinOut(){

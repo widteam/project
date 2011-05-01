@@ -2,9 +2,12 @@
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
+import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +86,16 @@ public class boardView extends JPanel implements MouseListener{
 
  
     public void itemClicked(String id){
-    	//TODO!!
+    	for (List<DigitalObject> SubList : digiBoard.getMainComposit()
+				.getComponentList()) {
+			for (DigitalObject obj : SubList) {
+				if(obj.ID.equals(id)){
+					if(id.contains("SWITCH")) ((SWITCH)(obj)).Toggle();
+				}
+				//TODO a többit
+			}
+    	}
+    	invalidate();//TODO ez vmiért nemmûkszik!!
     	System.out.println(id+" clicked!!");
     }
 	/**
@@ -96,6 +108,8 @@ public class boardView extends JPanel implements MouseListener{
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setPaint(Color.black);
 
+		ViewList=new ArrayList<viewElem>();
+		
 		maxy = 0;
 		/*
 		 * Egy kettos forach-csel bejarjuk a ComponentListet. (azert foreach-re
@@ -130,23 +144,33 @@ public class boardView extends JPanel implements MouseListener{
 				viewElem current=new viewElem(x, y, szint, obj.GetID());
 				ViewList.add(current);
 
-				/*
-				 * most gyorsan kirjzoljuk a gyonyoru mintat. Teglalap. Ezt nem
-				 * artana csicsazni .)
-				 */
-				g2.draw(new Rectangle(x, y, 100, 50));
-
-				/* Kiirjuk hozza az objektum nevet is. */
-				g2.drawString(obj.GetName(), x + 5, y + 20);
-				if(obj.ID.contains("ORGate")){
-				    Image img=null;
-				    try {
-				    	img=ImageIO.read(new File("or.png"));
-				    	g.drawImage(img,x,y,this);
-				    }
-				    catch(IOException e)  {}
+				if(obj.ID.contains("Composit")){
+					g2.draw(new Rectangle(x, y, 100, 50));
+					/* Kiirjuk hozza az objektum nevet is. */
+					g2.drawString(obj.GetName(), x + 15, y + 20);
+				} else {
+					g2.drawString(obj.GetName(), x + 15, y - 5);
+				}				
+				
+				BufferedImage img=new BufferedImage(100,50,BufferedImage.TYPE_INT_ARGB);
 				    
-				}
+				try {
+					if(obj.ID.contains("ORGate")) img=ImageIO.read(new File("or.gif"));
+				    if(obj.ID.contains("ANDGate")) img=ImageIO.read(new File("and.gif"));
+				    if(obj.ID.contains("GENERATOR")) img=ImageIO.read(new File("generator.gif"));
+				    if(obj.ID.contains("INVERTER")) img=ImageIO.read(new File("inverter.gif"));
+				    if(obj.ID.contains("LED"))
+				    	if(obj.wireIn.get(0).GetValue()>0) img=ImageIO.read(new File("ledon.gif"));
+				    	else img=ImageIO.read(new File("ledoff.gif"));
+				    if(obj.ID.contains("SWITCH"))
+				    	if(((SWITCH)(obj)).Value>0) img=ImageIO.read(new File("swon.gif"));
+				    	else img=ImageIO.read(new File("swoff.gif"));
+				    if(obj.ID.contains("Oscilloscope")) img=ImageIO.read(new File("oscilloscope.gif"));
+				   
+				  //g2.drawRenderedImage(img, new AffineTransform());  
+				    g2.drawImage(img, x,y, this);
+				} catch(IOException e)  {}
+				
 				/*
 				 * Ha ez a legmelyebben fekvo elem, akkor modositani kell a maxy
 				 * koordinatat a feedback kirajzolasahoz.
