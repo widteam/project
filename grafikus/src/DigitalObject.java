@@ -1,4 +1,5 @@
 /*  IMPORTOK  */
+import java.util.ArrayList;
 import java.util.List;
 /** 
  * <table border=0>
@@ -40,13 +41,13 @@ public abstract class DigitalObject {
 	 * {@link Wire} objektum-referenciakbol allo lista azon Wire objektumokrol,
 	 * melyek az objektum bemeneteihez kapcsolodnak.
 	 */
-	protected List<Wire> wireIn;
+	protected List<Wire> wireIn=new ArrayList<Wire>();
 
 	/**
 	 * {@link Wire} objektum-referenciakbol allo lista azon Wire objektumokrol,
 	 * melyek az objektum kimeneteihez kapcsolodnak.
 	 */
-	protected List<Wire> wireOut;
+	protected List<Wire> wireOut=new ArrayList<Wire>();
 
 	/**
 	 * Ha egy Gate egyik bemenete egy visszacsatolas kezdete, akkor tartalmaz
