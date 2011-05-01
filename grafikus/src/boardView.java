@@ -1,8 +1,14 @@
 /* Importok */
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -12,7 +18,7 @@ import javax.swing.*;
  * elemeket kirajzolja szintenkent, ezt kovetoen a kapcsolatokat is megjeleniti
  * az egyes elemek kozott.
  */
-public class boardView extends JPanel {
+public class boardView extends JPanel implements MouseListener{
 
 	/** UID, mert kell... */
 	private static final long serialVersionUID = 1L;
@@ -28,9 +34,9 @@ public class boardView extends JPanel {
 	 */
 	public boardView(DigitalBoard db) {
 		digiBoard = db;
+		addMouseListener(this);
 	}
 
-	private int feeds = 0;
 	/**
 	 * Egy Y koordinata, mely megadja a legmelyebben fekvo elem Y koordinatajat.
 	 * ez ahhoz kell, hogy a visszacsatolas ezen Y alatt fusson
@@ -58,7 +64,28 @@ public class boardView extends JPanel {
 		}
 		return null;
 	}
+	
+	
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}	
+    public void mousePressed(MouseEvent e) {}
 
+    public void mouseClicked(MouseEvent e) {
+    	for(viewElem elem:ViewList){
+    		if(elem.X<e.getX())
+    			if(elem.Y<e.getY())
+    				if(elem.X>e.getX()-100)
+    					if(elem.Y>e.getY()-50)
+    						itemClicked(elem.ID);
+    	}
+    }
+
+ 
+    public void itemClicked(String id){
+    	//TODO!!
+    	System.out.println(id+" clicked!!");
+    }
 	/**
 	 * Fuggveny ami kirajzolja a ComponentListben talalhato elemeket.
 	 */
@@ -111,7 +138,15 @@ public class boardView extends JPanel {
 
 				/* Kiirjuk hozza az objektum nevet is. */
 				g2.drawString(obj.GetName(), x + 5, y + 20);
-
+				if(obj.ID.contains("ORGate")){
+				    Image img=null;
+				    try {
+				    	img=ImageIO.read(new File("or.png"));
+				    	g.drawImage(img,x,y,this);
+				    }
+				    catch(IOException e)  {}
+				    
+				}
 				/*
 				 * Ha ez a legmelyebben fekvo elem, akkor modositani kell a maxy
 				 * koordinatat a feedback kirajzolasahoz.
@@ -196,7 +231,6 @@ public class boardView extends JPanel {
 		g2.setPaint(Color.black);
 		if (digiBoard.getMainComposit()==null) return false;
 
-		feeds=0;
 		for (Wire wire:digiBoard.getMainComposit().getWireList()) {
 			for(DigitalObject  objOut:wire.objectsOut){
 				viewElem from=findInList(wire.objectsIn.get(0).GetID());
@@ -209,76 +243,45 @@ public class boardView extends JPanel {
 					PIN pin=(PIN)wire.objectsIn.get(0);
 					from=findInList(pin.ContainerComposit.ID);
 				}
-				paintAWire(g2, from.getNextPinOut(), to.getNextPinIn());
+				paintAWire(g2, from.getNextPinOut(), to.getNextPinIn(), wire.GetValue());
 			}
 		}
-//		/* Vegigmegyunk a WireListen */
-//		for (Wire wire:digiBoard.getMainComposit().getWireList()) {
-//			/* Minden Wire-nek egy bemeno objektuma van, ez az objectsIn.get(0) 
-//			 * Ehhez az elemhez kikeressuk a View objektumokat tarolo 
-//			 * listabol a hozza tartozo View-ot
-//			 */ 
-//			viewElem from = findInList(wire.objectsIn.get(0).ID);
-//			viewElem to = findInList(wire.objectsOut.get(0).ID);
-//			if(wire.objectsIn.get(0).ID.contains("PIN")){
-//				from=
-//			}
-//			
-//			if(wire.objectsIn.get(0).ID.contains("PIN")){
-//				to=to;
-//			} else if (wire.objectsOut.get(0).ID.contains("PIN")){
-//				
-//			} else paintAWire(g2, from.pins_out.get(0), to.pins_in.get(0));
-
-
-//				/* Kikeressuk a Viewok listajabol a kimeno elemunket */
-//				viewElem to = findInList(obj.ID);
-//				/* ha NULL, az azt jelenti, hogy egy Composit bemeno PIN-je... 
-//				 * ezen esetben az elemunk a PIN Compositja
-//				 */
-//				if (to == null) {
-//					PIN pinem = (PIN) ((obj));
-//					to = findInList(pinem.ContainerComposit.ID);
-//				}
-//				/* Beallitjuk a szint szurkere. ez az alapertelmezett. */
-//				g2.setPaint(Color.gray);
-//				/* ha a Wire-ben van aram, a szin fekete */
-//				if (wire.GetValue() > 0)
-//					g2.setPaint(Color.black);
-//
-//				
-//				/* Ha a drot kiindulo pontja elorebb van mint a cel, azaz 
-//				 * alsobb hierarchiabol huzunk feljebb, normalis egyenest rajzolunk
-//				*/	
-//				if (from.X < to.X)
-//					g2.drawLine(from.X + 100, from.Y + 25, to.X, to.Y + 25);
-//				else {
-//					/* Kulonben visszacsatolas van, azt maskent kell kezelni */
-//					feeds++;
-//					g2.drawLine(to.X, to.Y + 25, to.X - 10, maxy + feeds * 5
-//							+ 60); // balrol bal le
-//					g2.drawLine(from.X + 100, from.Y + 25, from.X + 110, maxy
-//							+ feeds * 5 + 60);// jobbrol jobb lent
-//					g2.drawLine(to.X - 10, maxy + feeds * 5 + 60, from.X + 110,
-//							maxy + feeds * 5 + 60);// bal lent jobb lent
-//				}
 			
 		
 		
 		return true;
 	}
 	
-	private void paintAWire(Graphics g, viewElem from, viewElem to ){
+	private void paintAWire(Graphics2D g, viewElem from, viewElem to , int value ){
 		int x;
 		int y;
 		x=from.X+10;
 		y=from.Y;
+		
+		//from kis basza
+		g.setPaint(Color.black);
 		g.drawLine(from.X, y, x, y);
-		//TODO
-		g.drawLine(x,y, to.X-10, to.Y);
 		
+		g.setPaint(Color.gray);
+		/* ha a Wire-ben van aram, a szin fekete */
+		if (value > 0)
+			g.setPaint(Color.black);
+		
+		//ha szomszédok, sima vonal
+		if(from.szint==to.szint-1)
+			g.drawLine(x,y, to.X-10, to.Y);
+		
+		else{
+			g.drawLine(x, y, x, from.szint * 100 + 175);
+			g.drawLine(x, from.szint * 100 + 175, to.X-10, from.szint * 100 + 175);
+			g.drawLine(to.X-10, from.szint * 100 + 175, to.X-10, to.Y);
+		}
+		
+		
+		
+		//to kis basza
+		g.setPaint(Color.black);
 		g.drawLine(to.X-10, to.Y, to.X, to.Y);
-		
 		
 	}
 
@@ -287,6 +290,8 @@ public class boardView extends JPanel {
 		drawComponentList(g);
 		drawWires(g);
 	}
+	
 
 
 }
+
