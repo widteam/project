@@ -13,4 +13,5 @@ composit main(in,out)
 	led led01;	
 	oscilloscope osc01(10);	
 	comp01(in sw01,gen01,out led01,osc01);
+	set sw01=1;
 endcomposit;

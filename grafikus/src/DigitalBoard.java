@@ -48,7 +48,7 @@ public class DigitalBoard{
 	/**
 	 * Egy fo Composit, ez tartalmaz minden tovabbi elemet, Compositot
 	 */
-	public Composit MainComposit = null;
+	private Composit MainComposit = null;
 	/** KONSTRUKTOR */
 	public DigitalBoard() {
 		SimStatus = Status.STOPPED;
@@ -121,7 +121,7 @@ public class DigitalBoard{
 		 * MAIN composit megkeresese letrehozasa
 		 */
 		String main_composit = bhdlParser.FindMainComposit(strFileContents);
-		MainComposit = bhdlParser.CreateMain(main_composit);
+		MainComposit=bhdlParser.CreateMain(main_composit);
 		bhdlParser.ReadComposit(MainComposit, strFileContents, MainComposit.GetName());
 		
 		Debug();
@@ -249,4 +249,11 @@ public class DigitalBoard{
 	   Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's GetStatus()");
 	   return SimStatus;
    }
+
+	/**
+	 * @return a mainComposit-tal
+	 */
+	public Composit getMainComposit() {
+		return MainComposit;
+	}
 }

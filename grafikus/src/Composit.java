@@ -16,12 +16,12 @@ public class Composit extends DigitalObject {
 	 * csatlakozo elemek, stb) az egyes szinteken pedig egy lista van az
 	 * elemekröl
 	 */
-	public ArrayList<List<DigitalObject>> ComponentList;
+	private ArrayList<List<DigitalObject>> ComponentList;
 
 	/**
 	 * Egyszeru lista a Wire objektumokbol
 	 */
-	public List<Wire> WireList;
+	private List<Wire> WireList;
 
 	/**
 	 * PIN elemekbol allo lista, melybe a kivulrol erkezo drotok futnak
@@ -850,5 +850,16 @@ public class Composit extends DigitalObject {
 	 */
 	public List<DigitalObject> getFirstLevelOfComponentList() {
 		return ComponentList.get(0);
+	}
+	
+	/**
+	 * 
+	 * @return a Hierarchikus lista.
+	 */
+	public ArrayList<List<DigitalObject>>  getComponentList(){
+		return ComponentList;
+	}
+	public List<Wire> getWireList(){
+		return WireList;
 	}
 }
