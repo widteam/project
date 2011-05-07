@@ -50,47 +50,47 @@ public class boardView extends JPanel implements MouseListener {
 
         try {
 
-            Image andGate = toolkit.getImage(getClass().getResource("images/and.gif"));
+            Image andGate = toolkit.getImage(getClass().getResource("images/and.png"));
             mediaTracker.addImage(andGate, id);
             id++;
             images.put("ANDGate", andGate);
 
-            Image orGate = toolkit.getImage(getClass().getResource("images/or.gif"));
+            Image orGate = toolkit.getImage(getClass().getResource("images/or.png"));
             mediaTracker.addImage(orGate, id);
             id++;
             images.put("ORGate", orGate);
 
-            Image generator = toolkit.getImage(getClass().getResource("images/generator.gif"));
+            Image generator = toolkit.getImage(getClass().getResource("images/generator.png"));
             mediaTracker.addImage(generator, id);
             id++;
             images.put("GENERATOR", generator);
 
-            Image inverter = toolkit.getImage(getClass().getResource("images/inverter.gif"));
+            Image inverter = toolkit.getImage(getClass().getResource("images/inverter.png"));
             mediaTracker.addImage(inverter, id);
             id++;
             images.put("INVERTER", inverter);
 
-            Image ledOff = toolkit.getImage(getClass().getResource("images/ledoff.gif"));
+            Image ledOff = toolkit.getImage(getClass().getResource("images/ledoff.png"));
             mediaTracker.addImage(ledOff, id);
             id++;
             images.put("LED", ledOff);
 
-            Image ledOn = toolkit.getImage(getClass().getResource("images/ledon.gif"));
+            Image ledOn = toolkit.getImage(getClass().getResource("images/ledon.png"));
             mediaTracker.addImage(ledOn, id);
             id++;
             images.put("led", ledOn);
 
-            Image oscilloscope = toolkit.getImage(getClass().getResource("images/oscilloscope.gif"));
+            Image oscilloscope = toolkit.getImage(getClass().getResource("images/oscilloscope.png"));
             mediaTracker.addImage(oscilloscope, id);
             id++;
             images.put("Oscilloscope", oscilloscope);
 
-            Image swOff = toolkit.getImage(getClass().getResource("images/swoff.gif"));
+            Image swOff = toolkit.getImage(getClass().getResource("images/swoff.png"));
             mediaTracker.addImage(swOff, id);
             id++;
             images.put("SWITCH", swOff);
 
-            Image swOn = toolkit.getImage(getClass().getResource("images/swon.gif"));
+            Image swOn = toolkit.getImage(getClass().getResource("images/swon.png"));
             mediaTracker.addImage(swOn, id);
             id++;
             images.put("switch", swOn);
@@ -108,17 +108,22 @@ public class boardView extends JPanel implements MouseListener {
         }
 
     }
-    /**
-     * Egy Y koordinata, mely megadja a legmelyebben fekvo elem Y koordinatajat.
-     * ez ahhoz kell, hogy a visszacsatolas ezen Y alatt fusson
-     */
+   
     /**
      * Elt�rolja, hogy a szintek k�z�tt h�ny vonal van m�r..
      * Ezzel elker�lhet� a vonalak egym�sra rajzol�sa.
      * ha szintSzamlalo[3]=3, akkor a 3ik �s 4ik szint k�zti t�rben 3 wire megy m�r kereszt�l.
      */
     private ArrayList<Integer> szintSzamlalo = new ArrayList<Integer>();
-    private int maxy = 0;
+   
+    /**
+     * Elt�rolja, hogy a szintek k�z�tt h�ny vonal van m�r..
+     * Ezzel elker�lhet� a vonalak egym�sra rajzol�sa.
+     * ha szintSzamlalo[3]=3, akkor a 3ik �s 4ik szint k�zti t�rben 3 wire megy m�r kereszt�l.
+     */
+    private ArrayList<Integer> oszlopSzamlalo = new ArrayList<Integer>();
+   
+    
     /**
      * Lista melyben az egyes elemekhez tartozo {@link viewElem} tipusu
      * objektumokat taroljuk
@@ -187,7 +192,6 @@ public class boardView extends JPanel implements MouseListener {
 
         ViewList = new ArrayList<viewElem>();
 
-        maxy = 0;
         /*
          * Egy kettos forach-csel bejarjuk a ComponentListet. (azert foreach-re
          * irtam at a for(int i...)-t mert igy kisebb)
@@ -245,14 +249,7 @@ public class boardView extends JPanel implements MouseListener {
                 //g2.drawRenderedImage(img, new AffineTransform());
                 g2.drawImage(img, x, y, this);
 
-                /*
-                 * Ha ez a legmelyebben fekvo elem, akkor modositani kell a maxy
-                 * koordinatat a feedback kirajzolasahoz.
-                 */
-                if (y > maxy) {
-                    maxy = y;
-                }
-
+             
 
                 if (obj.GetType().equals("Composit")) {
                     Composit comp = (Composit) (obj);
@@ -323,7 +320,15 @@ public class boardView extends JPanel implements MouseListener {
      * @param g a gafikai objektum ahova rajzolunk majd
      */
     private boolean drawWires(Graphics g) {
-        /* Grafikai inicializalas */
+        oszlopSzamlalo=new ArrayList<Integer>();
+        szintSzamlalo=new ArrayList<Integer>();
+    	for(int i=0; i<10;i++){
+    		oszlopSzamlalo.add(1);
+    		szintSzamlalo.add(1);
+    	}
+        
+        
+    	/* Grafikai inicializalas */
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -354,35 +359,66 @@ public class boardView extends JPanel implements MouseListener {
     }
 
     private void paintAWire(Graphics2D g, viewElem from, viewElem to, int value) {
-        int x;
-        int y;
-        x = from.X + 10;
-        y = from.Y;
+        
+    	int hanyadikFrom=(from.Y-200)/100; //hanyadik a szinten a from
+    	int hanyadikTo=(to.Y-200)/100; //hanyadik a szinten a to
+        int x=from.X + 5+ oszlopSzamlalo.get(hanyadikFrom)*3;
+        int y=from.Y;
+        int x1= to.X - 5 - oszlopSzamlalo.get(hanyadikTo)*3;
+    	int y1= from.szint * 100 + 175 + szintSzamlalo.get(from.szint)*3;
+    	int y2=to.Y;
 
+        
+        /**
+         *    from   x        x1      
+         * y  XX------   XX        
+         *           |     
+         * y1        ---------
+         *                   |
+         *               XX  |
+         *                   |       to
+         * y2                -------XX
+         *                   
+         */
+        
+        
         //from kis basza
         g.setPaint(Color.black);
-        g.drawLine(from.X, y, x, y);
+        g.drawLine(from.X, y, from.X+5, y);
 
         g.setPaint(Color.gray);
+        
         /* ha a Wire-ben van aram, a szin fekete */
         if (value > 0) {
             g.setPaint(Color.black);
         }
 
+        g.drawLine(from.X+5, y, x, y);
+        
         //ha szomsz�dok, sima vonal
         if (from.szint == to.szint - 1) {
-            g.drawLine(x, y, to.X - 10, to.Y);
+            g.drawLine(x, y, x1, y);
+            g.drawLine(x1, y, x1, y2);
+            oszlopSzamlalo.set(hanyadikTo, oszlopSzamlalo.get(hanyadikTo)+1);
+            //g.drawLine(x, y, x1, y2);
         } else {
-            g.drawLine(x, y, x, from.szint * 100 + 175);
-            g.drawLine(x, from.szint * 100 + 175, to.X - 10, from.szint * 100 + 175);
-            g.drawLine(to.X - 10, from.szint * 100 + 175, to.X - 10, to.Y);
+        	        	
+        	g.drawLine(x, y, x, y1);
+            g.drawLine(x, y1, x1, y1);
+            g.drawLine(x1, y1, x1, y2);
+        
+            oszlopSzamlalo.set(hanyadikFrom, oszlopSzamlalo.get(hanyadikFrom)+1);
+            oszlopSzamlalo.set(hanyadikTo, oszlopSzamlalo.get(hanyadikTo)+1);
+            szintSzamlalo.set(from.szint, szintSzamlalo.get(from.szint)+1);
+            
         }
+        
 
 
-
+        g.drawLine(x1, y2, to.X, to.Y);
         //to kis basza
         g.setPaint(Color.black);
-        g.drawLine(to.X - 10, to.Y, to.X, to.Y);
+        g.drawLine(to.X-5, to.Y, to.X, to.Y);
 
     }
 
