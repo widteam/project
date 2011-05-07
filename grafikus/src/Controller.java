@@ -2,44 +2,38 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 public class Controller implements ActionListener {
 
-    private int maxX = 500;
-    private int maxY = 500;
-
     /* a MODELL */
-    /** A modellt tartalmazï¿½ vï¿½ltozï¿½. */
+    /** A modellt tartalmazo valtozo. */
     DigitalBoard digitalboard;
 
     /* a VIEW */
     private boardView BoardView;
 
     /* Frame-k */
-    /** Az ablak, amelyben fut az alkalmazï¿½sunk. */
+    /** Az ablak, amelyben fut az alkalmazasunk. */
     JFrame frame;
 
     /* Timerek */
     /** A Timer delay-e */
     Integer delay = 1000;
-    /** A futtatï¿½s alatti idï¿½zï¿½tï¿½sï¿½rt felel. */
+    /** A futtatás alatti idozitesert felel */
     Timer timer;
 
     /* Gombok */
-    /** Rakattintva betï¿½lti a modellt (hï¿½lï¿½zatot). */
+    /** Rakattintva betolti a modellt (halozatot). */
     JButton loadBoardButton;
-    /** Rakattintva betï¿½lti a modellt (hï¿½lï¿½zatot). */
-    JButton loadSpecBoardButton;
-    /** Rakattintva futtatja a hï¿½lï¿½zatot. */
+    /** Rakattintva futtatja a halozatot. */
     JButton runButton;
-    /** Rakattintva megï¿½llï¿½tja a hï¿½lï¿½zat futï¿½sï¿½t. */
+    /** Rakattintva megallitja a halozat futasat. */
     JButton pauseButton;
-    /** Rakattintva alaphelyzetbe ï¿½llï¿½tja a hï¿½lï¿½zatot. */
+    /** Rakattintva alaphelyzetbe allitja a halozatot. */
     JButton stopButton;
     /** Rakattintva lepteti a halozatot */
     JButton stepButton;
@@ -48,12 +42,14 @@ public class Controller implements ActionListener {
     /** Ertek beirasa utan ENTER-re beallitja a Timer erteket */
     JTextField timerValueField;
     JPanel pane;
+    
     /* Listek */
     /**
      * A program lefutï¿½sa sorï¿½n elï¿½fordulï¿½ esemï¿½nyek jelzï¿½se a felhasznï¿½lï¿½ felï¿½.
      */
     JList eventList;
     DefaultListModel listModel = new DefaultListModel();
+    
     // ActionCommandek
     protected final static String LOAD_BOARD = "loadBoard";
     protected final static String LOAD_BOARD_1 = "loadBoard1";
@@ -66,17 +62,11 @@ public class Controller implements ActionListener {
     protected final static String TICK = "tick";
 
     public Controller() {
-        // A modell inicializï¿½lï¿½sa
+        // A modell inicializalasa
         digitalboard = new DigitalBoard();
-
-        // Kepernyo meretenek lekerese
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        maxX = screenSize.width;
-        maxY = screenSize.height;
 
         // a view inicializalasa
         BoardView = new boardView(digitalboard);
-        // BoardView.setSize(maxX, 300);
 
         // letrehozom a frame-t
         frame = new JFrame("DigitalCircuit Simulator  - WID");
@@ -88,7 +78,7 @@ public class Controller implements ActionListener {
         frame.setResizable(false);
 
         // Elemek letrehozasa
-	/* Timer */
+        /* Timer */
         timer = new Timer(delay, this);
 
         timer.setActionCommand(TICK);
@@ -100,15 +90,6 @@ public class Controller implements ActionListener {
         loadBoardButton.setActionCommand(LOAD_BOARD);
         loadBoardButton.setPreferredSize(buttonSize);
         loadBoardButton.addActionListener(
-                this);
-
-        /* Teszthez by csomï¿½k.. debugot segiti, ha van egy gyorsgomb */
-        loadSpecBoardButton = new JButton("Load1es", new ImageIcon(
-                "__KEP__HELYE__"));
-
-        loadSpecBoardButton.setActionCommand(LOAD_BOARD_1);
-        loadSpecBoardButton.setPreferredSize(buttonSize);
-        loadSpecBoardButton.addActionListener(
                 this);
 
         /* Run */
@@ -152,14 +133,16 @@ public class Controller implements ActionListener {
 
 
         eventList = new JList(listModel); // data has type Object[]
-        eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        eventList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        eventList.setVisibleRowCount(5);
-        eventList.setPreferredSize(
-                new Dimension(frame.getSize().width - 50, 100));
+        eventList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        eventList.setLayoutOrientation(JList.VERTICAL);
+         eventList.setVisibleRowCount(5);
+        //eventList.setPreferredSize(
+        //        new Dimension(frame.getSize().width - 50, 100));
         eventList.setBackground(Color.LIGHT_GRAY);
-
-
+        JScrollPane listScroller = new JScrollPane(eventList,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        	      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        listScroller.setPreferredSize(new Dimension(frame.getSize().width - 50, 100));
+        listScroller.setBorder(new LineBorder(Color.LIGHT_GRAY));
         JPanel buttonPanel = new JPanel();
 
         buttonPanel.setLayout(
@@ -185,7 +168,7 @@ public class Controller implements ActionListener {
         frame.add(BoardView, BorderLayout.CENTER);
         JPanel eventPanel = new JPanel();
 
-        eventPanel.add(eventList);
+        eventPanel.add(listScroller);
 
         eventPanel.setBackground(Color.LIGHT_GRAY);
 

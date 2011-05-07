@@ -285,11 +285,7 @@ public class boardView extends JPanel implements MouseListener {
                             }
                         }
                     }
-
-
-
                 }
-
 
                 /*
                  * Noveljuk a segedvaltozot ami megmondja hogy adott sinten
@@ -345,9 +341,6 @@ public class boardView extends JPanel implements MouseListener {
                 paintAWire(g2, from.getNextPinOut(), to.getNextPinIn(), wire.GetValue());
             }
         }
-
-
-
         return true;
     }
 

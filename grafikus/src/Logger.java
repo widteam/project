@@ -113,7 +113,7 @@ public class Logger {
 	private static void WriteToStandardOutput(String InputForLog){
 		System.out.println(InputForLog);
 		listModel.addElement(InputForLog);
-		if(listModel.size()>=5)
-			listModel.removeElement(listModel.firstElement());
+		/*if(listModel.size()>=5)
+			listModel.removeElement(listModel.firstElement());*/
 	}
 }

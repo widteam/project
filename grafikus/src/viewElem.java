@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
 /**
  * Seged view class az elemek megjelenitesehez. Tarolja az egyes elemek X, Y
  * koordintait, tovabba az elem ID-jet, amely a kapcsolatot jelenti az elem es a
@@ -21,6 +25,9 @@ public class viewElem {
 	private int pinInNo=0;
 	private int pinOuNo=0;
 	
+	private Icon LabelIcon;
+	private JLabel ImageContainer;
+	
 	/** Konstruktor. letrehozzuk az adott IDju elemhez tartozo View objektumot. */
 	public viewElem(int xa, int ya, int szinta, String ida) {
 		X = xa;
@@ -29,6 +36,8 @@ public class viewElem {
 		szint=szinta;
 		pins_in=new ArrayList<viewElem>();
 		pins_out=new ArrayList<viewElem>();
+		
+		ImageContainer = new JLabel(ID,new ImageIcon(), javax.swing.SwingConstants.RIGHT); 
 	}
 
 	public void addPinIn(viewElem e){
@@ -54,4 +63,14 @@ public class viewElem {
 		return pins_out.get(pinOuNo);
 	}
 	
+	public JLabel getImageContainer(){
+		return ImageContainer;
+	}
+	
+	public void setElemIcon(Icon ic){
+		LabelIcon = ic;
+		ImageContainer.setIcon(LabelIcon);
+		ImageContainer.setLocation(X,Y);
+	}
+
 }
