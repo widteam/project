@@ -3,17 +3,10 @@
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
-import java.awt.image.RescaleOp;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -60,7 +53,7 @@ public class boardView extends JPanel implements MouseListener {
             id++;
             images.put("ORGate", orGate);
 
-            Image generator = toolkit.getImage(getClass().getResource("images/generator.png"));
+            Image generator = toolkit.getImage(getClass().getResource("images/GENERATOR.png"));
             mediaTracker.addImage(generator, id);
             id++;
             images.put("GENERATOR", generator);
@@ -80,7 +73,7 @@ public class boardView extends JPanel implements MouseListener {
             id++;
             images.put("led", ledOn);
 
-            Image oscilloscope = toolkit.getImage(getClass().getResource("images/oscilloscope.png"));
+            Image oscilloscope = toolkit.getImage(getClass().getResource("images/OSCILLOSCOPE.png"));
             mediaTracker.addImage(oscilloscope, id);
             id++;
             images.put("Oscilloscope", oscilloscope);

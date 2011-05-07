@@ -1,365 +1,426 @@
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.*;
 
 public class Controller implements ActionListener {
 
-	private int maxX = 500;
-	private int maxY = 500;
+    private int maxX = 500;
+    private int maxY = 500;
 
-	/* a MODELL */
-	/** A modellt tartalmazó változó. */
-	DigitalBoard digitalboard;
+    /* a MODELL */
+    /** A modellt tartalmazï¿½ vï¿½ltozï¿½. */
+    DigitalBoard digitalboard;
 
-	/* a VIEW */
-	private boardView BoardView;
+    /* a VIEW */
+    private boardView BoardView;
 
-	/* Frame-k */
-	/** Az ablak, amelyben fut az alkalmazásunk. */
-	JFrame frame;
+    /* Frame-k */
+    /** Az ablak, amelyben fut az alkalmazï¿½sunk. */
+    JFrame frame;
 
-	/* Timerek */
-	/** A Timer delay-e */
-	int delay = 5000;
-	/** A futtatás alatti idõzítésért felel. */
-	Timer timer;
+    /* Timerek */
+    /** A Timer delay-e */
+    Integer delay = 1000;
+    /** A futtatï¿½s alatti idï¿½zï¿½tï¿½sï¿½rt felel. */
+    Timer timer;
 
-	/* Gombok */
-	/** Rakattintva betölti a modellt (hálózatot). */
-	JButton loadBoardButton;
-	/** Rakattintva betölti a modellt (hálózatot). */
-	JButton loadSpecBoardButton;
-	/** Rakattintva futtatja a hálózatot. */
-	JButton runButton;
-	/** Rakattintva megállítja a hálózat futását. */
-	JButton pauseButton;
-	/** Rakattintva alaphelyzetbe állítja a hálózatot. */
-	JButton stopButton;
-	/** Rakattintva lepteti a halozatot */
-	JButton stepButton;
-	/** Rakattintva kilep a programbol */
-	JButton exitButton;
+    /* Gombok */
+    /** Rakattintva betï¿½lti a modellt (hï¿½lï¿½zatot). */
+    JButton loadBoardButton;
+    /** Rakattintva betï¿½lti a modellt (hï¿½lï¿½zatot). */
+    JButton loadSpecBoardButton;
+    /** Rakattintva futtatja a hï¿½lï¿½zatot. */
+    JButton runButton;
+    /** Rakattintva megï¿½llï¿½tja a hï¿½lï¿½zat futï¿½sï¿½t. */
+    JButton pauseButton;
+    /** Rakattintva alaphelyzetbe ï¿½llï¿½tja a hï¿½lï¿½zatot. */
+    JButton stopButton;
+    /** Rakattintva lepteti a halozatot */
+    JButton stepButton;
+    /** Rakattintva kilep a programbol */
+    JButton exitButton;
+    /** Ertek beirasa utan ENTER-re beallitja a Timer erteket */
+    JTextField timerValueField;
+    JPanel pane;
+    /* Listek */
+    /**
+     * A program lefutï¿½sa sorï¿½n elï¿½fordulï¿½ esemï¿½nyek jelzï¿½se a felhasznï¿½lï¿½ felï¿½.
+     */
+    JList eventList;
+    DefaultListModel listModel = new DefaultListModel();
+    // ActionCommandek
+    protected final static String LOAD_BOARD = "loadBoard";
+    protected final static String LOAD_BOARD_1 = "loadBoard1";
+    protected final static String RUN_SIMULATION = "run";
+    protected final static String STOP_SIMULATION = "stop";
+    protected final static String PAUSE_SIMULATION = "pause";
+    protected final static String STEP = "stepComponents";
+    protected final static String EXIT = "exit";
+    protected final static String TIMER = "timerChanged";
+    protected final static String TICK = "tick";
 
-	JPanel pane;
-	/* Listek */
-	/**
-	 * A program lefutása során elõforduló események jelzése a felhasználó felé.
-	 */
-	JList eventList;
-	DefaultListModel listModel = new DefaultListModel();
+    public Controller() {
+        // A modell inicializï¿½lï¿½sa
+        digitalboard = new DigitalBoard();
 
-	// ActionCommandek
-	protected final static String LOAD_BOARD = "loadBoard";
-	protected final static String LOAD_BOARD_1 = "loadBoard1";
-	protected final static String RUN_SIMULATION = "run";
-	protected final static String STOP_SIMULATION = "stop";
-	protected final static String PAUSE_SIMULATION = "pause";
-	protected final static String STEP = "stepComponents";
-	protected final static String EXIT = "exit";
-	protected final static String TICK = "tick";
+        // Kepernyo meretenek lekerese
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        maxX = screenSize.width;
+        maxY = screenSize.height;
 
-	public Controller() {
-		// A modell inicializálása
-		digitalboard = new DigitalBoard();
-		// a view inicializalasa
-		BoardView = new boardView(digitalboard);
-		//BoardView.setSize(500, 500);
+        // a view inicializalasa
+        BoardView = new boardView(digitalboard);
+        // BoardView.setSize(maxX, 300);
 
-		// Kepernyo meretenek lekerese
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		maxX = screenSize.width;
-		maxY = screenSize.height;
+        // letrehozom a frame-t
+        frame = new JFrame("DigitalCircuit Simulator  - WID");
+        // ha bezarjuk reagaljon ra
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// Elemek letrehozasa
-		/* Timer */
-		timer = new Timer(delay, this);
-		timer.setActionCommand(TICK);
+        frame.setLayout(new BorderLayout());
+        frame.setSize(800, 700);
+        frame.setResizable(false);
 
-		/* Load Board */
-		loadBoardButton = new JButton("Load", new ImageIcon("__KEP__HELYE__"));
-		loadBoardButton.setActionCommand(LOAD_BOARD);
-		loadBoardButton.addActionListener(this);
+        // Elemek letrehozasa
+	/* Timer */
+        timer = new Timer(delay, this);
 
-		/* Teszthez by csomák.. debugot segiti, ha van egy gyorsgomb */
-		loadSpecBoardButton = new JButton("Load1es", new ImageIcon(
-				"__KEP__HELYE__"));
-		loadSpecBoardButton.setActionCommand(LOAD_BOARD_1);
-		loadSpecBoardButton.addActionListener(this);
+        timer.setActionCommand(TICK);
+        // Gombok merete
+        Dimension buttonSize = new Dimension(100, 30);
 
-		/* Run */
-		runButton = new JButton("Run", new ImageIcon("__KEP__HELYE__"));
-		runButton.setActionCommand(RUN_SIMULATION);
-		runButton.addActionListener(this);
+        /* Load Board */
+        loadBoardButton = new JButton("Load", new ImageIcon("__KEP__HELYE__"));
+        loadBoardButton.setActionCommand(LOAD_BOARD);
+        loadBoardButton.setPreferredSize(buttonSize);
+        loadBoardButton.addActionListener(
+                this);
 
-		/* Pause */
-		pauseButton = new JButton("Pause", new ImageIcon("__KEP__HELYE__"));
-		pauseButton.setActionCommand(PAUSE_SIMULATION);
-		pauseButton.addActionListener(this);
+        /* Teszthez by csomï¿½k.. debugot segiti, ha van egy gyorsgomb */
+        loadSpecBoardButton = new JButton("Load1es", new ImageIcon(
+                "__KEP__HELYE__"));
 
-		/* Stop */
-		stopButton = new JButton("Stop", new ImageIcon("__KEP__HELYE__"));
-		stopButton.setActionCommand(STOP_SIMULATION);
-		stopButton.addActionListener(this);
+        loadSpecBoardButton.setActionCommand(LOAD_BOARD_1);
+        loadSpecBoardButton.setPreferredSize(buttonSize);
+        loadSpecBoardButton.addActionListener(
+                this);
 
-		/* Exit */
-		exitButton = new JButton("Exit", new ImageIcon("__KEP__HELYE__"));
-		exitButton.setActionCommand(EXIT);
-		exitButton.addActionListener(this);
+        /* Run */
+        runButton = new JButton("Run", new ImageIcon("__KEP__HELYE__"));
+        runButton.setActionCommand(RUN_SIMULATION);
+        runButton.setPreferredSize(buttonSize);
+        runButton.addActionListener(
+                this);
 
-		/* Step Components */
-		stepButton = new JButton("Step", new ImageIcon("__KEP__HELYE__"));
-		stepButton.setActionCommand(STEP);
-		stepButton.addActionListener(this);
+        /* Pause */
+        pauseButton = new JButton("Pause", new ImageIcon("__KEP__HELYE__"));
+        pauseButton.setActionCommand(PAUSE_SIMULATION);
+        pauseButton.setPreferredSize(buttonSize);
+        pauseButton.addActionListener(this);
 
-		eventList = new JList(listModel); // data has type Object[]
-		eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		eventList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		eventList.setVisibleRowCount(-1);
+        /* Stop */
+        stopButton = new JButton("Stop", new ImageIcon("__KEP__HELYE__"));
+        stopButton.setActionCommand(STOP_SIMULATION);
+        stopButton.setPreferredSize(buttonSize);
+        stopButton.addActionListener(this);
 
-		// Panel letrehozasa
-		pane = new JPanel();
+        /* Exit */
+        exitButton = new JButton("Exit", new ImageIcon("__KEP__HELYE__"));
+        exitButton.setActionCommand(EXIT);
+        exitButton.setPreferredSize(buttonSize);
+        exitButton.addActionListener(this);
 
-		// panelhez hozzaadom az elemeket
-		BoardView.add(loadBoardButton);
-		BoardView.add(loadSpecBoardButton);
-		BoardView.add(runButton);
-		BoardView.add(pauseButton);
-		BoardView.add(stopButton);
-		BoardView.add(stopButton);
-		BoardView.add(exitButton);
-		BoardView.add(eventList);
+        /* Step Components */
+        stepButton = new JButton("Step", new ImageIcon("__KEP__HELYE__"));
+        stepButton.setActionCommand(STEP);
+        stepButton.setPreferredSize(buttonSize);
+        stepButton.addActionListener(this);
 
-		// letrehozom a frame-t
-		frame = new JFrame("DigitalCircuit Simulator  - WID");
-		// ha bezarjuk reagaljon ra
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        /* Timer value */
+        timerValueField = new JTextField();
+        timerValueField.setActionCommand(TIMER);
+        timerValueField.setPreferredSize(buttonSize);
+        timerValueField.setText(delay.toString());
+        timerValueField.addActionListener(this);
+        timerValueField.setHorizontalAlignment(JTextField.CENTER);
 
-		frame.add(BoardView);
 
-		frame.setSize(maxX, maxY);
+        eventList = new JList(listModel); // data has type Object[]
+        eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        eventList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        eventList.setVisibleRowCount(5);
+        eventList.setPreferredSize(
+                new Dimension(frame.getSize().width - 50, 100));
+        eventList.setBackground(Color.LIGHT_GRAY);
 
-		frame.setVisible(true);
 
-		Logger.logging_level = Logger.log_levels.MEDIUM;
-		Logger.listModel = listModel;
-	}
+        JPanel buttonPanel = new JPanel();
 
-	public void actionPerformed(ActionEvent event) {
+        buttonPanel.setLayout(
+                new FlowLayout());
+        buttonPanel.setComponentOrientation(
+                ComponentOrientation.LEFT_TO_RIGHT);
 
-		String command = event.getActionCommand();
-		String path = "";
+        buttonPanel.setBackground(Color.LIGHT_GRAY);
 
-		/* FILTER */
-		class BHDLFileFilter extends javax.swing.filechooser.FileFilter {
-			public boolean accept(java.io.File f) {
-				return f.isDirectory()
-						|| f.getName().toLowerCase().endsWith(".bhdl");
-			}
+        buttonPanel.add(loadBoardButton);
+        //buttonPanel.add(loadSpecBoardButton);
+        buttonPanel.add(runButton);
+        buttonPanel.add(pauseButton);
+        buttonPanel.add(stopButton);
+        buttonPanel.add(stepButton);
+        buttonPanel.add(exitButton);
+        buttonPanel.add(timerValueField);
 
-			public String getDescription() {
-				return "ButaHDL fajlok (*.bhdl)";
-			}
-		}
+        frame.add(buttonPanel, BorderLayout.NORTH);
 
-		if (command.equalsIgnoreCase("loadBoard1")) {
-			try {
-				digitalboard.LoadBoard("teszt4.bhdl");
-				Logger.Log(Logger.log_type.INFO, path + " is loaded");
-			} catch (IOException e2) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
-			} catch (ExceptionWrongBoard e2) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: WrongBoard: Rosszul formazott BHDL fajl!");
-			} catch (Exception e) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
-								+ e.toString() + " File: " + path);
-			} finally {
-				frame.repaint();
-			}
-		}
+        BoardView.setBackground(Color.WHITE);
 
-		if (command.equalsIgnoreCase("loadBoard")) {
-			/* FileBrowser letrehozasa a palya meghatarozasara */
-			JFileChooser chooser = new JFileChooser(new java.io.File("").getAbsolutePath());
-			chooser.setFileFilter(new BHDLFileFilter());
-			int rVal = chooser.showOpenDialog(frame);
-			if (rVal == JFileChooser.APPROVE_OPTION) {
-				path = chooser.getSelectedFile().getPath();
-				try {
-					digitalboard.LoadBoard(path);
-					Logger.Log(Logger.log_type.INFO, path + " is loaded");
-				} catch (IOException e2) {
-					Logger.Log(Logger.log_type.ERROR,
-							"x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
-				} catch (ExceptionWrongBoard e2) {
-					Logger.Log(Logger.log_type.ERROR,
-							"x Error: WrongBoard: Rosszul formazott BHDL fajl!");
-				} catch (Exception e) {
-					Logger.Log(Logger.log_type.ERROR,
-							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
-									+ e.toString() + " File: " + path);
-				} finally {
-					frame.repaint();
-				}
-			}
-			if (rVal == JFileChooser.CANCEL_OPTION) {
-				path = "";
-			}
-		}// end loadboard
-			// stepComponents [step]
-		else if (command.equalsIgnoreCase("stepComponents")) {
-			try {
-				if (digitalboard.GetStatus() != Status.STOPPED)
-					digitalboard.StepComponents();
-				Logger.Log(Logger.log_type.INFO,
-						"digitalboard circuit has stepped");
-			} catch (ExceptionElementHasNoInputs ehni) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: ElementHasNoInput: A megjelolt elemnek nincs bemenete! /Hiba itt: "
-								+ ehni.TheObject.GetName() + "/");
-			} catch (ExceptionElementNotConnected ehni) {
-				Logger.Log(
-						Logger.log_type.ERROR,
-						"i Warning: ElementHasNoOutput: Egy kimenettel rendelkezo elem nem csatlakozik tovabbi aramkori elemhez!/Hiba itt: "
-								+ ehni.TheObject.GetName() + "/");
-			} catch (ExceptionUnstableCircuit instab) {
-				Logger.Log(
-						Logger.log_type.ERROR,
-						"x Error: UnstableCircuit: Instabil aramkor, a szimulacio nem futtathato. /Hiba itt: "
-								+ instab.TheObject.GetName() + "/");
-			} catch (ExceptionWireHasMultipleInputs e) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: WireHasMultipleInputs: Nem egyertelmu Wire bemenet! /Hiba itt: "
-								+ e.TheObject.GetName() + "/");
-			} catch (ExceptionElementInputSize e) {
-				Logger.Log(
-						Logger.log_type.ERROR,
-						"x Error: UnstableCircuit: A megjelolt elem nem rendelkezik a megfelelo szamu bemenettel! /Hiba itt: "
-								+ e.TheObject.GetName() + "/");
-			} catch (ExceptionsWithConnection e) {
-				Logger.Log(
-						Logger.log_type.ERROR,
-						"x Error: ErrorWithConnections: Meghatarozhattalan hiba tortent az aramkori kapcsolatok letrehozasakor!");
-			} catch (NullPointerException e) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
-			} catch (Exception e) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
-								+ e.toString());
-			} finally {
-				frame.repaint();
-			}
-		}// end stepComponents
-			// run
-		else if (command.equalsIgnoreCase("run")) {
-			digitalboard.Run();
-			timer.start();
-			Logger.Log(Logger.log_type.INFO, "Simulation started.");
-			frame.repaint();
-		}
+        frame.add(BoardView, BorderLayout.CENTER);
+        JPanel eventPanel = new JPanel();
 
-		// pause
-		else if (command.equalsIgnoreCase("pause")) {
-			Logger.Log(Logger.log_type.INFO, "Simulation is not running");
-			digitalboard.Pause();
-			frame.repaint();
-		}
-		// Stop
-		else if (command.equalsIgnoreCase("stop")) {
-			try {
-				digitalboard.LoadBoard(path);
-				Logger.Log(Logger.log_type.INFO, path + " is loaded");
-			} catch (IOException e2) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
-			} catch (ExceptionWrongBoard e2) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: WrongBoard: Rosszul formazott BHDL fajl!");
-			} catch (Exception e) {
-				Logger.Log(Logger.log_type.ERROR,
-						"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
-								+ e.toString() + " File: " + path);
-			}
-			timer.stop();
-			Logger.Log(Logger.log_type.INFO, "Simulation stopped");
-			frame.repaint();
-		}
-		// tick
-		else if (command.equalsIgnoreCase("tick")) {
-			if (digitalboard.GetStatus() == Status.RUNNING) {
-				try {
-					digitalboard.StepComponents();
-				} catch (ExceptionElementHasNoInputs ehni) {
-					Logger.Log(Logger.log_type.ERROR,
-							"x Error: ElementHasNoInput: A megjelolt elemnek nincs bemenete! /Hiba itt: "
-									+ ehni.TheObject.GetName() + "/");
-					digitalboard.Stop();
-					timer.stop();
+        eventPanel.add(eventList);
 
-				} catch (ExceptionElementNotConnected ehni) {
-					Logger.Log(
-							Logger.log_type.ERROR,
-							"i Warning: ElementHasNoOutput: Egy kimenettel rendelkezo elem nem csatlakozik tovabbi aramkori elemhez!/Hiba itt: "
-									+ ehni.TheObject.GetName() + "/");
-					digitalboard.Stop();
-					timer.stop();
+        eventPanel.setBackground(Color.LIGHT_GRAY);
 
-				} catch (ExceptionUnstableCircuit instab) {
-					Logger.Log(
-							Logger.log_type.ERROR,
-							"x Error: UnstableCircuit: Instabil aramkor, a szimulacio nem futtathato. /Hiba itt: "
-									+ instab.TheObject.GetName() + "/");
-					digitalboard.Stop();
-					timer.stop();
+        frame.add(eventPanel, BorderLayout.SOUTH);
 
-				} catch (ExceptionWireHasMultipleInputs e) {
-					Logger.Log(Logger.log_type.ERROR,
-							"x Error: WireHasMultipleInputs: Nem egyertelmu Wire bemenet! /Hiba itt: "
-									+ e.TheObject.GetName() + "/");
-					digitalboard.Stop();
-					timer.stop();
+        frame.setVisible(
+                true);
 
-				} catch (ExceptionElementInputSize e) {
-					Logger.Log(
-							Logger.log_type.ERROR,
-							"x Error: UnstableCircuit: A megjelolt elem nem rendelkezik a megfelelo szamu bemenettel! /Hiba itt: "
-									+ e.TheObject.GetName() + "/");
-					digitalboard.Stop();
-					timer.stop();
+        Logger.logging_level = Logger.log_levels.MEDIUM;
+        Logger.listModel = listModel;
+    }
 
-				} catch (ExceptionsWithConnection e) {
-					Logger.Log(
-							Logger.log_type.ERROR,
-							"x Error: ErrorWithConnections: Meghatarozhattalan hiba tortent az aramkori kapcsolatok letrehozasakor!");
-					digitalboard.Stop();
-					timer.stop();
+    @Override
+    public void actionPerformed(ActionEvent event) {
 
-				} catch (NullPointerException e) {
-					Logger.Log(Logger.log_type.ERROR,
-							"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
-					timer.stop();
+        String command = event.getActionCommand();
+        String path = "";
 
-				} catch (Exception e) {
-					Logger.Log(Logger.log_type.ERROR,
-							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
-									+ e.toString());
-					digitalboard.Stop();
-					timer.stop();
+        /* FILTER */
+        class BHDLFileFilter extends javax.swing.filechooser.FileFilter {
 
-				} finally {
-					frame.repaint();
-				}// end try
-			}// end if board==running
-			else if (command.equalsIgnoreCase("exit")) {
-				System.exit(1);
-				frame.repaint();
-			}
-		}// end tick
-	}
+            @Override
+            public boolean accept(java.io.File f) {
+                return f.isDirectory()
+                        || f.getName().toLowerCase().endsWith(".bhdl");
+            }
+
+            @Override
+            public String getDescription() {
+                return "ButaHDL fajlok (*.bhdl)";
+            }
+        }
+
+        if (command.equalsIgnoreCase("exit")) {
+            System.exit(0);
+        }
+
+
+        if (command.equalsIgnoreCase("loadBoard1")) {
+            try {
+                digitalboard.LoadBoard("teszt4.bhdl");
+                Logger.Log(Logger.log_type.INFO, path + " is loaded");
+            } catch (IOException e2) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
+            } catch (ExceptionWrongBoard e2) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: WrongBoard: Rosszul formazott BHDL fajl!");
+            } catch (Exception e) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
+                        + e.toString() + " File: " + path);
+            } finally {
+                frame.repaint();
+            }
+        }
+
+        if (command.equalsIgnoreCase("loadBoard")) {
+            /* FileBrowser letrehozasa a palya meghatarozasara */
+            JFileChooser chooser = new JFileChooser(new java.io.File("").getAbsolutePath());
+            chooser.setFileFilter(new BHDLFileFilter());
+            int rVal = chooser.showOpenDialog(frame);
+            if (rVal == JFileChooser.APPROVE_OPTION) {
+                path = chooser.getSelectedFile().getPath();
+                try {
+                    digitalboard.LoadBoard(path);
+                    Logger.Log(Logger.log_type.INFO, path + " is loaded");
+                } catch (IOException e2) {
+                    Logger.Log(Logger.log_type.ERROR,
+                            "x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
+                } catch (ExceptionWrongBoard e2) {
+                    Logger.Log(Logger.log_type.ERROR,
+                            "x Error: WrongBoard: Rosszul formazott BHDL fajl!");
+                } catch (Exception e) {
+                    Logger.Log(Logger.log_type.ERROR,
+                            "x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
+                            + e.toString() + " File: " + path);
+                } finally {
+                    frame.repaint();
+                }
+            }
+            if (rVal == JFileChooser.CANCEL_OPTION) {
+                path = "";
+            }
+        }// end loadboard
+        // stepComponents [step]
+        else if (command.equalsIgnoreCase("stepComponents")) {
+            try {
+                if (digitalboard.GetStatus() != Status.STOPPED) {
+                    digitalboard.StepComponents();
+                }
+                Logger.Log(Logger.log_type.INFO,
+                        "digitalboard circuit has stepped");
+            } catch (ExceptionElementHasNoInputs ehni) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: ElementHasNoInput: A megjelolt elemnek nincs bemenete! /Hiba itt: "
+                        + ehni.TheObject.GetName() + "/");
+            } catch (ExceptionElementNotConnected ehni) {
+                Logger.Log(
+                        Logger.log_type.ERROR,
+                        "i Warning: ElementHasNoOutput: Egy kimenettel rendelkezo elem nem csatlakozik tovabbi aramkori elemhez!/Hiba itt: "
+                        + ehni.TheObject.GetName() + "/");
+            } catch (ExceptionUnstableCircuit instab) {
+                Logger.Log(
+                        Logger.log_type.ERROR,
+                        "x Error: UnstableCircuit: Instabil aramkor, a szimulacio nem futtathato. /Hiba itt: "
+                        + instab.TheObject.GetName() + "/");
+            } catch (ExceptionWireHasMultipleInputs e) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: WireHasMultipleInputs: Nem egyertelmu Wire bemenet! /Hiba itt: "
+                        + e.TheObject.GetName() + "/");
+            } catch (ExceptionElementInputSize e) {
+                Logger.Log(
+                        Logger.log_type.ERROR,
+                        "x Error: UnstableCircuit: A megjelolt elem nem rendelkezik a megfelelo szamu bemenettel! /Hiba itt: "
+                        + e.TheObject.GetName() + "/");
+            } catch (ExceptionsWithConnection e) {
+                Logger.Log(
+                        Logger.log_type.ERROR,
+                        "x Error: ErrorWithConnections: Meghatarozhattalan hiba tortent az aramkori kapcsolatok letrehozasakor!");
+            } catch (NullPointerException e) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
+            } catch (Exception e) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
+                        + e.toString());
+            } finally {
+                frame.repaint();
+            }
+        }// end stepComponents
+        // run
+        else if (command.equalsIgnoreCase("run")) {
+            digitalboard.Run();
+            timer.start();
+            Logger.Log(Logger.log_type.INFO, "Simulation started.");
+            frame.repaint();
+        } // pause
+        else if (command.equalsIgnoreCase("pause")) {
+            Logger.Log(Logger.log_type.INFO, "Simulation is not running");
+            digitalboard.Pause();
+            frame.repaint();
+        } // Stop
+        else if (command.equalsIgnoreCase("stop")) {
+            try {
+                digitalboard.LoadBoard(path);
+                Logger.Log(Logger.log_type.INFO, path + " is loaded");
+            } catch (IOException e2) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
+            } catch (ExceptionWrongBoard e2) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: WrongBoard: Rosszul formazott BHDL fajl!");
+            } catch (Exception e) {
+                Logger.Log(Logger.log_type.ERROR,
+                        "x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
+                        + e.toString() + " File: " + path);
+            }
+            timer.stop();
+            Logger.Log(Logger.log_type.INFO, "Simulation stopped");
+            frame.repaint();
+        } else if (command.equalsIgnoreCase("timerChanged")) {
+            
+            try {
+                timer.setDelay(Integer.parseInt(timerValueField.getText()));
+            } catch (Exception e) {
+                timer.setDelay(5000);
+            }
+
+        }// tick
+        else if (command.equalsIgnoreCase("tick")) {
+            if (digitalboard.GetStatus() == Status.RUNNING) {
+                try {
+                    digitalboard.StepComponents();
+                } catch (ExceptionElementHasNoInputs ehni) {
+                    Logger.Log(Logger.log_type.ERROR,
+                            "x Error: ElementHasNoInput: A megjelolt elemnek nincs bemenete! /Hiba itt: "
+                            + ehni.TheObject.GetName() + "/");
+                    digitalboard.Stop();
+                    timer.stop();
+
+                } catch (ExceptionElementNotConnected ehni) {
+                    Logger.Log(
+                            Logger.log_type.ERROR,
+                            "i Warning: ElementHasNoOutput: Egy kimenettel rendelkezo elem nem csatlakozik tovabbi aramkori elemhez!/Hiba itt: "
+                            + ehni.TheObject.GetName() + "/");
+                    digitalboard.Stop();
+                    timer.stop();
+
+                } catch (ExceptionUnstableCircuit instab) {
+                    Logger.Log(
+                            Logger.log_type.ERROR,
+                            "x Error: UnstableCircuit: Instabil aramkor, a szimulacio nem futtathato. /Hiba itt: "
+                            + instab.TheObject.GetName() + "/");
+                    digitalboard.Stop();
+                    timer.stop();
+
+                } catch (ExceptionWireHasMultipleInputs e) {
+                    Logger.Log(Logger.log_type.ERROR,
+                            "x Error: WireHasMultipleInputs: Nem egyertelmu Wire bemenet! /Hiba itt: "
+                            + e.TheObject.GetName() + "/");
+                    digitalboard.Stop();
+                    timer.stop();
+
+                } catch (ExceptionElementInputSize e) {
+                    Logger.Log(
+                            Logger.log_type.ERROR,
+                            "x Error: UnstableCircuit: A megjelolt elem nem rendelkezik a megfelelo szamu bemenettel! /Hiba itt: "
+                            + e.TheObject.GetName() + "/");
+                    digitalboard.Stop();
+                    timer.stop();
+
+                } catch (ExceptionsWithConnection e) {
+                    Logger.Log(
+                            Logger.log_type.ERROR,
+                            "x Error: ErrorWithConnections: Meghatarozhattalan hiba tortent az aramkori kapcsolatok letrehozasakor!");
+                    digitalboard.Stop();
+                    timer.stop();
+
+                } catch (NullPointerException e) {
+                    Logger.Log(Logger.log_type.ERROR,
+                            "x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
+                    timer.stop();
+
+                } catch (Exception e) {
+                    Logger.Log(Logger.log_type.ERROR,
+                            "x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
+                            + e.toString());
+                    digitalboard.Stop();
+                    timer.stop();
+
+                } finally {
+                    frame.repaint();
+                }// end try
+            }
+        }// end tick
+    }
 }
