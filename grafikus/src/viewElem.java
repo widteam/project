@@ -1,8 +1,8 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.util.ArrayList;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * Seged view class az elemek megjelenitesehez. Tarolja az egyes elemek X, Y
@@ -25,8 +25,27 @@ public class viewElem {
 	private int pinInNo=0;
 	private int pinOuNo=0;
 	
-	private Icon LabelIcon;
-	public JLabel ImageContainer;
+	
+
+	public class ImagePanel extends JPanel{
+		private static final long serialVersionUID = -8103459490901853605L;
+		private Image img;		
+	    public void paintComponent(Graphics g) {
+	    	super.paintComponents(g);
+	    	this.setBackground(Color.WHITE);
+	        g.drawImage(img, 0, 0, null);
+	    }
+	    
+	    public void refreshImage(Image im){
+	    	img=im;
+	    	int width = img.getWidth(null);
+	        int height = img.getHeight(null);	        
+	        this.setSize(width, height);
+	        repaint();
+	    }
+	}
+
+	public ImagePanel ImageContainer;
 	
 	/** Konstruktor. letrehozzuk az adott IDju elemhez tartozo View objektumot. */
 	public viewElem(int xa, int ya, int szinta, String ida) {
@@ -37,8 +56,9 @@ public class viewElem {
 		pins_in=new ArrayList<viewElem>();
 		pins_out=new ArrayList<viewElem>();
 		
-		ImageContainer = new JLabel(new ImageIcon(), javax.swing.SwingConstants.RIGHT); 
+		ImageContainer = new ImagePanel(); 
 		ImageContainer.setName(ID);
+		
 	}
 
 	public void addPinIn(viewElem e){
@@ -62,16 +82,6 @@ public class viewElem {
 		if(pins_out.size()==0) 
 			return null;
 		return pins_out.get(pinOuNo);
-	}
-	
-	public JLabel getImageContainer(){
-		return ImageContainer;
-	}
-	
-	public void setElemIcon(Icon ic){
-		LabelIcon = ic;
-		ImageContainer.setIcon(LabelIcon);
-		ImageContainer.setLocation(X,Y);
 	}
 
 }
