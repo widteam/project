@@ -387,37 +387,44 @@ public class Controller implements ActionListener,MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		String tmp="";
-		tmp = arg0.getComponent().getName();
-		if(tmp!=null && !tmp.equalsIgnoreCase("null")){
-			DigitalObject o=digitalboard.GetElementByID(tmp);
-			if(o.GetType().equalsIgnoreCase("switch")){
+		String tmpID = "";
+		tmpID = arg0.getComponent().getName();
+		if (tmpID != null && !tmpID.equalsIgnoreCase("null")) {
+			String tipus = tmpID.split("#")[1].trim();
+			if (tipus.equalsIgnoreCase("switch")) {
+				try {
+					digitalboard.Toggle(tmpID);
+				} catch (ExceptionObjectNotFound e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				frame.repaint();
+			} else if (tipus.equalsIgnoreCase("oscilloscope")) {
+				 JOptionPane.showMessageDialog(frame,
+				 "Ez bizony egy OSCILLOSCOPE!", "Kattintas az alabbira:",
+				 JOptionPane.INFORMATION_MESSAGE);
+				 
+			} else if (tipus.equalsIgnoreCase("generator")) {
+				String inputValue = JOptionPane.showInputDialog("Kerem, adja meg a generator ("+tmpID+") uj erteket!");
+			    while(inputValue == null || inputValue.isEmpty() || !inputValue.matches("[0-1]*"))
+			    {
+			        inputValue = JOptionPane.showInputDialog("Kerem, adja meg a generator ("+tmpID+") uj erteket!");
+			    }
+			    try {
+					digitalboard.SetSequence(inputValue, tmpID);
+				} catch (ExceptionObjectNotFound e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				JOptionPane.showMessageDialog(frame,
-					    "Ez bizony egy SWITCH!",
-					    "Kattintas az alabbira:",
-					    JOptionPane.INFORMATION_MESSAGE);
-			}
-			else if(o.GetType().equalsIgnoreCase("oscilloscope")){
+						"Ez bizony egy GENERATOR!", "Kattintas az alabbira:",
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
 				JOptionPane.showMessageDialog(frame,
-					    "Ez bizony egy OSCILLOSCOPE!",
-					    "Kattintas az alabbira:",
-					    JOptionPane.INFORMATION_MESSAGE);
+						"Ez bizony nem allithato...!\n" + tmpID,
+						"Kattintas az alabbira:", JOptionPane.WARNING_MESSAGE);
 			}
-			else if(o.GetType().equalsIgnoreCase("generator")){
-				JOptionPane.showMessageDialog(frame,
-					    "Ez bizony egy GENERATOR!",
-					    "Kattintas az alabbira:",
-					    JOptionPane.INFORMATION_MESSAGE);
-			}
-			else{
-				JOptionPane.showMessageDialog(frame,
-					    "Ez bizony nem allithato...!\n" + o.GetID(),
-					    "Kattintas az alabbira:",
-					    JOptionPane.WARNING_MESSAGE);
-			}
-			
 
-			
 		}
 		
 	}
