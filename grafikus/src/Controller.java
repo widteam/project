@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.swing.border.LineBorder;
 
@@ -60,8 +59,7 @@ public class Controller implements ActionListener,MouseListener {
     protected final static String EXIT = "exit";
     protected final static String TIMER = "timerChanged";
     protected final static String TICK = "tick";
-    protected final static String SET_SAMPLE_OK = "setSample";
-    protected final static String SET_SAMPLE_CANCEL = "setSampleCancel";
+
 
     // Gombok merete
     Dimension buttonSize = new Dimension(100, 30);
@@ -391,10 +389,13 @@ public class Controller implements ActionListener,MouseListener {
         }
     }
 
-	@Override
+	/**
+	 * Elkapjuk az eger esemenyeket. Azon belul jelenitunk meg popup windowokat...
+	 * az egyes popup windowok-hoz sajat actionListener tartoziK!
+	 */
 	public void mouseClicked(MouseEvent arg0) {
-		String tmpID = "";
-		tmpID = arg0.getComponent().getName();
+		
+		final String tmpID = arg0.getComponent().getName();
 		if (tmpID != null && !tmpID.equalsIgnoreCase("null")) {
 			String tipus = tmpID.split("#")[1].trim();
 			
@@ -419,7 +420,7 @@ public class Controller implements ActionListener,MouseListener {
 			else if (tipus.equalsIgnoreCase("oscilloscope")) {
 				
 				// letrehozzuk a popup paneljet es beallithgatjuk
-				JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
+				final JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
 				PopUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				PopUpFrame.setLayout(new BorderLayout());		        
 				PopUpFrame.setResizable(false);
@@ -474,15 +475,15 @@ public class Controller implements ActionListener,MouseListener {
 						}
 					}
 					public void paint(Graphics g) {
-						Graphics2D g2d = (Graphics2D) g;
-						// for antialising geometric shapes
+						Graphics2D g2d = (Graphics2D) g;						
 						g2d.addRenderingHints(new RenderingHints(
 								RenderingHints.KEY_ANTIALIASING,
-								RenderingHints.VALUE_ANTIALIAS_ON));
-						// for antialiasing text
+								RenderingHints.VALUE_ANTIALIAS_ON));					
 						g2d.setRenderingHint(
 								RenderingHints.KEY_TEXT_ANTIALIASING,
 								RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+						
+						
 						g.setColor(background);
 						//Rajzvaszon meretezese
 						g.fillRect(0, 0, canvas_width, canvas_height);
@@ -492,17 +493,43 @@ public class Controller implements ActionListener,MouseListener {
 				
 				Oscilloscope theOsc = (Oscilloscope) digitalboard.GetElementByID(tmpID);
 				JLabel lblInput = new JLabel("Kerem adja meg a tarolando minta nagysagat!\n");
-				JTextField txtSampleSize = new JTextField(theOsc.getSamples().length);
+				final JTextField txtSampleSize = new JTextField(theOsc.getSamples().length);
+				
+				
+				ActionListener PopUpListener = new ActionListener(){
+					public void actionPerformed(ActionEvent event){
+						String command = event.getActionCommand();
+				        if (command.equalsIgnoreCase("SET_SAMPLE_OK")) {
+				        	try {
+								digitalboard.SetSample(Integer.parseInt(txtSampleSize.getText()), tmpID);
+				        	} catch (ExceptionObjectNotFound e1) {
+								Logger.Log(Logger.log_type.ERROR,
+										"x ERROR: ObjectNotFound: Nincs elem a megadott azonositoval! /"
+												+ e1.ItemID + "/");
+							} catch (NullPointerException e) {
+								Logger.Log(Logger.log_type.ERROR,
+										"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
+							} catch (Exception e) {
+								Logger.Log(Logger.log_type.ERROR,
+										"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
+							}
+				        }
+				        else if(command.equalsIgnoreCase("SET_SAMPLE_CANCEL")){
+				        	PopUpFrame.dispose();
+				        }
+					}
+				};
+				
 				
 				JButton btnOK = new JButton("OK");
-				btnOK.setActionCommand(SET_SAMPLE_OK);
-				btnOK.setPreferredSize(buttonSize);
-				btnOK.addActionListener(this);
+				btnOK.setActionCommand("SET_SAMPLE_OK");
+				btnOK.setPreferredSize(buttonSize);	
+				btnOK.addActionListener(PopUpListener);
 				
 				JButton btnCancel = new JButton("Cancel"); 		      
-				btnCancel.setActionCommand(SET_SAMPLE_CANCEL);
+				btnCancel.setActionCommand("SET_SAMPLE_CANCEL");
 				btnCancel.setPreferredSize(buttonSize);
-				btnCancel.addActionListener(this);		        
+				btnCancel.addActionListener(PopUpListener);		        
 		        
 				Graph g = new Graph();
 				g.num_of_samples=theOsc.getSamples().length;
