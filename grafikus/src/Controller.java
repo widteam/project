@@ -427,6 +427,7 @@ public class Controller implements ActionListener,MouseListener {
 		        
 				/* A grafikon */
 				class Graph extends Canvas {
+					private static final long serialVersionUID = 1L;
 					public int num_of_samples = 10;
 					public int canvas_width=480;
 					public int canvas_height=80;
@@ -448,9 +449,9 @@ public class Controller implements ActionListener,MouseListener {
 						this.setSize(canvas_width+10, canvas_height+10);
 					}
 
-					private final Font font = new Font(
+					/*private final Font font = new Font(
 							"Tiresias PCFont Z", Font.PLAIN, 18);
-
+					 */
 					private void paintGrids(Graphics g){
 						g.setColor(interval1);
 						for (int i = 0; i <= canvas_width; i += v_interval1) {
@@ -523,12 +524,12 @@ public class Controller implements ActionListener,MouseListener {
 				
 				JButton btnOK = new JButton("OK");
 				btnOK.setActionCommand("SET_SAMPLE_OK");
-				btnOK.setPreferredSize(buttonSize);	
+				//btnOK.setPreferredSize(buttonSize);	
 				btnOK.addActionListener(PopUpListener);
 				
 				JButton btnCancel = new JButton("Cancel"); 		      
 				btnCancel.setActionCommand("SET_SAMPLE_CANCEL");
-				btnCancel.setPreferredSize(buttonSize);
+				//btnCancel.setPreferredSize(buttonSize);
 				btnCancel.addActionListener(PopUpListener);		        
 		        
 				Graph g = new Graph();
@@ -541,19 +542,22 @@ public class Controller implements ActionListener,MouseListener {
 				PopUpFrame.add(btnCancel);
 				
 				PopUpFrame.setSize(500,500);
-				PopUpFrame.setVisible(true);
 
+				PopUpFrame.setVisible(true);
+				PopUpFrame.setAlwaysOnTop(true);
+				PopUpFrame.requestFocus();
 				 
 			} 
 			/* generator: setfrequency, setsampl */
 			else if (tipus.equalsIgnoreCase("generator")) {
 				String inputValue = JOptionPane.showInputDialog("Kerem, adja meg a generator ("+tmpID+") uj erteket!");
-			    while(inputValue == null || inputValue.isEmpty() || !inputValue.matches("[0-1]*"))
+			    while(inputValue!=null && !inputValue.isEmpty() && !inputValue.matches("[0-1]*"))
 			    {
 			        inputValue = JOptionPane.showInputDialog("Kerem, adja meg a generator ("+tmpID+") uj erteket!");
 			    }
 			    try {
-					digitalboard.SetSequence(inputValue, tmpID);
+			    	if(inputValue!=null && !inputValue.isEmpty())
+			    		digitalboard.SetSequence(inputValue, tmpID);
 				} catch (ExceptionObjectNotFound e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
