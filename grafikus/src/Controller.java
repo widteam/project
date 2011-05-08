@@ -387,32 +387,42 @@ public class Controller implements ActionListener,MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		System.out.println(arg0.getComponent().getName());
-		
-	}
+		String tmp="";
+		tmp = arg0.getComponent().getName();
+		if(tmp!=null && !tmp.equalsIgnoreCase("null")){
+			DigitalObject o=digitalboard.GetElementByID(tmp);
+			if(o.GetType().equalsIgnoreCase("switch")){
+				JOptionPane.showMessageDialog(frame,
+					    "Ez bizony egy SWITCH!",
+					    "Kattintas az alabbira:",
+					    JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(o.GetType().equalsIgnoreCase("oscilloscope")){
+				JOptionPane.showMessageDialog(frame,
+					    "Ez bizony egy OSCILLOSCOPE!",
+					    "Kattintas az alabbira:",
+					    JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(o.GetType().equalsIgnoreCase("generator")){
+				JOptionPane.showMessageDialog(frame,
+					    "Ez bizony egy GENERATOR!",
+					    "Kattintas az alabbira:",
+					    JOptionPane.INFORMATION_MESSAGE);
+			}
+			else{
+				JOptionPane.showMessageDialog(frame,
+					    "Ez bizony nem allithato...!\n" + o.GetID(),
+					    "Kattintas az alabbira:",
+					    JOptionPane.WARNING_MESSAGE);
+			}
+			
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
+			
+		}
 		
 	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
 }

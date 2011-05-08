@@ -139,30 +139,7 @@ public class boardView extends JPanel {
         return null;
     }
 
-	private boolean createViewElemList() {
-		int szint = 0, hanyadikelem = 0; // Segedvaltozok a koordinatak
-		// kiszamolasahz.
 
-		if (digiBoard.getMainComposit() == null)
-			return false;
-		if (ViewList == null || ViewList.isEmpty() == false)
-			return false;
-
-		for (List<DigitalObject> SubList : digiBoard.getMainComposit()
-				.getComponentList()) {
-			for (DigitalObject obj : SubList) {
-				int x = szint * 150 + 200;
-				int y = hanyadikelem * 100 + 200;
-				viewElem current = new viewElem(x, y, szint, obj.GetID());
-				ViewList.add(current);
-				current.ImageContainer.addMouseListener(
-						this.getMouseListeners()[0]);
-				this.add(current.ImageContainer);
-			}
-		}
-		return true;
-	}
-	
 	/**
 	 * Fuggveny ami kirajzolja a ComponentListben talalhato elemeket.
 	 */
@@ -173,6 +150,7 @@ public class boardView extends JPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setPaint(Color.black);
 
+		ViewList = new ArrayList<viewElem>();
 		/*
 		 * Egy kettos forach-csel bejarjuk a ComponentListet. (azert foreach-re
 		 * irtam at a for(int i...)-t mert igy kisebb)
@@ -200,11 +178,9 @@ public class boardView extends JPanel {
 				 * koordinatajat tovabba az ID-jet , majd ezt az objektumot
 				 * hozzaadjuk a listahoz mely ezeket tarolja
 				 */
-				createViewElemList();
-				viewElem current = findInList(obj.GetID());
+				viewElem current = new viewElem(x, y, szint, obj.GetID());
+				ViewList.add(current);
 
-				if (current == null)
-					return false;
 
 				/* Kiirjuk hozza az objektum nevet is. */
 				if (obj.ID.contains("Composit")) {
@@ -281,9 +257,13 @@ public class boardView extends JPanel {
 						}
 					}
 
-					Icon ic = new ImageIcon(img);
-					current.ImageContainer.setIcon(ic);
+				
+					
 					current.ImageContainer.setLocation(x, y);
+					current.ImageContainer.refreshImage(img);
+					current.ImageContainer.addMouseListener(
+							this.getMouseListeners()[0]);					
+					this.add(current.ImageContainer);
 				}
 
 				/*
@@ -344,7 +324,6 @@ public class boardView extends JPanel {
     }
 
     private void paintAWire(Graphics2D g, viewElem from, viewElem to, int value) {
-        
     	int hanyadikFrom=(from.Y-200)/100; //hanyadik a szinten a from
     	int hanyadikTo=(to.Y-200)/100; //hanyadik a szinten a to
         int x=from.X + 5+ oszlopSzamlalo.get(hanyadikFrom)*3;
@@ -404,13 +383,15 @@ public class boardView extends JPanel {
         //to kis basza
         g.setPaint(Color.black);
         g.drawLine(to.X-5, to.Y, to.X, to.Y);
-
     }
 
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if(drawComponentList(g))
-        	drawWires(g);
-        	
+    	this.removeAll();
+        super.paintComponent(g);       
+        drawComponentList(g);
+        drawWires(g);        	
+        
+       // RepaintManager.setCurrentManager(new RepaintManager());
+      	
     }
 }
