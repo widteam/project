@@ -138,4 +138,12 @@ public class Oscilloscope extends Output {
 			throw new ExceptionWrongParameter(this);
 		}
 	}
+	public int[] getSamples(){
+		int i = 0;
+		int[] returnvalue = new int[Samples.size()] ;
+		Iterator<Integer> it = Samples.iterator();
+		while(it.hasNext())
+			returnvalue[i++] = (int)it.next();
+		return returnvalue;
+	}
 }
