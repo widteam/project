@@ -170,7 +170,7 @@ public class boardView extends JPanel {
 				 * elem(hanyadikelem), hogy ne csusszanak ossze
 				 */
 				int x = szint * 150 + 200;
-				int y = hanyadikelem * 100 + 200;
+				int y = hanyadikelem * 100 + 50;
 
 				/*
 				 * Most letrehozzuk a ComponentList adott elemehez tartozo View
@@ -324,12 +324,12 @@ public class boardView extends JPanel {
     }
 
     private void paintAWire(Graphics2D g, viewElem from, viewElem to, int value) {
-    	int hanyadikFrom=(from.Y-200)/100; //hanyadik a szinten a from
-    	int hanyadikTo=(to.Y-200)/100; //hanyadik a szinten a to
+    	int hanyadikFrom=(from.Y-50)/100; //hanyadik a szinten a from
+    	int hanyadikTo=(to.Y-50)/100; //hanyadik a szinten a to
         int x=from.X + 5+ oszlopSzamlalo.get(hanyadikFrom)*3;
         int y=from.Y;
         int x1= to.X - 5 - oszlopSzamlalo.get(hanyadikTo)*3;
-    	int y1= from.szint * 100 + 175 + szintSzamlalo.get(from.szint)*3;
+    	int y1= from.szint * 100 + 25 + szintSzamlalo.get(from.szint)*3;
     	int y2=to.Y;
 
         
