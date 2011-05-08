@@ -26,7 +26,7 @@ public class viewElem {
 	private int pinOuNo=0;
 	
 	private Icon LabelIcon;
-	private JLabel ImageContainer;
+	public JLabel ImageContainer;
 	
 	/** Konstruktor. letrehozzuk az adott IDju elemhez tartozo View objektumot. */
 	public viewElem(int xa, int ya, int szinta, String ida) {
@@ -37,7 +37,8 @@ public class viewElem {
 		pins_in=new ArrayList<viewElem>();
 		pins_out=new ArrayList<viewElem>();
 		
-		ImageContainer = new JLabel(ID,new ImageIcon(), javax.swing.SwingConstants.RIGHT); 
+		ImageContainer = new JLabel(new ImageIcon(), javax.swing.SwingConstants.RIGHT); 
+		ImageContainer.setName(ID);
 	}
 
 	public void addPinIn(viewElem e){

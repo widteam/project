@@ -1,13 +1,13 @@
-
 import java.awt.*;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
-
-import javax.swing.*;
 import javax.swing.border.LineBorder;
 
-public class Controller implements ActionListener {
+public class Controller implements ActionListener,MouseListener {
 
     /* a MODELL */
     /** A modellt tartalmazo valtozo. */
@@ -45,7 +45,7 @@ public class Controller implements ActionListener {
     
     /* Listek */
     /**
-     * A program lefut�sa sor�n el�fordul� esem�nyek jelz�se a felhaszn�l� fel�.
+     * A program lefutasa soran elofordulo esemenyek jelzese a felhasznalo fele.
      */
     JList eventList;
     DefaultListModel listModel = new DefaultListModel();
@@ -67,7 +67,7 @@ public class Controller implements ActionListener {
 
         // a view inicializalasa
         BoardView = new boardView(digitalboard);
-
+        BoardView.addMouseListener(this);
         // letrehozom a frame-t
         frame = new JFrame("DigitalCircuit Simulator  - WID");
         // ha bezarjuk reagaljon ra
@@ -135,14 +135,14 @@ public class Controller implements ActionListener {
         eventList = new JList(listModel); // data has type Object[]
         eventList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         eventList.setLayoutOrientation(JList.VERTICAL);
-         eventList.setVisibleRowCount(5);
-        //eventList.setPreferredSize(
-        //        new Dimension(frame.getSize().width - 50, 100));
+        eventList.setVisibleRowCount(5);
         eventList.setBackground(Color.LIGHT_GRAY);
         JScrollPane listScroller = new JScrollPane(eventList,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
         	      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         listScroller.setPreferredSize(new Dimension(frame.getSize().width - 50, 100));
         listScroller.setBorder(new LineBorder(Color.LIGHT_GRAY));
+        
+        
         JPanel buttonPanel = new JPanel();
 
         buttonPanel.setLayout(
@@ -153,7 +153,6 @@ public class Controller implements ActionListener {
         buttonPanel.setBackground(Color.LIGHT_GRAY);
 
         buttonPanel.add(loadBoardButton);
-        //buttonPanel.add(loadSpecBoardButton);
         buttonPanel.add(runButton);
         buttonPanel.add(pauseButton);
         buttonPanel.add(stopButton);
@@ -181,7 +180,6 @@ public class Controller implements ActionListener {
         Logger.listModel = listModel;
     }
 
-    @Override
     public void actionPerformed(ActionEvent event) {
 
         String command = event.getActionCommand();
@@ -190,39 +188,15 @@ public class Controller implements ActionListener {
         /* FILTER */
         class BHDLFileFilter extends javax.swing.filechooser.FileFilter {
 
-            @Override
+            
             public boolean accept(java.io.File f) {
                 return f.isDirectory()
                         || f.getName().toLowerCase().endsWith(".bhdl");
             }
 
-            @Override
+           
             public String getDescription() {
                 return "ButaHDL fajlok (*.bhdl)";
-            }
-        }
-
-        if (command.equalsIgnoreCase("exit")) {
-            System.exit(0);
-        }
-
-
-        if (command.equalsIgnoreCase("loadBoard1")) {
-            try {
-                digitalboard.LoadBoard("teszt4.bhdl");
-                Logger.Log(Logger.log_type.INFO, path + " is loaded");
-            } catch (IOException e2) {
-                Logger.Log(Logger.log_type.ERROR,
-                        "x Error: FileNotFound: Nem olvashato a megadott bemeneti fajl.");
-            } catch (ExceptionWrongBoard e2) {
-                Logger.Log(Logger.log_type.ERROR,
-                        "x Error: WrongBoard: Rosszul formazott BHDL fajl!");
-            } catch (Exception e) {
-                Logger.Log(Logger.log_type.ERROR,
-                        "x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
-                        + e.toString() + " File: " + path);
-            } finally {
-                frame.repaint();
             }
         }
 
@@ -405,5 +379,40 @@ public class Controller implements ActionListener {
                 }// end try
             }
         }// end tick
+        //exit
+        else if (command.equalsIgnoreCase("exit")) {
+            System.exit(0);
+        }
     }
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println(arg0.getComponent().getName());
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
