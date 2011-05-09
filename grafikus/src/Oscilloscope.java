@@ -138,6 +138,10 @@ public class Oscilloscope extends Output {
 			throw new ExceptionWrongParameter(this);
 		}
 	}
+	/**
+	 * Getter metodus a tarolt mintahoz
+	 * @return a tarolt minta
+	 */
 	public int[] getSamples(){
 		int i = 0;
 		int[] returnvalue = new int[Samples.size()] ;
@@ -147,6 +151,10 @@ public class Oscilloscope extends Output {
 		return returnvalue;
 	}
 	
+	/**
+	 * Visszaadja, hogy mekkora minta tarolasa van beallitva
+	 * @return a tarolt minta maximuma
+	 */
 	public int getSampleSize(){
 		return SampleSize;
 	}

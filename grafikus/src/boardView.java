@@ -195,7 +195,7 @@ public class boardView extends JPanel {
 				img = images.get(obj.GetType());
 
 				if (obj.GetType().equals("LED")
-						&& obj.wireIn.get(0).GetValue() > 0) {
+						&& obj.wireIn.get(0).GetValue(false) > 0) {
 					img = images.get("led");
 				} else if (obj.GetType().equals("SWITCH")
 						&& ((SWITCH) (obj)).Value > 0) {

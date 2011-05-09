@@ -208,9 +208,8 @@ public class DigitalBoard{
      * @param ElementID
      *            A SWITCH ID-ja
      * @throws ExceptionObjectNotFound 
-     * @throws ExceptionsWithConnection 
      */
-    public void Toggle(String ElementID) throws ExceptionObjectNotFound, ExceptionsWithConnection {
+    public void Toggle(String ElementID) throws ExceptionObjectNotFound{
     	Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's Toggle("+ElementID+")");
     	MainComposit.Toggle(ElementID);
     }

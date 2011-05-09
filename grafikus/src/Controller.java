@@ -1,4 +1,5 @@
 import java.awt.*;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -410,10 +411,6 @@ public class Controller implements ActionListener,MouseListener {
 				} catch (NullPointerException e) {
 					Logger.Log(Logger.log_type.ERROR,
 							"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
-				} catch (ExceptionsWithConnection e) {				
-					Logger.Log(Logger.log_type.ERROR,
-							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
-				
 				} catch (Exception e) {
 					Logger.Log(Logger.log_type.ERROR,
 							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
@@ -428,9 +425,11 @@ public class Controller implements ActionListener,MouseListener {
 				 ********************************************************/
 				class Graph extends Canvas {
 					private static final long serialVersionUID = 1L;
-					public int num_of_samples = 10;
+					private int num_of_samples = 10;
 					public int canvas_width=480;
 					public int canvas_height=80;
+					int[] values;
+					private int t=0;
 					
 					private int v_interval1  = canvas_width/num_of_samples/2;
 					private int v_interval2  = canvas_width/num_of_samples;
@@ -441,17 +440,26 @@ public class Controller implements ActionListener,MouseListener {
 					private final Color background = Color.WHITE;	
 					private final Color outline = Color.BLACK;
 					
-					private final Color interval1 = new Color(0, 0, 40);
-					private final Color interval2 = new Color(250, 128, 128);
-					
+					private final Color interval2 = new Color(0, 0, 40);
+					private final Color interval1 = new Color(250, 128, 128);
+					private final Color sign_color = new Color(40,150,20);
 					
 					public Graph(){
 						this.setSize(canvas_width+10, canvas_height+10);
 					}
-
+					public void setNumOfSamples(int size){
+						num_of_samples = size;
+						v_interval1  = canvas_width/num_of_samples/2;
+						v_interval2  = canvas_width/num_of_samples;
+						
+						h_interval1  = canvas_height/2/2;
+						h_interval2  = canvas_height/2;
+					}
+					
 					/*private final Font font = new Font(
 							"Tiresias PCFont Z", Font.PLAIN, 18);
 					 */
+					
 					private void paintGrids(Graphics g){
 						g.setColor(interval1);
 						for (int i = 0; i <= canvas_width; i += v_interval1) {
@@ -475,6 +483,28 @@ public class Controller implements ActionListener,MouseListener {
 							g.drawLine(0, i, canvas_width, i);
 						}
 					}
+					private void paintSign(Graphics g){
+						Graphics2D g2d = (Graphics2D) g;
+						g2d.setStroke(new BasicStroke(3F));
+						g2d.setColor(sign_color);
+						int y=canvas_height;
+						int prev_y=canvas_height;
+						 for(int i=0;i<values.length;i++){	
+							 // hova rajzoljunk, mlyen magassagba
+							 if(values[i]==1) y=h_interval2;
+							 else y=canvas_height;
+							 // vonal megrajzolasa
+							 g2d.drawLine(i*v_interval2, y, (i+1)*v_interval2, y);
+							 //most a fuggoleges vonal kell
+							 if(y==prev_y){
+								 ;
+							 }
+							 else{
+								 g2d.drawLine((i)*v_interval2, prev_y, (i)*v_interval2, y);
+							 }
+							 prev_y=y;							 
+						 }
+					}
 					public void paint(Graphics g) {
 						Graphics2D g2d = (Graphics2D) g;						
 						g2d.addRenderingHints(new RenderingHints(
@@ -489,6 +519,7 @@ public class Controller implements ActionListener,MouseListener {
 						//Rajzvaszon meretezese
 						g.fillRect(0, 0, canvas_width, canvas_height);
 						paintGrids(g);
+						paintSign(g);
 					}
 				}
 				/*************************************************************
@@ -496,7 +527,6 @@ public class Controller implements ActionListener,MouseListener {
 				 *************************************************************/
 				
 				
-						
 				/*letrehozzuk a popup paneljet es beallithgatjuk */
 				final JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
 				PopUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -507,9 +537,11 @@ public class Controller implements ActionListener,MouseListener {
 				Oscilloscope theOsc = (Oscilloscope) digitalboard.GetElementByID(tmpID);
 				
 				/* a grafikon panelsavja */
-				JPanel theGraphPanel = new JPanel();	
+				final JPanel theGraphPanel = new JPanel();	
+				
 				Graph g = new Graph();
-				g.num_of_samples=theOsc.getSamples().length;				
+				g.values=theOsc.getSamples();
+				g.setNumOfSamples(theOsc.getSampleSize());				
 				theGraphPanel.add(g);
 				
 				/* a felhasznaloi adatbevitelre felszolito elemek panelje */
@@ -544,8 +576,17 @@ public class Controller implements ActionListener,MouseListener {
 				        else if(command.equalsIgnoreCase("POPUP_CANCEL")){
 				        	PopUpFrame.dispose();
 				        }
+				        else  if(command.equalsIgnoreCase("REFRESH")){
+				        	theGraphPanel.repaint();
+				        }
 					}
 				};
+				
+			
+				Timer PopUpUpdater = new Timer(this.delay,PopUpListener);
+				PopUpUpdater.setActionCommand("REFRESH");
+				PopUpUpdater.start();
+				
 				/* a gombok letrehozasa, beregisztralva a popup action listenerehez */
 				JButton btnOK = new JButton("OK");
 				btnOK.setActionCommand("POPUP_OK");
@@ -600,7 +641,8 @@ public class Controller implements ActionListener,MouseListener {
 				theTextPanel.add(txtFrequency);
 				theTextPanel.add(lblInput2);		
 				
-				String inputValue2 = JOptionPane.showInputDialog(theTextPanel);
+				String inputValue2 = (String) JOptionPane.showInputDialog(BoardView, theTextPanel,"Generator Properties",
+						0, new ImageIcon(), null,theGen.getSequence());
 				String inputValue1 = txtFrequency.getText();
 			    try {
 			    	if(inputValue2!=null && !inputValue2.isEmpty())

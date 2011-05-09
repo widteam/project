@@ -26,12 +26,15 @@ public class viewElem {
 	private int pinOuNo=0;
 	
 	
-
+	/** Az elemhez tartozo kepet tartalmazo tarolo Component 
+	 * Override-olva a paintComponent 
+	 * es hozzaadva egy metodus, a refresImage(Image)
+	*/
 	public class ImagePanel extends JPanel{
 		private static final long serialVersionUID = -8103459490901853605L;
-		private Image img;		
+		private Image img;	
+		@Override
 	    public void paintComponent(Graphics g) {
-	    	super.paintComponents(g);
 	    	this.setBackground(Color.WHITE);
 	        g.drawImage(img, 0, 0, null);
 	    }

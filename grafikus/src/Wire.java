@@ -98,14 +98,9 @@ public class Wire {
 		Logger.Log(Logger.log_type.USER, "create "+this.GetName()+" ("+strClassName+").");
 	}
 
-	/** METODUSOK */
-
-
-
+	/* METODUSOK */
 	/**
 	 * A Wire objektum ertekenek lekerdezesere szolgalo metodus
-	 * 
-	 * @param
 	 * @return <i>A wire erteke</i>
 	 */
 	public int GetValue() {	
@@ -113,7 +108,22 @@ public class Wire {
 		Logger.Log(Logger.log_type.INFO, "<"+this.GetName()+"> value is "+Value);	
 		return Value;
 	};
-
+	/**
+	 * A Wire objektum ertekenek lekerdezesere szolgalo metodus
+	 * Ha van parametere  - barmi is legyen az erteke - nem logol.
+	 * @param
+	 * @return <i>A wire erteke</i>
+	 */
+	public int GetValue(boolean DoLog) {
+		if (DoLog) {
+			// LOGOLAS;
+			Logger.Log(Logger.log_type.INFO, "<" + this.GetName()
+					+ "> value is " + Value);
+			return Value;
+		} else {
+			return Value;
+		}
+	};
 	/**
 	 * A Wire objektum ertekenek beallitasara szolgalo metodus
 	 * 

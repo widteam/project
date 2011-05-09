@@ -44,15 +44,16 @@ public class SWITCH extends Input {
 	}
 	
 	/* METODUSOK */
-	/** A Value valtozo erteket allitja nullabol egybe, egybol nullaba 
-	 * @throws ExceptionsWithConnection */
-	public void Toggle() throws ExceptionsWithConnection {
+	/** A Value valtozo erteket allitja nullabol egybe, egybol nullaba */
+	public void Toggle() {
 		if (Value == 0)
 			Value = 1;
 		else
 			Value = 0;
 		
-		Step();
+		for (Wire OutPut : wireOut) {
+			OutPut.SetValue(Value);
+		}
 		// LOGOLAS;
 		Logger.Log(Logger.log_type.DEBUG, this.GetID()+" has been  toggled. New value is "+ Value);
 		Logger.Log(Logger.log_type.USER, this.GetName()+"'s value changed");
@@ -104,10 +105,8 @@ public class SWITCH extends Input {
 			Value=value;
 		else
 			Value = 0;
-
 		// LOGOLAS;
 		Logger.Log(Logger.log_type.DEBUG, this.GetID() + "set to "+Value );
-
 		return Value;
 	}
 }
