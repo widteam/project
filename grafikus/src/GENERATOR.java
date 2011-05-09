@@ -191,5 +191,10 @@ public class GENERATOR extends Input {
 		
 		return true; // A GENERATOR mindig igazzal ter vissza
 	};
-
+	public String getSequence(){
+		return Sequence;
+	}
+	public int getFrequency(){
+		return Frequency;
+	}
 }

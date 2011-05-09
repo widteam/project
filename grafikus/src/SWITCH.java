@@ -44,13 +44,15 @@ public class SWITCH extends Input {
 	}
 	
 	/* METODUSOK */
-	/** A Value valtozo erteket allitja nullabol egybe, egybol nullaba */
-	public void Toggle() {
+	/** A Value valtozo erteket allitja nullabol egybe, egybol nullaba 
+	 * @throws ExceptionsWithConnection */
+	public void Toggle() throws ExceptionsWithConnection {
 		if (Value == 0)
 			Value = 1;
 		else
 			Value = 0;
 		
+		Step();
 		// LOGOLAS;
 		Logger.Log(Logger.log_type.DEBUG, this.GetID()+" has been  toggled. New value is "+ Value);
 		Logger.Log(Logger.log_type.USER, this.GetName()+"'s value changed");

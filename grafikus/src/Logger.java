@@ -33,7 +33,7 @@ public class Logger {
 				else if(log_mode == 2){
 					WriteToFile(InputForLog);
 					WriteToStandardOutput(InputForLog);
-				}			
+				}	
 		}else if(logging_level == log_levels.MEDIUM){ 
 			if(prio == log_type.ERROR || prio == log_type.INFO || prio == log_type.USER ){
 					if(log_mode == 0){
@@ -73,6 +73,9 @@ public class Logger {
 							WriteToStandardOutput(InputForLog);
 						}	
 				}
+		}
+		if(prio == log_type.ERROR){
+			//
 		}
 	}
 	

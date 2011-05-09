@@ -146,4 +146,8 @@ public class Oscilloscope extends Output {
 			returnvalue[i++] = (int)it.next();
 		return returnvalue;
 	}
+	
+	public int getSampleSize(){
+		return SampleSize;
+	}
 }

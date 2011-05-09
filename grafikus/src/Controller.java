@@ -410,6 +410,10 @@ public class Controller implements ActionListener,MouseListener {
 				} catch (NullPointerException e) {
 					Logger.Log(Logger.log_type.ERROR,
 							"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
+				} catch (ExceptionsWithConnection e) {				
+					Logger.Log(Logger.log_type.ERROR,
+							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
+				
 				} catch (Exception e) {
 					Logger.Log(Logger.log_type.ERROR,
 							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
@@ -418,14 +422,10 @@ public class Controller implements ActionListener,MouseListener {
 			} 
 			/*Oscilloscope: setSize , show */
 			else if (tipus.equalsIgnoreCase("oscilloscope")) {
-				
-				// letrehozzuk a popup paneljet es beallithgatjuk
-				final JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
-				PopUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				PopUpFrame.setLayout(new BorderLayout());		        
-				PopUpFrame.setResizable(false);
-		        
-				/* A grafikon */
+
+				/********************************************************
+				 *  A grafikon 
+				 ********************************************************/
 				class Graph extends Canvas {
 					private static final long serialVersionUID = 1L;
 					public int num_of_samples = 10;
@@ -491,16 +491,41 @@ public class Controller implements ActionListener,MouseListener {
 						paintGrids(g);
 					}
 				}
+				/*************************************************************
+				 * Grafikon vége
+				 *************************************************************/
 				
+				
+						
+				/*letrehozzuk a popup paneljet es beallithgatjuk */
+				final JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
+				PopUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				PopUpFrame.setLayout(new BorderLayout());		        
+				PopUpFrame.setResizable(false);
+				
+				/* le kell catolnunk az oscilloscope-ot, hogy le tudjuk kerdezni az ertekeit*/
 				Oscilloscope theOsc = (Oscilloscope) digitalboard.GetElementByID(tmpID);
+				
+				/* a grafikon panelsavja */
+				JPanel theGraphPanel = new JPanel();	
+				Graph g = new Graph();
+				g.num_of_samples=theOsc.getSamples().length;				
+				theGraphPanel.add(g);
+				
+				/* a felhasznaloi adatbevitelre felszolito elemek panelje */
 				JLabel lblInput = new JLabel("Kerem adja meg a tarolando minta nagysagat!\n");
-				final JTextField txtSampleSize = new JTextField(theOsc.getSamples().length);
+				final JTextField txtSampleSize = new JTextField(String.valueOf(theOsc.getSampleSize()), 10);
 				
+				JPanel theTextPanel = new JPanel();
+				theTextPanel.setLayout(new BoxLayout(theTextPanel, BoxLayout.PAGE_AXIS));
+				theTextPanel.add(lblInput);
+				theTextPanel.add(txtSampleSize);
 				
+				/* a popup action listenere */
 				ActionListener PopUpListener = new ActionListener(){
 					public void actionPerformed(ActionEvent event){
 						String command = event.getActionCommand();
-				        if (command.equalsIgnoreCase("SET_SAMPLE_OK")) {
+				        if (command.equalsIgnoreCase("POPUP_OK")) {
 				        	try {
 								digitalboard.SetSample(Integer.parseInt(txtSampleSize.getText()), tmpID);
 				        	} catch (ExceptionObjectNotFound e1) {
@@ -514,57 +539,104 @@ public class Controller implements ActionListener,MouseListener {
 								Logger.Log(Logger.log_type.ERROR,
 										"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
 							}
+							frame.repaint();
 				        }
-				        else if(command.equalsIgnoreCase("SET_SAMPLE_CANCEL")){
+				        else if(command.equalsIgnoreCase("POPUP_CANCEL")){
 				        	PopUpFrame.dispose();
 				        }
 					}
 				};
-				
-				
+				/* a gombok letrehozasa, beregisztralva a popup action listenerehez */
 				JButton btnOK = new JButton("OK");
-				btnOK.setActionCommand("SET_SAMPLE_OK");
-				//btnOK.setPreferredSize(buttonSize);	
+				btnOK.setActionCommand("POPUP_OK");
+				btnOK.setPreferredSize(buttonSize);	
 				btnOK.addActionListener(PopUpListener);
 				
 				JButton btnCancel = new JButton("Cancel"); 		      
-				btnCancel.setActionCommand("SET_SAMPLE_CANCEL");
-				//btnCancel.setPreferredSize(buttonSize);
-				btnCancel.addActionListener(PopUpListener);		        
-		        
-				Graph g = new Graph();
-				g.num_of_samples=theOsc.getSamples().length;
+				btnCancel.setActionCommand("POPUP_CANCEL");
+				btnCancel.setPreferredSize(buttonSize);
+				btnCancel.addActionListener(PopUpListener);	
 				
-				PopUpFrame.add(g);
-				PopUpFrame.add(lblInput);
-				PopUpFrame.add(txtSampleSize);
-				PopUpFrame.add(btnOK);
-				PopUpFrame.add(btnCancel);
+				/* a gombok panelsavja */
+				JPanel theButtonPanel = new JPanel();
+				theButtonPanel.setLayout(new BoxLayout(theButtonPanel, BoxLayout.LINE_AXIS));
+				theButtonPanel.add(btnOK);
+				theButtonPanel.add(btnCancel);
 				
-				PopUpFrame.setSize(500,500);
+				/* panel melyben benne minden ami nem grafikon */
+				JPanel othersPanel = new JPanel();
+				othersPanel.setLayout(new BoxLayout(othersPanel, BoxLayout.PAGE_AXIS));
+				othersPanel.add(theTextPanel);
+				othersPanel.add(theButtonPanel);
+				
+				PopUpFrame.add(theGraphPanel, BorderLayout.PAGE_START);
+				PopUpFrame.add(othersPanel, BorderLayout.CENTER);
+				
+				PopUpFrame.pack();
 
 				PopUpFrame.setVisible(true);
 				PopUpFrame.setAlwaysOnTop(true);
 				PopUpFrame.requestFocus();
-				 
+				frame.repaint(); 
 			} 
 			/* generator: setfrequency, setsampl */
 			else if (tipus.equalsIgnoreCase("generator")) {
-				String inputValue = JOptionPane.showInputDialog("Kerem, adja meg a generator ("+tmpID+") uj erteket!");
-			    while(inputValue!=null && !inputValue.isEmpty() && !inputValue.matches("[0-1]*"))
-			    {
-			        inputValue = JOptionPane.showInputDialog("Kerem, adja meg a generator ("+tmpID+") uj erteket!");
-			    }
+				/*letrehozzuk a popup paneljet es beallithgatjuk */
+				final JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
+				PopUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				PopUpFrame.setLayout(new BorderLayout());		        
+				PopUpFrame.setResizable(false);
+				
+				/* le kell catolnunk az oscilloscope-ot, hogy le tudjuk kerdezni az ertekeit*/
+				GENERATOR theGen = (GENERATOR) digitalboard.GetElementByID(tmpID);
+				
+				/* a felhasznaloi adatbevitelre felszolito elemek panelje */
+				JLabel lblInput1 = new JLabel("Kerem adja meg a frekvenciat!\n");
+				final JTextField txtFrequency = new JTextField(String.valueOf(theGen.getFrequency()));
+				JLabel lblInput2 = new JLabel("Kerem adja meg a szekvenciat!\n");
+				JPanel theTextPanel = new JPanel();
+				theTextPanel.setLayout(new BoxLayout(theTextPanel, BoxLayout.PAGE_AXIS));
+				theTextPanel.add(lblInput1);
+				theTextPanel.add(txtFrequency);
+				theTextPanel.add(lblInput2);		
+				
+				String inputValue2 = JOptionPane.showInputDialog(theTextPanel);
+				String inputValue1 = txtFrequency.getText();
 			    try {
-			    	if(inputValue!=null && !inputValue.isEmpty())
-			    		digitalboard.SetSequence(inputValue, tmpID);
-				} catch (ExceptionObjectNotFound e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			    	if(inputValue2!=null && !inputValue2.isEmpty())
+			    		digitalboard.SetSequence(inputValue2, tmpID);
+				}  catch (ExceptionObjectNotFound e1) {
+					Logger.Log(Logger.log_type.ERROR,
+							"x ERROR: ObjectNotFound: Nincs elem a megadott azonositoval! /"
+									+ e1.ItemID + "/");
+				} catch (NullPointerException e) {
+					Logger.Log(Logger.log_type.ERROR,
+							"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
+				} catch (Exception e) {
+					Logger.Log(Logger.log_type.ERROR,
+							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
 				}
-				JOptionPane.showMessageDialog(frame,
-						"Ez bizony egy GENERATOR!", "Kattintas az alabbira:",
-						JOptionPane.INFORMATION_MESSAGE);
+				if(inputValue1!=null && !inputValue1.isEmpty())
+					try {
+						digitalboard.SetFrequency(Integer.parseInt(inputValue1), tmpID);
+					}catch (NumberFormatException e1) {
+						Logger.Log(Logger.log_type.ERROR,
+								"x ERROR: Wrong Parameter: /" + inputValue1 + "/");
+					} catch (ExceptionObjectNotFound e1) {
+						Logger.Log(Logger.log_type.ERROR,
+								"x ERROR: ObjectNotFound: Nincs elem a megadott azonositoval! /"
+										+ e1.ItemID + "/");
+					}catch(ExceptionWrongParameter e){
+						Logger.Log(Logger.log_type.ERROR,
+								"x ERROR: WrongParameter: A frekvencianak pozitiv szamnak kell lennie!");
+					} catch (NullPointerException e) {
+						Logger.Log(Logger.log_type.ERROR,
+								"x ERROR: NoBoard: Nincs betoltve a DigitalBoard!");
+					} catch (Exception e) {
+						Logger.Log(Logger.log_type.ERROR,
+								"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
+					}
+					frame.repaint();
 			} 
 			/* egyeb */
 			else {

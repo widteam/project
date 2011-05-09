@@ -127,8 +127,9 @@ public class Composit extends DigitalObject {
 	 * 
 	 * @param ElementID
 	 * @throws ExceptionObjectNotFound 
+	 * @throws ExceptionsWithConnection 
 	 */
-	public void Toggle(String ElementID) throws ExceptionObjectNotFound {
+	public void Toggle(String ElementID) throws ExceptionObjectNotFound, ExceptionsWithConnection {
 		// LOGOLAS;
 		Logger.Log(Logger.log_type.ADDITIONAL, "called Composit ("+this.GetName()+")'s Toggle("+ElementID+")");
 		
