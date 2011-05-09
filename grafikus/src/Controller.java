@@ -182,11 +182,11 @@ public class Controller implements ActionListener,MouseListener {
         Logger.logging_level = Logger.log_levels.MEDIUM;
         Logger.listModel = listModel;
     }
-
+    String path = "";
     public void actionPerformed(ActionEvent event) {
 
         String command = event.getActionCommand();
-        String path = "";
+        
 
         /* FILTER */
         class BHDLFileFilter extends javax.swing.filechooser.FileFilter {
@@ -429,7 +429,6 @@ public class Controller implements ActionListener,MouseListener {
 					public int canvas_width=480;
 					public int canvas_height=80;
 					int[] values;
-					private int t=0;
 					
 					private int v_interval1  = canvas_width/num_of_samples/2;
 					private int v_interval2  = canvas_width/num_of_samples;
@@ -506,6 +505,7 @@ public class Controller implements ActionListener,MouseListener {
 						 }
 					}
 					public void paint(Graphics g) {
+						super.paint(g);
 						Graphics2D g2d = (Graphics2D) g;						
 						g2d.addRenderingHints(new RenderingHints(
 								RenderingHints.KEY_ANTIALIASING,
@@ -525,21 +525,16 @@ public class Controller implements ActionListener,MouseListener {
 				/*************************************************************
 				 * Grafikon vége
 				 *************************************************************/
-				
-				
-				/*letrehozzuk a popup paneljet es beallithgatjuk */
-				final JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
-				PopUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				PopUpFrame.setLayout(new BorderLayout());		        
-				PopUpFrame.setResizable(false);
+				// Dialogus ablak letrehozasa, modalitas beallitasa(legyen a foablak, focusban)
+				final JDialog dialog=new JDialog(frame,Dialog.ModalityType.DOCUMENT_MODAL);
+				dialog.setResizable(false);
 				
 				/* le kell catolnunk az oscilloscope-ot, hogy le tudjuk kerdezni az ertekeit*/
-				Oscilloscope theOsc = (Oscilloscope) digitalboard.GetElementByID(tmpID);
+				final Oscilloscope theOsc = (Oscilloscope) digitalboard.GetElementByID(tmpID);
 				
 				/* a grafikon panelsavja */
-				final JPanel theGraphPanel = new JPanel();	
-				
-				Graph g = new Graph();
+				JPanel theGraphPanel = new JPanel();					
+				final Graph g = new Graph();
 				g.values=theOsc.getSamples();
 				g.setNumOfSamples(theOsc.getSampleSize());				
 				theGraphPanel.add(g);
@@ -547,7 +542,6 @@ public class Controller implements ActionListener,MouseListener {
 				/* a felhasznaloi adatbevitelre felszolito elemek panelje */
 				JLabel lblInput = new JLabel("Kerem adja meg a tarolando minta nagysagat!\n");
 				final JTextField txtSampleSize = new JTextField(String.valueOf(theOsc.getSampleSize()), 10);
-				
 				JPanel theTextPanel = new JPanel();
 				theTextPanel.setLayout(new BoxLayout(theTextPanel, BoxLayout.PAGE_AXIS));
 				theTextPanel.add(lblInput);
@@ -560,6 +554,8 @@ public class Controller implements ActionListener,MouseListener {
 				        if (command.equalsIgnoreCase("POPUP_OK")) {
 				        	try {
 								digitalboard.SetSample(Integer.parseInt(txtSampleSize.getText()), tmpID);
+								g.setNumOfSamples(theOsc.getSampleSize());	
+								g.repaint();
 				        	} catch (ExceptionObjectNotFound e1) {
 								Logger.Log(Logger.log_type.ERROR,
 										"x ERROR: ObjectNotFound: Nincs elem a megadott azonositoval! /"
@@ -574,10 +570,11 @@ public class Controller implements ActionListener,MouseListener {
 							frame.repaint();
 				        }
 				        else if(command.equalsIgnoreCase("POPUP_CANCEL")){
-				        	PopUpFrame.dispose();
+				        	dialog.dispose();
 				        }
-				        else  if(command.equalsIgnoreCase("REFRESH")){
-				        	theGraphPanel.repaint();
+				        else  if(command.equalsIgnoreCase("REFRESH")){				        	
+				        	g.values=theOsc.getSamples();
+				        	g.repaint();
 				        }
 					}
 				};
@@ -599,36 +596,36 @@ public class Controller implements ActionListener,MouseListener {
 				btnCancel.addActionListener(PopUpListener);	
 				
 				/* a gombok panelsavja */
-				JPanel theButtonPanel = new JPanel();
-				theButtonPanel.setLayout(new BoxLayout(theButtonPanel, BoxLayout.LINE_AXIS));
-				theButtonPanel.add(btnOK);
-				theButtonPanel.add(btnCancel);
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.setLayout(new BoxLayout(buttonPanel,
+                                                   BoxLayout.LINE_AXIS));
+                buttonPanel.add(Box.createHorizontalGlue());
+                buttonPanel.add(btnCancel);
+                buttonPanel.add(btnOK);
+                buttonPanel.setBorder(BorderFactory.
+                    createEmptyBorder(0,0,5,5));				
+                
+				
 				
 				/* panel melyben benne minden ami nem grafikon */
-				JPanel othersPanel = new JPanel();
-				othersPanel.setLayout(new BoxLayout(othersPanel, BoxLayout.PAGE_AXIS));
-				othersPanel.add(theTextPanel);
-				othersPanel.add(theButtonPanel);
-				
-				PopUpFrame.add(theGraphPanel, BorderLayout.PAGE_START);
-				PopUpFrame.add(othersPanel, BorderLayout.CENTER);
-				
-				PopUpFrame.pack();
-
-				PopUpFrame.setVisible(true);
-				PopUpFrame.setAlwaysOnTop(true);
-				PopUpFrame.requestFocus();
+                JPanel contentPane = new JPanel(new BorderLayout());
+                contentPane.add(theGraphPanel, BorderLayout.PAGE_START);
+                contentPane.add(theTextPanel, BorderLayout.CENTER);
+                contentPane.add(buttonPanel, BorderLayout.PAGE_END);
+                contentPane.setOpaque(true);
+                dialog.setContentPane(contentPane);
+                
+                //Show it.
+				dialog.setLocationRelativeTo(frame); 
+				dialog.pack();
+                dialog.setVisible(true);
+                
 				frame.repaint(); 
 			} 
 			/* generator: setfrequency, setsampl */
 			else if (tipus.equalsIgnoreCase("generator")) {
-				/*letrehozzuk a popup paneljet es beallithgatjuk */
-				final JFrame PopUpFrame = new JFrame("Properties - "+tmpID);
-				PopUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				PopUpFrame.setLayout(new BorderLayout());		        
-				PopUpFrame.setResizable(false);
-				
-				/* le kell catolnunk az oscilloscope-ot, hogy le tudjuk kerdezni az ertekeit*/
+		
+				/* le kell castolnunk az oscilloscope-ot, hogy le tudjuk kerdezni az ertekeit*/
 				GENERATOR theGen = (GENERATOR) digitalboard.GetElementByID(tmpID);
 				
 				/* a felhasznaloi adatbevitelre felszolito elemek panelje */
@@ -658,7 +655,7 @@ public class Controller implements ActionListener,MouseListener {
 					Logger.Log(Logger.log_type.ERROR,
 							"x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"+e.toString());
 				}
-				if(inputValue1!=null && !inputValue1.isEmpty())
+				if(inputValue2!=null && inputValue1!=null && !inputValue1.isEmpty())
 					try {
 						digitalboard.SetFrequency(Integer.parseInt(inputValue1), tmpID);
 					}catch (NumberFormatException e1) {
