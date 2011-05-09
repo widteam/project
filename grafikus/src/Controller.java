@@ -107,13 +107,15 @@ public class Controller implements ActionListener,MouseListener {
         pauseButton.setActionCommand(PAUSE_SIMULATION);
         pauseButton.setPreferredSize(buttonSize);
         pauseButton.addActionListener(this);
+        
 
         /* Stop */
         stopButton = new JButton("Stop", new ImageIcon("__KEP__HELYE__"));
         stopButton.setActionCommand(STOP_SIMULATION);
         stopButton.setPreferredSize(buttonSize);
         stopButton.addActionListener(this);
-
+        
+        
         /* Exit */
         exitButton = new JButton("Exit", new ImageIcon("__KEP__HELYE__"));
         exitButton.setActionCommand(EXIT);
@@ -125,7 +127,7 @@ public class Controller implements ActionListener,MouseListener {
         stepButton.setActionCommand(STEP);
         stepButton.setPreferredSize(buttonSize);
         stepButton.addActionListener(this);
-
+       
         /* Timer value */
         timerValueField = new JTextField();
         timerValueField.setActionCommand(TIMER);
@@ -134,7 +136,31 @@ public class Controller implements ActionListener,MouseListener {
         timerValueField.addActionListener(this);
         timerValueField.setHorizontalAlignment(JTextField.CENTER);
 
-
+        if(digitalboard.getMainComposit()==null){
+        	stopButton.setEnabled(false);
+        	pauseButton.setEnabled(false);
+        	stepButton.setEnabled(false);        	 
+        	runButton.setEnabled(false);
+        }
+        else if(digitalboard.GetStatus() == Status.STOPPED){
+        	stopButton.setEnabled(false);
+        	pauseButton.setEnabled(false);
+        	stepButton.setEnabled(false);        	 
+        	runButton.setEnabled(true);
+        }
+        else if(digitalboard.GetStatus() == Status.PAUSED){        	
+        	pauseButton.setEnabled(false);        	
+        	stepButton.setEnabled(true);        	 
+        	stopButton.setEnabled(true);
+        	runButton.setEnabled(true);
+        }
+        else if(digitalboard.GetStatus() == Status.RUNNING){
+        	
+        	pauseButton.setEnabled(true);        	
+        	stepButton.setEnabled(false);        	 
+        	stopButton.setEnabled(true);
+        	runButton.setEnabled(false);
+        }
         eventList = new JList(listModel); // data has type Object[]
         eventList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         eventList.setLayoutOrientation(JList.VERTICAL);
@@ -181,6 +207,7 @@ public class Controller implements ActionListener,MouseListener {
 
         Logger.logging_level = Logger.log_levels.MEDIUM;
         Logger.listModel = listModel;
+        Logger.mainFrame=frame;
     }
     String path = "";
     public void actionPerformed(ActionEvent event) {
@@ -224,6 +251,7 @@ public class Controller implements ActionListener,MouseListener {
                             "x Error: UnknownError: Ismeretlen hiba tortent! (Info: +"
                             + e.toString() + " File: " + path);
                 } finally {
+                	digitalboard.Stop();
                     frame.repaint();
                 }
             }
@@ -283,12 +311,14 @@ public class Controller implements ActionListener,MouseListener {
             timer.start();
             Logger.Log(Logger.log_type.INFO, "Simulation started.");
             frame.repaint();
-        } // pause
+        } 
+        // pause
         else if (command.equalsIgnoreCase("pause")) {
             Logger.Log(Logger.log_type.INFO, "Simulation is not running");
             digitalboard.Pause();
             frame.repaint();
-        } // Stop
+        } 
+        // Stop
         else if (command.equalsIgnoreCase("stop")) {
             try {
                 digitalboard.LoadBoard(path);
@@ -305,6 +335,7 @@ public class Controller implements ActionListener,MouseListener {
                         + e.toString() + " File: " + path);
             }
             timer.stop();
+            digitalboard.Stop();
             Logger.Log(Logger.log_type.INFO, "Simulation stopped");
             frame.repaint();
         } 
@@ -387,6 +418,32 @@ public class Controller implements ActionListener,MouseListener {
         //exit
         else if (command.equalsIgnoreCase("exit")) {
             System.exit(0);
+        }
+        
+        if(digitalboard.getMainComposit()==null){
+        	stopButton.setEnabled(false);
+        	pauseButton.setEnabled(false);
+        	stepButton.setEnabled(false);        	 
+        	runButton.setEnabled(false);
+        }
+        else if(digitalboard.GetStatus() == Status.STOPPED){
+        	stopButton.setEnabled(false);
+        	pauseButton.setEnabled(false);
+        	stepButton.setEnabled(false);        	 
+        	runButton.setEnabled(true);
+        }
+        else if(digitalboard.GetStatus() == Status.PAUSED){        	
+        	pauseButton.setEnabled(false);        	
+        	stepButton.setEnabled(true);        	 
+        	stopButton.setEnabled(true);
+        	runButton.setEnabled(true);
+        }
+        else if(digitalboard.GetStatus() == Status.RUNNING){
+        	
+        	pauseButton.setEnabled(true);        	
+        	stepButton.setEnabled(false);        	 
+        	stopButton.setEnabled(true);
+        	runButton.setEnabled(false);
         }
     }
 
@@ -526,7 +583,7 @@ public class Controller implements ActionListener,MouseListener {
 				 * Grafikon vége
 				 *************************************************************/
 				// Dialogus ablak letrehozasa, modalitas beallitasa(legyen a foablak, focusban)
-				final JDialog dialog=new JDialog(frame,Dialog.ModalityType.DOCUMENT_MODAL);
+				final JDialog dialog=new JDialog(frame,"Oscilloscope Properites",Dialog.ModalityType.DOCUMENT_MODAL);
 				dialog.setResizable(false);
 				
 				/* le kell catolnunk az oscilloscope-ot, hogy le tudjuk kerdezni az ertekeit*/
@@ -679,9 +736,7 @@ public class Controller implements ActionListener,MouseListener {
 			} 
 			/* egyeb */
 			else {
-				JOptionPane.showMessageDialog(frame,
-						"Ez bizony nem allithato...!\n" + tmpID,
-						"Kattintas az alabbira:", JOptionPane.WARNING_MESSAGE);
+				;
 			}
 
 		}

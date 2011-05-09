@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 
 
@@ -19,7 +21,7 @@ public class Logger {
 	public static String log_file="wid_test_log.log";
 	
 	public static DefaultListModel listModel;
-	
+	public static JFrame mainFrame;
 	//Ha ALL - a logging_level es a 
 	public static void Log(log_type prio,String InputForLog){
 		if(logging_level == log_levels.LOW){
@@ -75,7 +77,11 @@ public class Logger {
 				}
 		}
 		if(prio == log_type.ERROR){
-			//
+			JOptionPane.showMessageDialog(mainFrame,
+				    InputForLog,
+				    "X Error",
+				    JOptionPane.ERROR_MESSAGE);
+
 		}
 	}
 	

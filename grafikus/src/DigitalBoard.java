@@ -122,7 +122,13 @@ public class DigitalBoard{
 		 */
 		String main_composit = bhdlParser.FindMainComposit(strFileContents);
 		MainComposit=bhdlParser.CreateMain(main_composit);
-		bhdlParser.ReadComposit(MainComposit, strFileContents, MainComposit.GetName());
+		try {
+			bhdlParser.ReadComposit(MainComposit, strFileContents, MainComposit.GetName());
+		} catch (ExceptionWrongBoard e) {
+			MainComposit=null;
+			throw new ExceptionWrongBoard(MainComposit);
+			
+		}
 		
 		Debug();
 	}
@@ -237,11 +243,13 @@ public class DigitalBoard{
      * @throws ExceptionUnstableCircuit 
      */
     public void StepComponents() throws ExceptionUnstableCircuit, ExceptionsWithConnection {
-    	Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's StepComponents()");
-    	if(SimStatus == Status.RUNNING)
+    	
+    	if(SimStatus == Status.RUNNING){
     		MainComposit.StepComponents();
-    	else if(SimStatus == Status.PAUSED){
+    		Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's StepComponents()");
+    	}else if(SimStatus == Status.PAUSED){
     		MainComposit.StepComponents();
+    		Logger.Log(Logger.log_type.ADDITIONAL, "called DigitalBoard's StepComponents()");
     	}
     }
 
