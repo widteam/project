@@ -8,9 +8,13 @@ echo Creating new directories...
 md build
 md build\classes
 md dist
+md dist\images
 
 echo Updating the PATH...
-PATH=D:\Program Files\Java\jdk1.6.0_14\bin
+PATH=D:\Program Files\Java\jdk1.6.0_16\bin;
+
+echo Copy the images...
+copy src\images\*.png dist\images
 
 echo Creating the class files...
 javac -d build\classes src\*.java
