@@ -1,0 +1,8 @@
+composit main(in,out)
+	switch sw01;
+	oscilloscope osc01(10);
+	wire w02;	
+	assign w02 = sw01 & w02;
+	assign osc01 = w02;
+	set sw01 = 1
+endcomposit;
