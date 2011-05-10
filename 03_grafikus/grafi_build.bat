@@ -11,7 +11,7 @@ md build\classes\images
 md dist
 
 echo Updating the PATH...
-PATH=C:\Program Files\Java\jdk1.6.0_23\bin;
+PATH=D:\Program Files\Java\jdk1.6.0_14\bin;C:\Program Files\Java\jdk1.6.0_23\bin;
 
 echo Copy the images...
 copy src\images\*.png build\classes\images
